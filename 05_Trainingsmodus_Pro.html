@@ -55,39 +55,63 @@ body{
     z-index: 501;
     background: var(--green);
     color: #fff;
-    padding: 8px 16px;
+    padding: 5px 14px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
     flex-shrink: 0;
-    font-size: 14px;
+    font-size: 12px;
+    min-height: 40px;
 }
 .app-header .app-header-title{
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: 15px;
+    font-size: 13px;
     letter-spacing: .02em;
+    white-space: nowrap;
+    flex-wrap: wrap;
 }
-.app-header .app-header-logo{ width: 26px; height: 26px; flex-shrink: 0; }
-.app-header .app-header-controls{ display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.app-header .app-header-logo{ width: 20px; height: 20px; flex-shrink: 0; }
+.app-header .app-header-controls{ display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .app-header a, .app-header button{
     color: #fff;
     text-decoration: none;
     background: rgba(255,255,255,0.14);
     border: none;
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 13px;
+    padding: 4px 10px;
+    border-radius: 7px;
+    font-size: 11px;
     cursor: pointer;
     transition: background .15s ease;
+    touch-action: manipulation;
 }
 .app-header a:hover, .app-header button:hover{ background: rgba(255,255,255,0.24); }
-.app-header .app-header-back{ background: transparent; padding: 6px 4px; }
+.app-header .app-header-back{ background: transparent; padding: 4px 4px; }
+.app-header select{
+    padding: 4px 6px;
+    border-radius: 7px;
+    border: none;
+    font-size: 11px;
+    background: rgba(255,255,255,0.9);
+    color: #143;
+    touch-action: manipulation;
+}
+.app-header .player-selector{
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+}
+.app-header .keyboard-status{
+    padding: 2px 10px;
+    font-size: 10px;
+    border-radius: 14px;
+}
 .app-header .app-header-back:hover{ background: rgba(255,255,255,0.14); }
 /* Hochformat-Hinweis: die App ist für Querformat (Smartphone liegend) optimiert */
 .rotate-hint {
@@ -120,53 +144,36 @@ body{
    aber wenig Höhe. Reine Breiten-Media-Queries greifen hier NICHT,
    da diese Geräte oft sehr breit sind.)
    ============================================================ */
-@media (max-height: 820px) {
-    .app-header{ padding: 5px 14px; font-size: 12px; }
-    .app-header .app-header-logo{ width: 20px; height: 20px; }
+/* Auf großen, hohen Bildschirmen (Desktop) darf es etwas großzügiger
+   sein – Standard ist bewusst kompakt für Tablets/Touch-Monitore. */
+@media (min-height: 900px) {
+    .arena-header{ padding: 10px 16px; }
+    .arena-title{ font-size: 1.5rem; }
+    .keyboard-hint{ padding: 4px 12px; font-size: .78rem; }
 
-    .arena-header{ padding: 6px 14px; gap: 6px; }
-    .arena-title{ font-size: 1rem; }
-    .keyboard-hint{ padding: 3px 10px; font-size: 0.65rem; }
+    .scoreboard-row{ padding: 0 14px 12px; gap: 10px; }
+    .roster-panel{ width: 190px; padding: 10px; gap: 6px; }
+    .roster-panel-title{ font-size: .8rem; }
+    .roster-slot select{ padding: 7px 8px; font-size: .85rem; }
+    .score-card{ padding: 14px 18px; border-bottom-width: 7px; }
+    .team-name{ font-size: 1.05rem; }
+    .team-score{ font-size: 3.8rem; }
+    .team-wins{ padding: 5px 14px; font-size: 1.05rem; }
+    .team-wins span{ font-size: 1.25rem; }
 
-    .scoreboard-row{ padding: 0 10px 8px; gap: 6px; }
-    .roster-panel{ width: 150px; padding: 6px; gap: 3px; }
-    .roster-panel-title{ font-size: 0.7rem; }
-    .roster-slot select{ padding: 4px 6px; font-size: 0.75rem; }
-    .score-card{ padding: 8px 10px; border-bottom-width: 5px; }
-    .team-name{ font-size: 0.75rem; }
-    .team-score{ font-size: 2.4rem; }
-    .team-wins{ padding: 3px 10px; font-size: 0.85rem; }
-    .team-wins span{ font-size: 1rem; }
+    .tabs{ margin-bottom: 8px; }
+    .tab-btn{ padding: 8px 14px; font-size: .8rem; }
 
-    .header{ padding: 6px 14px; gap: 8px; }
-    .header h1{ font-size: 1.1rem; }
-    .header-controls select, .header-controls button{ padding: 4px 8px; font-size: 0.8rem; }
-    .player-selector select{ padding: 4px 8px; }
-    .keyboard-status{ font-size: 0.7rem; padding: 3px 8px; }
+    .kehren-table{ border-spacing: 0 7px; padding: 0 14px; }
+    .kehren-table td{ padding: 9px 6px; font-size: 1rem; }
 
-    .tabs{ margin-bottom: 4px; }
-    .tab-btn{ padding: 5px 12px; font-size: 0.75rem; }
+    .quick-entry{ margin: 6px 14px 12px; padding: 12px 14px; }
+    .quick-btn{ width: 40px; height: 40px; font-size: 15px; }
+    .swap-btn{ width: 36px; height: 36px; font-size: 15px; }
+    .btn-save-kehre, .btn-cancel-kehre{ padding: 10px 20px; font-size: .85rem; }
 
-    .kehren-table{ border-spacing: 0 5px; padding: 0 10px; }
-    .kehren-table td{ padding: 6px 4px; font-size: 0.9rem; }
-
-    .quick-entry{ margin: 4px 10px 8px; padding: 8px; }
-    .quick-entry-title{ margin-bottom: 6px; font-size: 0.7rem; }
-    .quick-btn{ width: 34px; height: 34px; font-size: 13px; }
-    .swap-btn{ width: 30px; height: 30px; font-size: 13px; }
-    .quick-actions{ margin-top: 8px; }
-    .btn-save-kehre, .btn-cancel-kehre{ padding: 8px 16px; font-size: 0.8rem; }
-
-    .footer{ padding: 8px; gap: 6px; }
-    .footer button{ padding: 8px 12px; font-size: 0.8rem; }
-}
-
-@media (max-height: 620px) {
-    .keyboard-hint{ display: none; }
-    .team-score{ font-size: 1.9rem; }
-    .roster-panel{ width: 130px; }
-    .roster-slot select{ padding: 3px 5px; font-size: 0.7rem; }
-    .footer{ padding: 6px; }
+    .footer{ padding: 12px; gap: 8px; }
+    .footer button{ padding: 10px 16px; font-size: .9rem; }
 }
 
 
@@ -197,54 +204,13 @@ body{
 }
 .topbar .logout:hover{ border-color:var(--text-dim); }
 
-.header{
-    position: sticky;
-    top: 0;
-    z-index: 500;
-    background:var(--bg-panel);
-    border-bottom:1px solid var(--line);
-    color:var(--text-main);
-    padding:10px 14px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    flex-wrap:wrap;
-    gap:12px;
-    flex-shrink:0;
-}
-
-.header h1{
-    font-family:var(--font-display);
-    letter-spacing:0.03em;
-    text-transform:uppercase;
-    font-size:1.7rem;
-    color:var(--text-main);
-}
-.header h1::before{
-    content:"Modul 05";
-    display:block;
-    font-family:var(--font-body);
-    text-transform:uppercase;
-    letter-spacing:0.14em;
-    font-size:11px;
-    color:var(--accent);
-    font-weight:700;
-}
-
-.header-controls{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    align-items:center;
-}
-
 button,
 select,
 input{
     border:none;
-    border-radius:20px;
-    padding:10px 14px;
-    font-size:1rem;
+    border-radius:11px;
+    padding:8px 14px;
+    font-size:.9rem;
     touch-action: manipulation;
 }
 
@@ -286,17 +252,17 @@ button:active {
 
 .arena-header{
     background:var(--light);
-    padding:12px 16px;
+    padding:6px 14px;
     display:flex;
     justify-content:space-between;
     align-items:center;
     flex-shrink:0;
     flex-wrap:wrap;
-    gap:8px;
+    gap:6px;
 }
 
 .arena-title{
-    font-size:1.6rem;
+    font-size:1.1rem;
     font-weight:900;
     color:var(--green);
     text-align:center;
@@ -305,17 +271,17 @@ button:active {
 .keyboard-hint {
     background: var(--dark);
     color: white;
-    padding: 4px 12px;
+    padding: 3px 10px;
     border-radius: 20px;
-    font-size: 0.8rem;
+    font-size: 0.65rem;
     font-weight: 600;
 }
 
 .scoreboard-row{
     display:flex;
     align-items:stretch;
-    gap:10px;
-    padding:0 14px 14px;
+    gap:6px;
+    padding:0 10px 6px;
     flex-shrink:0;
 }
 
@@ -329,15 +295,15 @@ button:active {
 
 /* ===== SPIELERAUSWAHL (Aufstellung) ===== */
 .roster-panel{
-    width:190px;
+    width:140px;
     flex-shrink:0;
     background:#f7faf5;
     border:2px solid var(--border);
-    border-radius:16px;
-    padding:10px;
+    border-radius:12px;
+    padding:6px;
     display:flex;
     flex-direction:column;
-    gap:6px;
+    gap:3px;
 }
 
 .roster-panel.team-e{
@@ -369,9 +335,9 @@ button:active {
 
 .roster-slot select{
     width:100%;
-    padding:7px 8px;
-    font-size:0.8rem;
-    border-radius:9px;
+    padding:4px 6px;
+    font-size:0.7rem;
+    border-radius:7px;
     border:1px solid var(--border);
     background:white;
     color:#222;
@@ -504,10 +470,10 @@ button:active {
 
 .score-card{
     background:#f7faf5;
-    border-radius:18px;
-    padding:16px 20px;
+    border-radius:12px;
+    padding:6px 10px;
     text-align:center;
-    border-bottom:8px solid var(--green);
+    border-bottom:5px solid var(--green);
     display:flex;
     justify-content:center;
     align-items:center;
@@ -540,7 +506,7 @@ button:active {
 }
 
 .team-name{
-    font-size:1.2rem;
+    font-size:.75rem;
     font-weight:900;
 }
 
@@ -551,7 +517,7 @@ button:active {
 }
 
 .team-score{
-    font-size:4.2rem;
+    font-size:2.4rem;
     font-weight:900;
     color:var(--green);
     line-height:1;
@@ -564,18 +530,18 @@ button:active {
 .team-wins{
     display:flex;
     align-items:center;
-    gap:8px;
+    gap:5px;
     background:var(--dark);
     color:white;
-    padding:6px 16px;
-    border-radius:10px;
+    padding:3px 10px;
+    border-radius:8px;
     font-weight:700;
-    font-size:1.2rem;
+    font-size:.85rem;
     white-space:nowrap;
 }
 
 .team-wins span{
-    font-size:1.4rem;
+    font-size:1rem;
 }
 
 .kehren-wrapper{
@@ -613,9 +579,9 @@ button:active {
     display:flex;
     justify-content:center;
     align-items:center;
-    gap:10px;
+    gap:6px;
     flex-wrap:wrap;
-    padding:14px;
+    padding:8px;
     border-top:1px solid var(--border);
     flex-shrink:0;
     background: white;
@@ -623,20 +589,20 @@ button:active {
 
 .footer .footer-left {
     display:flex;
-    gap:10px;
+    gap:6px;
     flex-wrap:wrap;
     justify-content:center;
 }
 
 .footer .footer-right {
-    font-size:0.85rem;
+    font-size:0.7rem;
     color:#555;
     background:var(--light);
-    padding:4px 14px;
+    padding:3px 12px;
     border-radius:30px;
     font-weight:500;
     letter-spacing:0.3px;
-    margin-left:20px;
+    margin-left:10px;
 }
 
 /* ============================================================
@@ -649,15 +615,15 @@ button:active {
     display:flex;
     gap:4px;
     padding:0 14px;
-    margin-bottom:8px;
+    margin-bottom:4px;
     border-bottom:1px solid var(--border);
     flex-shrink:0;
 }
 .tab-btn{
     background:none;
     border:none;
-    padding:8px 14px;
-    font-size:.85rem;
+    padding:5px 12px;
+    font-size:.75rem;
     font-weight:800;
     color:#8a97a0;
     border-bottom:3px solid transparent;
@@ -676,8 +642,8 @@ button:active {
 .kehren-table{
     width:100%;
     border-collapse:separate;
-    border-spacing:0 8px;
-    padding:0 14px;
+    border-spacing:0 5px;
+    padding:0 10px;
 }
 .kehren-table th{
     font-size:.7rem;
@@ -692,10 +658,10 @@ button:active {
     background:white;
     border-top:2px solid var(--border);
     border-bottom:2px solid var(--border);
-    padding:10px 6px;
+    padding:6px 4px;
     text-align:center;
     font-weight:800;
-    font-size:1.05rem;
+    font-size:.9rem;
 }
 .kehren-table td:first-child{
     border-left:2px solid var(--border);
@@ -745,43 +711,56 @@ button:active {
 
 .quick-entry{
     flex-shrink:0;
-    margin:6px 14px 14px;
+    margin:4px 10px 8px;
     background:#fbfdfb;
     border:2px solid var(--border);
-    border-radius:16px;
-    padding:14px;
+    border-radius:14px;
+    padding:8px 10px;
     box-shadow:0 -4px 14px rgba(0,0,0,0.06);
 }
 .quick-entry-title{
-    font-size:.8rem;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    font-size:.7rem;
     font-weight:800;
     letter-spacing:.05em;
     text-transform:uppercase;
     color:#7a8a86;
-    margin-bottom:10px;
+    margin-bottom:6px;
     text-align:center;
+}
+.quick-entry-title .kehre-badge{
+    background:var(--green);
+    color:white;
+    border-radius:20px;
+    padding:1px 9px;
+    font-size:.7rem;
+    letter-spacing:0;
+    text-transform:none;
 }
 .quick-row{
     display:flex;
     align-items:center;
     justify-content:center;
-    gap:10px;
+    gap:8px;
     flex-wrap:wrap;
 }
 .quick-buttons{
     display:flex;
-    gap:6px;
+    gap:5px;
     flex-wrap:wrap;
     justify-content:center;
 }
 .quick-btn{
-    width:42px;
-    height:42px;
-    border-radius:10px;
+    width:34px;
+    height:34px;
+    border-radius:9px;
     border:2px solid var(--border);
     background:white;
     font-weight:900;
-    font-size:15px;
+    font-size:13px;
     touch-action:manipulation;
     transition: all .15s ease;
 }
@@ -792,12 +771,12 @@ button:active {
 .quick-btn:active{ transform:scale(0.92); }
 
 .swap-btn{
-    width:38px;
-    height:38px;
+    width:30px;
+    height:30px;
     border-radius:50%;
     border:2px solid var(--border);
     background:white;
-    font-size:16px;
+    font-size:13px;
     cursor:pointer;
     touch-action:manipulation;
     flex-shrink:0;
@@ -806,16 +785,16 @@ button:active {
 
 .quick-actions{
     display:flex;
-    gap:10px;
+    gap:8px;
     justify-content:center;
-    margin-top:14px;
+    margin-top:8px;
     flex-wrap:wrap;
 }
 .btn-save-kehre, .btn-cancel-kehre{
-    padding:12px 22px;
-    border-radius:12px;
+    padding:7px 16px;
+    border-radius:10px;
     font-weight:800;
-    font-size:.9rem;
+    font-size:.8rem;
     border:none;
     cursor:pointer;
     touch-action:manipulation;
@@ -1446,19 +1425,9 @@ button:active {
             <text x="100" y="130" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="26" fill="#c8e6c9" letter-spacing="2.5">GREIN</text>
         </svg>
         Trainingsmodus Pro
+        <span class="keyboard-status" id="keyboardStatus">🔑 Bereit</span>
     </div>
     <div class="app-header-controls">
-        <a class="app-header-back" href="dashboard.html">⬅ Dashboard</a>
-        <a class="logout" href="#" onclick="logout(); return false;">Abmelden</a>
-    </div>
-</div>
-
-<div class="header">
-    <h1>Trainingsmodus Pro</h1>
-
-    <div class="header-controls">
-        <span class="keyboard-status" id="keyboardStatus">🔑 Bereit</span>
-
         <div class="player-selector">
             <label for="playerCount">👥</label>
             <select id="playerCount">
@@ -1483,7 +1452,9 @@ button:active {
             <option value="8">8 Kehren</option>
         </select>
 
-        <button onclick="fullReset()" style="background:#b93a32;">↺</button>
+        <button onclick="fullReset()" style="background:#b93a32;" title="Kompletter Reset">↺</button>
+        <a class="app-header-back" href="dashboard.html">⬅ Dashboard</a>
+        <a class="logout" href="#" onclick="logout(); return false;">Abmelden</a>
     </div>
 </div>
 
@@ -2470,7 +2441,7 @@ function renderQuickEntry(arena, activeIdx) {
 
     return `
     <div class="quick-entry">
-        <div class="quick-entry-title">Schnell-Eingabe für Kehre ${activeIdx + 1}</div>
+        <div class="quick-entry-title">Aktuelle Kehre <span class="kehre-badge">${activeIdx + 1}</span></div>
         <div class="quick-row">
             <div class="quick-buttons">${buildButtons('a')}</div>
             <button class="swap-btn" onclick="swapQuickValues()" title="Werte tauschen">⇄</button>
