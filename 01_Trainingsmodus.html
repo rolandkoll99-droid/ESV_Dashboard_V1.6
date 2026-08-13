@@ -116,6 +116,54 @@ body{
     .rotate-hint { display: flex; }
 }
 
+/* ============================================================
+   KOMPAKT-ANSICHT FÜR BEGRENZTE BILDSCHIRMHÖHE
+   (Tablets/Touch-Monitore im Querformat, z. B. 1280×800 – breit,
+   aber wenig Höhe. Reine Breiten-Media-Queries greifen hier NICHT,
+   da diese Geräte oft sehr breit sind.)
+   ============================================================ */
+@media (max-height: 820px) {
+    .app-header{ padding: 5px 14px; font-size: 12px; }
+    .app-header .app-header-logo{ width: 20px; height: 20px; }
+
+    .header{ padding: 6px 14px; gap: 8px; }
+    .header h1{ font-size: 1.1rem; }
+    .header-clock{ font-size: 0.7rem; padding: 2px 8px; }
+    .header-clock .clock-date{ display: none; }
+    .header-controls select, .header-controls button{ padding: 4px 8px; font-size: 0.8rem; }
+    .player-selector select{ padding: 4px 8px; }
+
+    .game-header-card{ padding: 8px 16px 10px; margin: 0 14px 8px; }
+    .game-header-title{ font-size: 0.75rem; margin-bottom: 2px; }
+    .big-score-row{ gap: 14px; }
+    .big-score{ font-size: 2.6rem; }
+    .big-score-sep{ font-size: 1.3rem; }
+    .game-meta{ margin-top: 2px; font-size: 0.75rem; }
+    .status-pill{ margin-top: 4px; padding: 2px 12px; font-size: 0.65rem; }
+    .wins-row{ margin-top: 6px; font-size: 0.75rem; gap: 12px; }
+
+    .tabs{ margin-bottom: 4px; }
+    .tab-btn{ padding: 5px 12px; font-size: 0.75rem; }
+
+    .kehren-table{ border-spacing: 0 5px; padding: 0 10px; }
+    .kehren-table td{ padding: 6px 4px; font-size: 0.9rem; }
+
+    .quick-entry{ margin: 4px 10px 8px; padding: 8px; }
+    .quick-entry-title{ margin-bottom: 6px; font-size: 0.7rem; }
+    .quick-btn{ width: 34px; height: 34px; font-size: 13px; }
+    .swap-btn{ width: 30px; height: 30px; font-size: 13px; }
+    .quick-actions{ margin-top: 8px; }
+    .btn-save-kehre, .btn-cancel-kehre{ padding: 8px 16px; font-size: 0.8rem; }
+}
+
+@media (max-height: 620px) {
+    .header-clock{ display: none; }
+    .big-score{ font-size: 2.1rem; }
+    .game-header-card{ padding: 6px 14px 8px; }
+    .wins-row{ margin-top: 4px; }
+    .footer{ padding: 8px; }
+}
+
 
 .topbar{
     position: sticky;
