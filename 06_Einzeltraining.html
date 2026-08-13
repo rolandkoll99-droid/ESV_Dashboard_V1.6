@@ -82,6 +82,31 @@
         .app-header a:hover, .app-header button:hover{ background: rgba(255,255,255,0.24); }
         .app-header .app-header-back{ background: transparent; padding: 6px 4px; }
         .app-header .app-header-back:hover{ background: rgba(255,255,255,0.14); }
+/* Hochformat-Hinweis: die App ist für Querformat (Smartphone liegend) optimiert */
+.rotate-hint {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(13, 31, 19, 0.97);
+    color: #fff;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    text-align: center;
+    padding: 24px;
+    font-size: 1rem;
+}
+.rotate-hint .rotate-icon { font-size: 2.5rem; animation: rotate-hint-spin 1.8s ease-in-out infinite; }
+@keyframes rotate-hint-spin {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(90deg); }
+}
+@media (orientation: portrait) and (max-width: 600px) {
+    .rotate-hint { display: flex; }
+}
+
 
         .topbar{
     position: sticky;
@@ -534,6 +559,12 @@
     </style>
 </head>
 <body>
+<div class="rotate-hint">
+    <div class="rotate-icon">📱↻</div>
+    <div>Bitte das Gerät ins <strong>Querformat</strong> drehen<br>für die optimale Ansicht.</div>
+</div>
+
+
 
 <div class="app-header">
     <div class="app-header-title">

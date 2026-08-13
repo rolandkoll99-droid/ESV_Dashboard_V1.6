@@ -89,6 +89,31 @@ body{
 .app-header a:hover, .app-header button:hover{ background: rgba(255,255,255,0.24); }
 .app-header .app-header-back{ background: transparent; padding: 6px 4px; }
 .app-header .app-header-back:hover{ background: rgba(255,255,255,0.14); }
+/* Hochformat-Hinweis: die App ist für Querformat (Smartphone liegend) optimiert */
+.rotate-hint {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(13, 31, 19, 0.97);
+    color: #fff;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    text-align: center;
+    padding: 24px;
+    font-size: 1rem;
+}
+.rotate-hint .rotate-icon { font-size: 2.5rem; animation: rotate-hint-spin 1.8s ease-in-out infinite; }
+@keyframes rotate-hint-spin {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(90deg); }
+}
+@media (orientation: portrait) and (max-width: 600px) {
+    .rotate-hint { display: flex; }
+}
+
 
 .topbar{
     position: sticky;
@@ -471,7 +496,7 @@ button:active {
 }
 
 .team-score{
-    font-size:3.4rem;
+    font-size:4.2rem;
     font-weight:900;
     color:var(--green);
     line-height:1;
@@ -526,101 +551,6 @@ button:active {
     background:#0d3d22;
 }
 
-.kehren{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:14px;
-}
-
-.kehren-title{
-    text-align:center;
-    font-weight:900;
-    margin-bottom:8px;
-}
-
-.kehre-row{
-    display:grid;
-    grid-template-columns:90px 1fr 45px;
-    gap:8px;
-    align-items:center;
-    background:white;
-    border:2px solid var(--border);
-    border-radius:14px;
-    padding:8px;
-    margin-bottom:8px;
-    transition: all 0.2s ease;
-    cursor: pointer;
-    touch-action: manipulation;
-}
-
-.kehre-row:active {
-    transform: scale(0.98);
-}
-
-.kehre-row.active{
-    border:3px solid #4caf50;
-    background:#f3fff2;
-    box-shadow: 0 0 20px rgba(76, 175, 80, 0.2);
-}
-
-.kehre-row.completed{
-    border:3px solid #ff9800;
-    background:#fff8e1;
-}
-
-.kehre-row.delete-mode{
-    border:3px solid #ff0000;
-    background:#fff0f0;
-    box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
-}
-
-.kehre-number{
-    font-size:.9rem;
-    font-weight:900;
-    text-align:center;
-}
-
-.points{
-    display:flex;
-    gap:6px;
-    justify-content:center;
-    flex-wrap:wrap;
-}
-
-.point-btn{
-    width:44px;
-    height:44px;
-    border-radius:10px;
-    border:2px solid var(--border);
-    background:white;
-    color:black;
-    font-weight:900;
-    font-size:16px;
-    touch-action: manipulation;
-    transition: all 0.15s;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-}
-
-.point-btn:active {
-    transform: scale(0.92);
-    background:var(--green);
-    color:white;
-}
-
-.point-btn.active-point{
-    background:var(--green);
-    color:white;
-    border-color:var(--green);
-}
-
-.kehre-value{
-    text-align:center;
-    font-weight:900;
-    font-size:1.1rem;
-}
-
 .footer{
     position: sticky;
     bottom: 0;
@@ -653,6 +583,289 @@ button:active {
     letter-spacing:0.3px;
     margin-left:20px;
 }
+
+/* ============================================================
+   NEUE KEHREN-EINGABE (Tabelle + Schnell-Eingabe-Panel)
+   Tastatur-Bedienung (Ziffern/+/-/*//) bleibt unverändert erhalten
+   und schreibt in dieselben arena.pointsA/pointsB-Daten.
+   ============================================================ */
+
+.tabs{
+    display:flex;
+    gap:4px;
+    padding:0 14px;
+    margin-bottom:8px;
+    border-bottom:1px solid var(--border);
+    flex-shrink:0;
+}
+.tab-btn{
+    background:none;
+    border:none;
+    padding:8px 14px;
+    font-size:.85rem;
+    font-weight:800;
+    color:#8a97a0;
+    border-bottom:3px solid transparent;
+    cursor:pointer;
+    touch-action:manipulation;
+}
+.tab-btn.active{
+    color:var(--green);
+    border-bottom-color:var(--green);
+}
+.tab-btn[disabled]{
+    cursor:not-allowed;
+    opacity:.55;
+}
+
+.kehren-table{
+    width:100%;
+    border-collapse:separate;
+    border-spacing:0 8px;
+    padding:0 14px;
+}
+.kehren-table th{
+    font-size:.7rem;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:#8a97a0;
+    font-weight:800;
+    text-align:center;
+    padding-bottom:4px;
+}
+.kehren-table td{
+    background:white;
+    border-top:2px solid var(--border);
+    border-bottom:2px solid var(--border);
+    padding:10px 6px;
+    text-align:center;
+    font-weight:800;
+    font-size:1.05rem;
+}
+.kehren-table td:first-child{
+    border-left:2px solid var(--border);
+    border-radius:12px 0 0 12px;
+    font-weight:700;
+    font-size:.8rem;
+    color:#7a8a86;
+}
+.kehren-table td:last-child{
+    border-right:2px solid var(--border);
+    border-radius:0 12px 12px 0;
+}
+.kehren-table tr.editing td{
+    border-color:var(--green);
+    background:#f3fff2;
+}
+.kehren-table td.val-a{ color:var(--green); background:#f2fbf2; }
+.kehren-table td.val-b{ color:var(--red); background:#fff3f2; }
+.kehren-table tr.editing td.val-a{ background:#e5f9e0; }
+.kehren-table tr.editing td.val-b{ background:#ffe4e2; }
+.kehren-table tr.delete-mode td{
+    border-color:var(--red);
+    background:#fff0f0;
+}
+
+.row-actions{
+    display:flex;
+    gap:6px;
+    justify-content:center;
+}
+.icon-btn{
+    width:32px;
+    height:32px;
+    border-radius:8px;
+    border:1px solid var(--border);
+    background:white;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-size:.9rem;
+    cursor:pointer;
+    touch-action:manipulation;
+}
+.icon-btn.edit{ color:var(--green); border-color:#bfe6c6; }
+.icon-btn.delete{ color:var(--red); border-color:#f3c6c2; }
+.icon-btn:active{ transform:scale(0.92); }
+
+.quick-entry{
+    flex-shrink:0;
+    margin:6px 14px 14px;
+    background:#fbfdfb;
+    border:2px solid var(--border);
+    border-radius:16px;
+    padding:14px;
+    box-shadow:0 -4px 14px rgba(0,0,0,0.06);
+}
+.quick-entry-title{
+    font-size:.8rem;
+    font-weight:800;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    color:#7a8a86;
+    margin-bottom:10px;
+    text-align:center;
+}
+.quick-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    flex-wrap:wrap;
+}
+.quick-buttons{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+    justify-content:center;
+}
+.quick-btn{
+    width:42px;
+    height:42px;
+    border-radius:10px;
+    border:2px solid var(--border);
+    background:white;
+    font-weight:900;
+    font-size:15px;
+    touch-action:manipulation;
+    transition: all .15s ease;
+}
+.quick-btn.team-a{ color:var(--green); }
+.quick-btn.team-b{ color:var(--red); }
+.quick-btn.team-a.selected{ background:var(--green); color:white; border-color:var(--green); }
+.quick-btn.team-b.selected{ background:var(--red); color:white; border-color:var(--red); }
+.quick-btn:active{ transform:scale(0.92); }
+
+.swap-btn{
+    width:38px;
+    height:38px;
+    border-radius:50%;
+    border:2px solid var(--border);
+    background:white;
+    font-size:16px;
+    cursor:pointer;
+    touch-action:manipulation;
+    flex-shrink:0;
+}
+.swap-btn:active{ transform:scale(0.9); }
+
+.quick-actions{
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    margin-top:14px;
+    flex-wrap:wrap;
+}
+.btn-save-kehre, .btn-cancel-kehre{
+    padding:12px 22px;
+    border-radius:12px;
+    font-weight:800;
+    font-size:.9rem;
+    border:none;
+    cursor:pointer;
+    touch-action:manipulation;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+}
+.btn-save-kehre{ background:var(--green); color:white; }
+.btn-save-kehre:active{ transform:scale(0.97); }
+.btn-cancel-kehre{ background:white; color:#556; border:2px solid var(--border); }
+
+/* ===== SCHÜSSE-TAB (Spielserie & PDF-Export) ===== */
+.schuesse-wrapper{
+    flex:1;
+    overflow-y:auto;
+    min-height:0;
+    padding:0 14px 14px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+.schuesse-empty{
+    text-align:center;
+    color:#8a97a0;
+    padding:40px 20px;
+    font-size:.9rem;
+}
+.pdf-header{
+    text-align:center;
+    padding:6px 0 4px;
+}
+.pdf-title{
+    font-weight:900;
+    font-size:1.1rem;
+    color:var(--green);
+}
+.pdf-meta{
+    font-size:.8rem;
+    color:#556;
+    margin-top:2px;
+}
+.schuss-games-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+    gap:12px;
+    margin-top:10px;
+}
+.schuss-game-card{
+    background:white;
+    border:2px solid var(--border);
+    border-radius:14px;
+    padding:12px;
+    break-inside:avoid;
+}
+.schuss-game-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-weight:800;
+    font-size:.9rem;
+    color:var(--green);
+    margin-bottom:8px;
+}
+.schuss-game-time{
+    font-size:.75rem;
+    color:#8a97a0;
+    font-weight:600;
+}
+.schuss-game-result{
+    text-align:center;
+    font-weight:800;
+    font-size:.85rem;
+    color:#556;
+    margin-top:6px;
+}
+.schuss-game-result.in-progress{
+    color:#b65c00;
+}
+.btn-export-pdf{
+    flex-shrink:0;
+    align-self:center;
+    padding:12px 24px;
+    border-radius:12px;
+    font-weight:800;
+    font-size:.9rem;
+    border:none;
+    cursor:pointer;
+    touch-action:manipulation;
+    background:var(--green);
+    color:white;
+}
+.btn-export-pdf:active{ transform:scale(0.97); }
+
+@media print {
+    body * { visibility:hidden; }
+    #pdfExportArea, #pdfExportArea * { visibility:visible; }
+    #pdfExportArea{
+        position:absolute;
+        top:0; left:0;
+        width:100%;
+    }
+    .schuss-games-grid{ grid-template-columns:1fr 1fr; }
+    .no-print{ display:none !important; }
+}
+.btn-cancel-kehre:active{ transform:scale(0.97); }
 
 .gold{
     background:var(--gold);
@@ -1113,34 +1326,13 @@ button:active {
         gap: 6px;
     }
     
-    .kehren {
-        grid-template-columns: 1fr;
-        gap: 10px;
-    }
-    
-    .point-btn {
-        width: 58px;
-        height: 58px;
-        font-size: 22px;
-        border-radius: 12px;
+    .kehren-table th,
+    .kehren-table td {
+        font-size: .9rem;
     }
     
     .team-score {
         font-size: 4rem;
-    }
-    
-    .kehre-row {
-        grid-template-columns: 80px 1fr 50px;
-        padding: 10px;
-        border-radius: 16px;
-    }
-    
-    .kehre-number {
-        font-size: 1rem;
-    }
-    
-    .kehre-value {
-        font-size: 1.3rem;
     }
     
     .header h1 {
@@ -1153,16 +1345,10 @@ button:active {
 }
 
 @media (max-width: 600px) {
-    .point-btn {
-        width: 48px;
-        height: 48px;
-        font-size: 18px;
-    }
-    
-    .kehre-row {
-        grid-template-columns: 60px 1fr 40px;
-        padding: 6px;
-        gap: 4px;
+    .quick-btn {
+        width: 38px;
+        height: 38px;
+        font-size: 14px;
     }
     
     .team-score {
@@ -1190,6 +1376,12 @@ button:active {
 </style>
 </head>
 <body>
+<div class="rotate-hint">
+    <div class="rotate-icon">📱↻</div>
+    <div>Bitte das Gerät ins <strong>Querformat</strong> drehen<br>für die optimale Ansicht.</div>
+</div>
+
+
 
 <div class="app-header">
     <div class="app-header-title">
@@ -1357,7 +1549,12 @@ const state = {
     deleteMode: false,
     spectatorWindow: null,
     playerNames: loadPlayerList(),
-    roster: loadRoster()
+    roster: loadRoster(),
+    editingIndex: null,          // null = automatisch nächste offene Kehre (Touch-Bedienung)
+    pendingKehre: { a: null, b: null },
+    activeTab: 'kehren',         // 'kehren' oder 'schuesse'
+    history: [],                 // abgeschlossene Spiele der aktuellen Trainingsserie
+    trainingStarted: new Date()  // Datum/Uhrzeit für den PDF-Export
 };
 
 // ===== KEYBOARD =====
@@ -1555,6 +1752,11 @@ function addPointsToSelectedTeam() {
         }
     }
 
+    // Touch-Schnell-Eingabe zurücksetzen, damit sie nach einer
+    // Tastatur-Eingabe wieder mit der aktuellen Kehre synchron ist.
+    state.editingIndex = null;
+    state.pendingKehre = { a: null, b: null };
+
     state.selectedTeam = null;
     state.selectedPlayer = null;
     updateKeyboardStatus();
@@ -1621,8 +1823,24 @@ function evaluateGame() {
         toast(gameResult);
     }
 
+    // Abgeschlossenes Spiel in der Spielserien-Historie sichern
+    // (für den "Schüsse"-Tab und den PDF-Export), BEVOR die Kehren
+    // für das nächste Spiel zurückgesetzt werden.
+    state.history.push({
+        gameNumber: arena.gameNumber,
+        timestamp: new Date(),
+        pointsA: [...arena.pointsA],
+        pointsB: [...arena.pointsB],
+        scoreA: a,
+        scoreB: b,
+        resultLabel: gameResult
+    });
+
     arena.pointsA = Array(state.kehren).fill(null);
     arena.pointsB = Array(state.kehren).fill(null);
+    arena.gameNumber++;
+    state.editingIndex = null;
+    state.pendingKehre = { a: null, b: null };
 
     render();
     updateSpectatorInWindow();
@@ -1674,6 +1892,11 @@ function startNewTraining() {
     state.arena = createArena(1);
     state.selectedTeam = null;
     state.selectedPlayer = null;
+    state.editingIndex = null;
+    state.pendingKehre = { a: null, b: null };
+    state.history = [];
+    state.trainingStarted = new Date();
+    state.activeTab = 'kehren';
     resetRoster();
     // Spielerliste neu laden (falls sich was geändert hat)
     state.playerNames = loadPlayerList();
@@ -1704,13 +1927,13 @@ function toggleDeleteMode() {
 function exitDeleteMode() {
     state.deleteMode = false;
     updateKeyboardStatus();
-    const rows = document.querySelectorAll('.kehre-row');
+    const rows = document.querySelectorAll('#kehrenWrapper tr[data-kehre]');
     rows.forEach(row => row.classList.remove('delete-mode'));
 }
 
 function highlightDeleteRows() {
     setTimeout(() => {
-        const rows = document.querySelectorAll('.kehre-row');
+        const rows = document.querySelectorAll('#kehrenWrapper tr[data-kehre]');
         rows.forEach((row, index) => {
             const arena = state.arena;
             if (index < state.kehren) {
@@ -1735,6 +1958,12 @@ function deleteKehre(index) {
     }
     arena.pointsA[index] = null;
     arena.pointsB[index] = null;
+
+    if (state.editingIndex === index) {
+        state.editingIndex = null;
+        state.pendingKehre = { a: null, b: null };
+    }
+
     toast(`✅ Kehre ${index + 1} gelöscht`);
     exitDeleteMode();
     render();
@@ -1790,7 +2019,7 @@ function render() {
 function renderArena(arena) {
     const scoreA = sum(arena.pointsA);
     const scoreB = sum(arena.pointsB);
-    const activeIndex = activeKehre(arena) - 1;
+    const activeIndex = getEditingIndex(arena);
     
     const teamWClass = state.selectedTeam === 'w' ? 'team-active-w' : '';
     const teamEClass = state.selectedTeam === 'e' ? 'team-active-e' : '';
@@ -1832,18 +2061,17 @@ function renderArena(arena) {
             ${renderRosterPanel('E')}
         </div>
 
-        <div class="kehren-wrapper" id="kehrenWrapper">
-            <div class="kehren">
-                <div>
-                    <div class="kehren-title">⚪ Mannschaft W</div>
-                    ${renderKehren(arena, 'A', activeIndex)}
-                </div>
-                <div>
-                    <div class="kehren-title">🔴 Mannschaft E</div>
-                    ${renderKehren(arena, 'B', activeIndex)}
-                </div>
-            </div>
+        <div class="tabs">
+            <button class="tab-btn ${state.activeTab === 'schuesse' ? '' : 'active'}" onclick="switchTab('kehren')">Kehren</button>
+            <button class="tab-btn ${state.activeTab === 'schuesse' ? 'active' : ''}" onclick="switchTab('schuesse')">📄 Schüsse</button>
         </div>
+
+        ${state.activeTab === 'schuesse' ? renderSchuesseTab(arena) : `
+        <div class="kehren-wrapper" id="kehrenWrapper">
+            ${renderKehrenTable(arena, activeIndex)}
+        </div>
+        ${state.isTrainingEnded ? '' : renderQuickEntry(arena, activeIndex)}
+        `}
 
         <div class="footer">
             <div class="footer-left">
@@ -2054,73 +2282,225 @@ function importPlayersFromFile(event) {
     reader.readAsText(file, 'UTF-8');
 }
 
-function renderKehren(arena, team, activeIndex) {
-    let html = '';
-    const arr = team === 'A' ? arena.pointsA : arena.pointsB;
+function switchTab(name) {
+    state.activeTab = name;
+    render();
+}
 
-    for (let i = 0; i < state.kehren; i++) {
-        const active = activeIndex === i;
-        const bothCompleted = arena.pointsA[i] !== null && arena.pointsB[i] !== null;
-        const maxPoints = state.playerCount;
+function renderSchuesseTab(arena) {
+    const games = [...state.history];
 
-        html += `
-        <div class="kehre-row ${active ? 'active' : ''} ${bothCompleted ? 'completed' : ''}" 
-             data-kehre="${i}" 
-             data-team="${team}">
-            <div class="kehre-number">${i + 1}</div>
-            <div class="points">
-                ${Array.from({length: maxPoints + 1}, (_, v) => `
-                    <button class="point-btn ${arr[i] === v ? 'active-point' : ''}"
-                            onclick="event.stopPropagation(); setPoints('${team}', ${i}, ${v})"
-                            data-value="${v}">
-                        ${v}
-                    </button>
-                `).join('')}
-            </div>
-            <div class="kehre-value">${arr[i] !== null ? arr[i] : '-'}</div>
+    // Laufendes Spiel mit anzeigen, sofern schon Kehren gespielt wurden
+    const hasCurrentData = arena.pointsA.some(v => v !== null) || arena.pointsB.some(v => v !== null);
+    if (!state.isTrainingEnded && hasCurrentData) {
+        games.push({
+            gameNumber: arena.gameNumber,
+            timestamp: null,
+            pointsA: [...arena.pointsA],
+            pointsB: [...arena.pointsB],
+            scoreA: sum(arena.pointsA),
+            scoreB: sum(arena.pointsB),
+            resultLabel: 'Läuft …',
+            inProgress: true
+        });
+    }
+
+    if (games.length === 0) {
+        return `
+        <div class="schuesse-wrapper">
+            <div class="schuesse-empty">Noch keine Kehren in dieser Trainingsserie gespielt.</div>
         </div>
         `;
     }
-    return html;
+
+    const dateStr = state.trainingStarted.toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
+    const timeStr = state.trainingStarted.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+
+    const gamesHtml = games.map(g => {
+        let rows = '';
+        for (let i = 0; i < state.kehren; i++) {
+            rows += `
+            <tr>
+                <td>Kehre ${i + 1}</td>
+                <td class="val-a">${g.pointsA[i] ?? '-'}</td>
+                <td class="val-b">${g.pointsB[i] ?? '-'}</td>
+            </tr>
+            `;
+        }
+        const gameTime = g.timestamp
+            ? g.timestamp.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
+            : 'läuft';
+
+        return `
+        <div class="schuss-game-card">
+            <div class="schuss-game-header">
+                <span>Spiel ${g.gameNumber}</span>
+                <span class="schuss-game-time">🕐 ${gameTime}</span>
+            </div>
+            <table class="summary-table">
+                <thead><tr><th></th><th>⚪ ${arena.teamA}</th><th>🔴 ${arena.teamB}</th></tr></thead>
+                <tbody>${rows}</tbody>
+            </table>
+            <div class="schuss-game-result ${g.inProgress ? 'in-progress' : ''}">
+                ${g.inProgress ? '⏳ Läuft' : g.resultLabel} (${g.scoreA}:${g.scoreB})
+            </div>
+        </div>
+        `;
+    }).join('');
+
+    return `
+    <div class="schuesse-wrapper" id="schuesseWrapper">
+        <div id="pdfExportArea">
+            <div class="pdf-header">
+                <div class="pdf-title">🥌 ESV Grein – Trainingsprotokoll (Pro)</div>
+                <div class="pdf-meta">📅 ${dateStr} &nbsp;·&nbsp; 🕐 Start ${timeStr} Uhr</div>
+                <div class="pdf-meta">🏆 Stand: ⚪ ${arena.teamA} ${arena.winsA} : ${arena.winsB} 🔴 ${arena.teamB}</div>
+            </div>
+            <div class="schuss-games-grid">${gamesHtml}</div>
+        </div>
+        <button class="btn-export-pdf no-print" onclick="window.print()">📄 Als PDF exportieren / Drucken</button>
+    </div>
+    `;
 }
 
-function setPoints(team, index, value) {
-    const arena = state.arena;
+function renderKehrenTable(arena, activeIdx) {
+    let rows = '';
+    for (let i = 0; i < state.kehren; i++) {
+        const a = arena.pointsA[i];
+        const b = arena.pointsB[i];
+        const isEditing = i === activeIdx;
+        rows += `
+        <tr class="${isEditing ? 'editing' : ''}" data-kehre="${i}">
+            <td>Kehre ${i + 1}</td>
+            <td class="val-a">${a ?? '-'}</td>
+            <td class="val-b">${b ?? '-'}</td>
+            <td>
+                <div class="row-actions">
+                    <button class="icon-btn edit" onclick="editKehreRow(${i})" title="Kehre ${i + 1} bearbeiten">✏️</button>
+                    <button class="icon-btn delete" onclick="deleteKehre(${i})" title="Kehre ${i + 1} löschen">🗑️</button>
+                </div>
+            </td>
+        </tr>
+        `;
+    }
 
+    return `
+    <table class="kehren-table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>⚪ ${arena.teamA}</th>
+                <th>🔴 ${arena.teamB}</th>
+                <th>Aktionen</th>
+            </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+    </table>
+    `;
+}
+
+function renderQuickEntry(arena, activeIdx) {
+    const maxPoints = state.playerCount;
+    const pending = state.pendingKehre;
+
+    function buildButtons(team) {
+        let html = '';
+        for (let v = 0; v <= maxPoints; v++) {
+            const selected = pending[team] === v;
+            html += `<button class="quick-btn ${team === 'a' ? 'team-a' : 'team-b'} ${selected ? 'selected' : ''}"
+                             onclick="selectQuickValue('${team}', ${v})">${v}</button>`;
+        }
+        return html;
+    }
+
+    return `
+    <div class="quick-entry">
+        <div class="quick-entry-title">Schnell-Eingabe für Kehre ${activeIdx + 1}</div>
+        <div class="quick-row">
+            <div class="quick-buttons">${buildButtons('a')}</div>
+            <button class="swap-btn" onclick="swapQuickValues()" title="Werte tauschen">⇄</button>
+            <div class="quick-buttons">${buildButtons('b')}</div>
+        </div>
+        <div class="quick-actions">
+            <button class="btn-save-kehre" onclick="saveQuickKehre()">✓ Kehre speichern</button>
+            <button class="btn-cancel-kehre" onclick="cancelQuickKehre()">✗ Kehre abbrechen</button>
+        </div>
+    </div>
+    `;
+}
+
+// ============================================================
+// SCHNELL-EINGABE PER TOUCH/MAUS
+// (die Tastatur-Bedienung oben bleibt komplett unabhängig davon
+// bestehen – beide schreiben in dieselben arena.pointsA/pointsB)
+// ============================================================
+
+function getEditingIndex(arena) {
+    if (state.editingIndex !== null && state.editingIndex >= 0 && state.editingIndex < state.kehren) {
+        return state.editingIndex;
+    }
+    return Math.min(activeKehre(arena) - 1, state.kehren - 1);
+}
+
+function selectQuickValue(team, value) {
+    const arena = state.arena;
     if (state.isTrainingEnded) {
         toast('Training ist beendet! [Enter] für Neustart');
         return;
     }
-
     if (state.deleteMode) {
         toast('Löschmodus aktiv - [Enter] beenden');
         return;
     }
 
-    if (hasWinner(arena)) {
-        endTraining(arena);
-        return;
-    }
+    state.pendingKehre[team] = value;
 
-    if (team === 'A') {
-        arena.pointsA[index] = value;
-        if (arena.pointsB[index] === null) {
-            arena.pointsB[index] = 0;
-        }
-    } else {
-        arena.pointsB[index] = value;
-        if (arena.pointsA[index] === null) {
-            arena.pointsA[index] = 0;
-        }
+    // Wenn eine Mannschaft Punkte (>0) erhält, wird die Gegner-Mannschaft
+    // automatisch mit 0 vorbelegt, sofern dort noch nichts gewählt wurde.
+    const other = team === 'a' ? 'b' : 'a';
+    if (value > 0 && state.pendingKehre[other] === null) {
+        state.pendingKehre[other] = 0;
     }
 
     render();
+}
+
+function swapQuickValues() {
+    const { a, b } = state.pendingKehre;
+    state.pendingKehre.a = b;
+    state.pendingKehre.b = a;
+    render();
+}
+
+function saveQuickKehre() {
+    const arena = state.arena;
+    if (state.isTrainingEnded) {
+        toast('Training ist beendet! [Enter] für Neustart');
+        return;
+    }
+    if (state.deleteMode) {
+        toast('Löschmodus aktiv - [Enter] beenden');
+        return;
+    }
+
+    const idx = getEditingIndex(arena);
+    const { a, b } = state.pendingKehre;
+
+    if (a === null && b === null) {
+        toast('Bitte zuerst einen Wert auswählen');
+        return;
+    }
+
+    arena.pointsA[idx] = a ?? 0;
+    arena.pointsB[idx] = b ?? 0;
+
+    toast(`✅ Kehre ${idx + 1} gespeichert: ${arena.pointsA[idx]} : ${arena.pointsB[idx]}`);
+
+    state.editingIndex = null;
+    state.pendingKehre = { a: null, b: null };
+
+    render();
     updateSpectatorInWindow();
-    
-    const teamName = team === 'A' ? 'Mannschaft W' : 'Mannschaft E';
-    const otherTeam = team === 'A' ? 'Mannschaft E' : 'Mannschaft W';
-    const otherValue = team === 'A' ? arena.pointsB[index] : arena.pointsA[index];
-    toast(`📊 ${teamName}: ${value} | ${otherTeam}: ${otherValue} (auto)`);
 
     if (checkAllKehrenFull(arena)) {
         setTimeout(() => {
@@ -2128,6 +2508,33 @@ function setPoints(team, index, value) {
             setTimeout(() => evaluateGame(), 500);
         }, 300);
     }
+}
+
+function cancelQuickKehre() {
+    state.pendingKehre = { a: null, b: null };
+    render();
+}
+
+function editKehreRow(index) {
+    const arena = state.arena;
+    if (state.isTrainingEnded) {
+        toast('Training ist beendet! [Enter] für Neustart');
+        return;
+    }
+    if (state.deleteMode) {
+        toast('Löschmodus aktiv - [Enter] beenden');
+        return;
+    }
+    state.editingIndex = index;
+    state.pendingKehre = {
+        a: arena.pointsA[index],
+        b: arena.pointsB[index],
+    };
+    render();
+    setTimeout(() => {
+        const panel = document.querySelector('.quick-entry');
+        if (panel) panel.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }, 50);
 }
 
 // ===== HELFER =====
@@ -2139,7 +2546,8 @@ function createArena(id) {
         pointsA: Array(6).fill(null),
         pointsB: Array(6).fill(null),
         winsA: 0,
-        winsB: 0
+        winsB: 0,
+        gameNumber: 1
     };
 }
 
@@ -2179,7 +2587,7 @@ function scrollToActiveKehre() {
     setTimeout(() => {
         const wrapper = document.getElementById('kehrenWrapper');
         if (!wrapper) return;
-        const activeRow = wrapper.querySelector('.kehre-row.active');
+        const activeRow = wrapper.querySelector('tr.editing');
         if (activeRow) {
             const wrapperRect = wrapper.getBoundingClientRect();
             const rowRect = activeRow.getBoundingClientRect();
@@ -2204,8 +2612,14 @@ function resetGame() {
     arena.pointsB = Array(state.kehren).fill(null);
     arena.winsA = 0;
     arena.winsB = 0;
+    arena.gameNumber = 1;
     state.selectedTeam = null;
     state.selectedPlayer = null;
+    state.editingIndex = null;
+    state.pendingKehre = { a: null, b: null };
+    state.history = [];
+    state.trainingStarted = new Date();
+    state.activeTab = 'kehren';
     resetRoster();
     state.playerNames = loadPlayerList();
     updateKeyboardStatus();
@@ -2220,6 +2634,11 @@ function fullReset() {
     state.selectedPlayer = null;
     state.isTrainingEnded = false;
     state.deleteMode = false;
+    state.editingIndex = null;
+    state.pendingKehre = { a: null, b: null };
+    state.history = [];
+    state.trainingStarted = new Date();
+    state.activeTab = 'kehren';
     resetRoster();
     state.playerNames = loadPlayerList();
     updateKeyboardStatus();

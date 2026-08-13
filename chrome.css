@@ -126,6 +126,8 @@ body {
     padding: 0;
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* ===== DASHBOARD ===== */
@@ -139,7 +141,7 @@ body {
 /* ===== TOP-LEISTE ===== */
 .dashboard-top {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: clamp(6px, 1vw, 14px);
     flex-shrink: 0;
 }
@@ -271,6 +273,42 @@ body {
 .qr-actions .badge-copy { background: var(--green); color: white; cursor: pointer; }
 .qr-actions .badge-copy:hover { opacity: 0.85; }
 
+/* ===== TEMPERATURVERLAUF ===== */
+.history-card {
+    background: white;
+    border-radius: clamp(12px, 1.4vw, 20px);
+    padding: clamp(10px, 1.6vh, 20px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border);
+}
+.history-title {
+    font-size: clamp(0.7rem, 1vw, 0.95rem);
+    font-weight: 700;
+    color: var(--green);
+    margin-bottom: 6px;
+}
+.history-chart {
+    width: 100%;
+    height: clamp(60px, 10vh, 120px);
+    display: block;
+}
+.history-legend {
+    display: flex;
+    gap: 16px;
+    margin-top: 6px;
+    font-size: clamp(0.55rem, 0.75vw, 0.75rem);
+    color: #666;
+}
+.history-legend .dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 4px;
+}
+.dot-room { background: var(--gold); }
+.dot-asphalt { background: var(--green); }
+
 .dashboard-footer {
     flex-shrink: 0;
     text-align: center;
@@ -309,6 +347,58 @@ body {
     .dashboard-top { grid-template-columns: repeat(2, 1fr); gap: 4px; }
 }
 
+/* ===== SMARTPHONE QUERFORMAT (breit, aber wenig Höhe) ===== */
+@media (orientation: landscape) and (max-height: 500px) {
+    .header { min-height: 36px; padding: 4px 12px; }
+    .header h1 { font-size: 0.85rem; gap: 6px; }
+    .header .header-logo { width: 22px; height: 22px; }
+    .header-controls button, .header-controls a.logout { min-height: 26px; padding: 3px 10px; font-size: 0.7rem; }
+
+    .layout { padding: 6px; }
+    .dashboard { gap: 8px; padding: 8px; }
+
+    .dashboard-top { grid-template-columns: repeat(6, 1fr); gap: 6px; }
+    .dashboard-card { min-height: 44px; padding: 4px 6px; }
+    .dashboard-card .label { font-size: 0.5rem; }
+    .dashboard-card .value { font-size: 0.62rem; }
+
+    .dashboard-menu { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .menu-card, .qr-card { min-height: 84px; padding: 8px 6px; gap: 2px; }
+    .menu-card .icon, .qr-card .icon { font-size: 1.3rem; }
+    .menu-card .title, .qr-card .title { font-size: 0.65rem; }
+    .menu-card .desc, .qr-card .desc { display: none; }
+    .qr-container { transform: scale(0.6); margin: -10px 0; }
+    .qr-actions { margin-top: -6px; }
+    .qr-actions .badge { font-size: 0.55rem; padding: 1px 6px; }
+
+    .dashboard-footer { display: none; }
+}
+
+/* Hochformat-Hinweis: die App ist für Querformat (Smartphone liegend) optimiert */
+.rotate-hint {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(13, 31, 19, 0.97);
+    color: #fff;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    text-align: center;
+    padding: 24px;
+    font-size: 1rem;
+}
+.rotate-hint .rotate-icon { font-size: 2.5rem; animation: rotate-hint-spin 1.8s ease-in-out infinite; }
+@keyframes rotate-hint-spin {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(90deg); }
+}
+@media (orientation: portrait) and (max-width: 600px) {
+    .rotate-hint { display: flex; }
+}
+
 /* ===== DARK MODE ===== */
 html[data-theme="dark"] .arena { background: rgba(26, 31, 28, 0.96); }
 html[data-theme="dark"] .dashboard-card { background: #1a1f1c; border-color: #2a3a2e; color: #e8f0e5; }
@@ -323,3 +413,6 @@ html[data-theme="dark"] .qr-card .title { color: #6abf8a; }
 html[data-theme="dark"] .qr-card .desc { color: #a0b0a0; }
 html[data-theme="dark"] .qr-card:hover { border-color: var(--gold); }
 html[data-theme="dark"] .dashboard-footer { border-color: #2a3a2e; color: #667766; }
+html[data-theme="dark"] .history-card { background: #1a1f1c; border-color: #2a3a2e; }
+html[data-theme="dark"] .history-title { color: #6abf8a; }
+html[data-theme="dark"] .history-legend { color: #a0b0a0; }

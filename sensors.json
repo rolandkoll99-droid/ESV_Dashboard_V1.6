@@ -1,0 +1,6 @@
+{
+  "room_temp_c": null,
+  "asphalt_temp_c": null,
+  "updated_at": null,
+  "note": "Platzhalter – wird von tuya_bridge.py auf dem Raspberry Pi automatisch überschrieben, siehe RASPBERRY_PI_SENSOREN_SETUP.md"
+}

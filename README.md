@@ -24,6 +24,25 @@ Die internen weißen Karten/Tabellen der einzelnen Module (01, 02, 04, 05,
 06) reagieren derzeit nicht auf den Dark-Mode-Schalter – das wäre ein
 größerer separater Umbau jeder einzelnen Moduldatei.
 
+## Smartphone-Nutzung (Querformat)
+
+Alle Seiten (Dashboard + die 5 Module) sind für die Bedienung am
+Smartphone **im Querformat** optimiert:
+
+- Bei kurzen Bildschirmhöhen (typisch für ein liegendes Handy, z. B.
+  360–430 px hoch) greift eine eigene Kompakt-Ansicht: kleinerer Header,
+  kleinere Kacheln, ausgeblendete Beschreibungstexte – damit möglichst
+  viel ohne Scrollen sichtbar ist. Passt dennoch nicht alles auf den
+  Bildschirm, kann innerhalb der weißen Karte gescrollt werden (vorher
+  war das durch `overflow: hidden` blockiert – behoben).
+- Wird das Handy **hochkant** gehalten (schmal und hoch), erscheint ein
+  Hinweis „Bitte das Gerät ins Querformat drehen“, da die App für die
+  Bedienung im Querformat ausgelegt ist.
+
+Getestet wurde dies bislang nur mit den Browser-Entwicklertools
+(Chrome-Gerätesimulation); ein Test auf echten Geräten unterschiedlicher
+Displaygrößen wird empfohlen, bevor es im Vereinsbetrieb eingesetzt wird.
+
 ## Dateien
 
 ```
@@ -42,6 +61,11 @@ chrome.js                      Dark-Mode-Toggle & Toast-Funktion für das Dashbo
 auth.js                        zentrale, einfache Zugriffslogik (Passwort, Login, Logout)
 qrcode.min.js                  QR-Code-Bibliothek (MIT-lizenziert, ohne Abhängigkeiten) für
                                 die QR-Codes im Dashboard
+ds18b20_bridge.py              Hintergrund-Skript für den Pi: liest zwei DS18B20-Tauchsonden
+                                (Raum + Asphalt) über 1-Wire aus und schreibt sensors.json
+                                (siehe RASPBERRY_PI_SENSOREN_SETUP.md)
+sensors.json                   aktuelle Raum-/Asphalttemperatur fürs Dashboard (wird von
+                                tuya_bridge.py automatisch überschrieben)
 Defensiv Basis.jpg             Situationsbilder für das Einzeltraining
 Defensiv Elite.jpg
 Offensiv Basic.jpg
@@ -120,6 +144,69 @@ nicht nötig. Eigene Schritt-für-Schritt-Anleitungen:
 lokalen Datenstand (`localStorage`) für Spielerliste/Trainingsergebnisse –
 dazu mehr im Abschnitt „Wichtiger Hinweis zur Sicherheit“ unten sowie in
 den beiden Anleitungen.
+
+- [`RASPBERRY_PI_SENSOREN_SETUP.md`](RASPBERRY_PI_SENSOREN_SETUP.md) – Raum-
+  und Asphalttemperatur per kabelgebundener DS18B20-Tauchsonde im
+  Dashboard anzeigen. Die Sonden hängen direkt per 1-Wire am Pi (kein
+  WLAN, keine Cloud, kein API-Key nötig), das Hintergrund-Skript
+  `ds18b20_bridge.py` liest sie aus und schreibt die Werte in
+  `sensors.json`, das automatisch ins GitHub-Repo gepusht wird.
+- [`SUPABASE_SETUP.md`](SUPABASE_SETUP.md) – **neu:** zentrale
+  Temperatur-Historie statt nur Momentaufnahme. Das Dashboard zeigt einen
+  48-Stunden-Verlauf, gespeist aus einer kleinen, kostenlosen
+  Supabase-Datenbank (sicherer Lesezugriff für den Browser, Schreibzugriff
+  nur vom Pi). Baut auf `RASPBERRY_PI_SENSOREN_SETUP.md` auf. Siehe auch
+  `ROADMAP.md` für den größeren Zusammenhang.
+
+## Kehren-Eingabe in „Trainingsmodus" (01)
+Die Eingabe der Kehren-Ergebnisse wurde überarbeitet: Statt in jeder
+Kehren-Zeile einzeln auf einen Punktwert zu tippen, gibt es jetzt eine
+kombinierte Ergebnistabelle (Kehre / Team W / Team E / Aktionen) und
+darunter ein **Schnell-Eingabe-Panel** nur für die gerade aktive Kehre –
+Wert für beide Teams auswählen (mit Tausch-Button ⇄ bei Verwechslung),
+dann „Kehre speichern" oder „Kehre abbrechen". Bereits gespielte Kehren
+lassen sich über die Stift-/Papierkorb-Icons in der Tabelle nachträglich
+bearbeiten oder löschen. Zusätzlich große, gut lesbare Gesamt-Ergebnis-
+Anzeige mit Spielnummer und Status („Läuft"/„Beendet") oben in der Karte.
+
+**Hinweis:** Der zweite Tab „Schüsse (Detailmodus)“ ist aktuell nur ein
+Platzhalter (zeigt einen Hinweis-Toast) – eine Einzelschuss-Erfassung pro
+Kehre gibt es noch nicht, das wäre ein eigenes, größeres Feature.
+
+## Kehren-Eingabe in „Trainingsmodus Pro" (05)
+
+Dieselbe Tabellen-/Schnell-Eingabe-Bedienung wie in „Trainingsmodus" (01)
+wurde auch hier ergänzt – **die Tastatur-/Zusatztastatur-Bedienung bleibt
+dabei vollständig erhalten** und funktioniert unverändert wie zuvor
+(`-`/`+` Team wählen, `1`–`6` Spieler/Punktwert, `*` Löschmodus, `Enter`
+Wertung, `/` Zuschauermonitor). Touch-Eingabe (Tabelle mit
+Bearbeiten-/Löschen-Icons + Schnell-Eingabe-Panel) und Tastatur schreiben
+in dieselben Daten und bleiben synchron: eine Tastatur-Eingabe setzt eine
+noch nicht gespeicherte Touch-Auswahl automatisch zurück, damit die
+Anzeige nie auseinanderläuft. Aufstellungs-Panels (Spielerauswahl je
+Team), Spielerverwaltung und Zuschauermonitor sind unverändert.
+
+## „Schüsse"-Tab: Spielserie & PDF-Export (01 & 05)
+
+Der bisher als Platzhalter angelegte „Schüsse"-Tab ist jetzt eine echte
+**Spielserien-Übersicht**: Jedes abgeschlossene Spiel (inkl. aller
+Kehren-Ergebnisse, Uhrzeit und Endergebnis) wird gesammelt, solange das
+Training läuft – bisher wurden diese Daten beim Start des nächsten
+Spiels einfach überschrieben. Über den Button „📄 Als PDF exportieren /
+Drucken" lässt sich die komplette Serie ausdrucken bzw. über den
+Druckdialog des Browsers als PDF speichern (kein zusätzliches
+Plugin/keine externe Bibliothek nötig – „Als PDF speichern" ist in jedem
+modernen Browser bereits im Druckdialog enthalten).
+
+Die Historie ist an die laufende Trainingsserie gebunden und wird bei
+„Neues Spiel Starten" bzw. „Kompletter Reset" zusammen mit den übrigen
+Werten zurückgesetzt (neue Serie = neue Historie, neues Startdatum).
+
+## Roadmap
+
+Ein priorisierter Überblick über sinnvolle nächste Verbesserungen
+(Software, Hardware, Sensorik) inkl. Umsetzungsstatus steht in
+[`ROADMAP.md`](ROADMAP.md).
 
 ## Struktur erweitern
 

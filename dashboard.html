@@ -9,6 +9,12 @@
 </head>
 <body>
 
+    <!-- ===== HOCHFORMAT-HINWEIS ===== -->
+    <div class="rotate-hint">
+        <div class="rotate-icon">📱↻</div>
+        <div>Bitte das Gerät ins <strong>Querformat</strong> drehen<br>für die optimale Ansicht.</div>
+    </div>
+
     <!-- ===== HEADER ===== -->
     <div class="header">
         <h1>
@@ -50,6 +56,14 @@
                         <div class="dashboard-card">
                             <div class="label">🌤️ Wetter</div>
                             <div class="value" id="dashboardWeather">🌤️ --°C · --</div>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="label">🌡️ Raumtemp.</div>
+                            <div class="value" id="dashboardRoomTemp">--°C</div>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="label">🛣️ Asphalttemp.</div>
+                            <div class="value" id="dashboardAsphaltTemp">--°C</div>
                         </div>
                     </div>
 
@@ -110,6 +124,16 @@
                                 <span class="badge badge-copy" onclick="event.preventDefault(); event.stopPropagation(); copyQrUrl('einzel');">📋 Link kopieren</span>
                             </div>
                         </a>
+                    </div>
+
+                    <!-- ===== TEMPERATURVERLAUF ===== -->
+                    <div class="history-card" id="historyCard" style="display:none;">
+                        <div class="history-title">📈 Temperaturverlauf (48h)</div>
+                        <svg id="historyChart" class="history-chart" viewBox="0 0 600 120" preserveAspectRatio="none"></svg>
+                        <div class="history-legend">
+                            <span><i class="dot dot-room"></i> Raum</span>
+                            <span><i class="dot dot-asphalt"></i> Asphalt</span>
+                        </div>
                     </div>
 
                     <div class="dashboard-footer">
@@ -186,6 +210,123 @@
     }
 
     // ============================================================
+    // TEMPERATURVERLAUF (Supabase – optional, siehe SUPABASE_SETUP.md)
+    // ============================================================
+    // Leer lassen, um den Verlauf auszublenden (nur aktuelle Werte aus
+    // sensors.json werden dann angezeigt). Der PUBLISHABLE/ANON-Key ist
+    // für den Browser gedacht und sicher, solange Row Level Security in
+    // Supabase nur Lesezugriff erlaubt (siehe SUPABASE_SETUP.md) – anders
+    // als der SECRET-Key, der nur auf dem Pi stehen darf.
+    const SUPABASE_URL = '';
+    const SUPABASE_PUBLISHABLE_KEY = '';
+    const HISTORY_HOURS = 48;
+
+    function fetchTemperatureHistory() {
+        if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) return;
+
+        const since = new Date(Date.now() - HISTORY_HOURS * 3600 * 1000).toISOString();
+        const url = `${SUPABASE_URL}/rest/v1/sensor_readings?select=created_at,room_temp_c,asphalt_temp_c&created_at=gte.${encodeURIComponent(since)}&order=created_at.asc`;
+
+        fetch(url, {
+            headers: {
+                apikey: SUPABASE_PUBLISHABLE_KEY,
+                Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
+            },
+        })
+            .then(res => res.ok ? res.json() : Promise.reject(res.status))
+            .then(rows => renderTemperatureHistory(rows))
+            .catch(() => {
+                // Verlaufskarte einfach ausgeblendet lassen, wenn nicht erreichbar
+            });
+    }
+
+    function renderTemperatureHistory(rows) {
+        if (!Array.isArray(rows) || rows.length < 2) return;
+
+        const card = document.getElementById('historyCard');
+        const svg = document.getElementById('historyChart');
+        if (!card || !svg) return;
+
+        const width = 600, height = 120, pad = 8;
+        const times = rows.map(r => new Date(r.created_at).getTime());
+        const roomVals = rows.map(r => r.room_temp_c).filter(v => v !== null);
+        const asphaltVals = rows.map(r => r.asphalt_temp_c).filter(v => v !== null);
+        const allVals = roomVals.concat(asphaltVals);
+        if (allVals.length === 0) return;
+
+        const minT = Math.min(...times), maxT = Math.max(...times);
+        const minV = Math.min(...allVals) - 1, maxV = Math.max(...allVals) + 1;
+
+        const x = t => pad + ((t - minT) / Math.max(1, maxT - minT)) * (width - 2 * pad);
+        const y = v => height - pad - ((v - minV) / Math.max(1, maxV - minV)) * (height - 2 * pad);
+
+        function buildPath(key) {
+            let d = '';
+            rows.forEach((r, i) => {
+                if (r[key] === null || r[key] === undefined) return;
+                const cmd = d === '' ? 'M' : 'L';
+                d += `${cmd}${x(new Date(r.created_at).getTime()).toFixed(1)},${y(r[key]).toFixed(1)} `;
+            });
+            return d.trim();
+        }
+
+        svg.innerHTML = `
+            <path d="${buildPath('room_temp_c')}" fill="none" stroke="#e0b23c" stroke-width="2" />
+            <path d="${buildPath('asphalt_temp_c')}" fill="none" stroke="#1f5e3a" stroke-width="2" />
+        `;
+        card.style.display = '';
+    }
+
+    // ============================================================
+    // TEMPERATUR-SENSOREN (Raspberry Pi → Tuya-Bridge → sensors.json)
+    // ============================================================
+    // Wird von einem kleinen Hintergrund-Skript auf dem Raspberry Pi
+    // (siehe RASPBERRY_PI_SENSOREN_SETUP.md) periodisch aktualisiert und
+    // ins selbe GitHub-Repo gepusht. Deshalb hier immer ein relativer
+    // Pfad (selber Ursprung wie das Dashboard, kein Mixed-Content-Problem).
+    const SENSORS_JSON_URL = 'sensors.json';
+    // Wenn der letzte Datenpunkt älter ist als dieser Wert (Minuten),
+    // gilt die Anzeige als "veraltet" statt als aktueller Messwert.
+    const SENSORS_MAX_AGE_MINUTES = 20;
+
+    function formatSensorAge(isoTimestamp) {
+        if (!isoTimestamp) return null;
+        const ageMs = Date.now() - new Date(isoTimestamp).getTime();
+        return ageMs / 60000; // Minuten
+    }
+
+    function fetchSensorData() {
+        fetch(SENSORS_JSON_URL, { cache: 'no-store' })
+            .then(res => {
+                if (!res.ok) throw new Error('sensors.json nicht erreichbar');
+                return res.json();
+            })
+            .then(data => {
+                const roomEl = document.getElementById('dashboardRoomTemp');
+                const asphaltEl = document.getElementById('dashboardAsphaltTemp');
+                const ageMinutes = formatSensorAge(data.updated_at);
+                const isStale = ageMinutes === null || ageMinutes > SENSORS_MAX_AGE_MINUTES;
+
+                if (roomEl) {
+                    roomEl.textContent = (data.room_temp_c ?? null) !== null
+                        ? `${data.room_temp_c}°C${isStale ? ' ⚠️' : ''}`
+                        : '--°C';
+                }
+                if (asphaltEl) {
+                    asphaltEl.textContent = (data.asphalt_temp_c ?? null) !== null
+                        ? `${data.asphalt_temp_c}°C${isStale ? ' ⚠️' : ''}`
+                        : '--°C';
+                }
+            })
+            .catch(() => {
+                const roomEl = document.getElementById('dashboardRoomTemp');
+                const asphaltEl = document.getElementById('dashboardAsphaltTemp');
+                if (roomEl) roomEl.textContent = 'n. v.';
+                if (asphaltEl) asphaltEl.textContent = 'n. v.';
+            });
+    }
+
+    // ============================================================
     // WETTER API
     // ============================================================
     const WEATHER_API_KEY = 'edf5872a3f0fb45f5dba2e3ee558d817';
@@ -256,8 +397,12 @@
         renderDashboardQrCodes();
         updateDashboardInfo();
         fetchWeather();
+        fetchSensorData();
+        fetchTemperatureHistory();
         setInterval(updateDateTime, 1000);
         setInterval(fetchWeather, 300000);
+        setInterval(fetchSensorData, 120000);
+        setInterval(fetchTemperatureHistory, 300000);
         setTimeout(() => toast('🏠 Willkommen beim Trainingsportal!'), 500);
     });
 
