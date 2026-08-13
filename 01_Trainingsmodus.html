@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<title>Trainingsmodus – Trainingsportal ESV Grein</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --green:#1f5e3a;
+    --red:#b93a32;
+    --gold:#ffdf8c;
+    --dark:#102417;
+    --light:#eef5e9;
+    --border:#d7e4cf;
+
+    --bg-main:#0a0e14;
+    --bg-panel:#131b24;
+    --line:rgba(255,255,255,0.08);
+    --text-main:#eef2f6;
+    --text-dim:#8a97a6;
+    --accent:#ffdf8c;
+    --accent-hover:#f7cf5c;
+    --font-display:"Space Grotesk","Inter",sans-serif;
+    --font-body:"Inter",Segoe UI,Arial,sans-serif;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    height: 100%;
+    height: 100dvh;
+    overflow: hidden;
+}
+
+body{
+    font-family:var(--font-body);
+    background:
+        radial-gradient(900px 400px at 10% -10%, rgba(255,223,140,0.08), transparent 60%),
+        linear-gradient(135deg, #17351f, #0d1f13);
+    color:#222;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.app-header{
+    position: sticky;
+    top: 0;
+    z-index: 501;
+    background: var(--green);
+    color: #fff;
+    padding: 8px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    flex-shrink: 0;
+    font-size: 14px;
+}
+.app-header .app-header-title{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: .02em;
+}
+.app-header .app-header-logo{ width: 26px; height: 26px; flex-shrink: 0; }
+.app-header .app-header-controls{ display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.app-header a, .app-header button{
+    color: #fff;
+    text-decoration: none;
+    background: rgba(255,255,255,0.14);
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background .15s ease;
+}
+.app-header a:hover, .app-header button:hover{ background: rgba(255,255,255,0.24); }
+.app-header .app-header-back{ background: transparent; padding: 6px 4px; }
+.app-header .app-header-back:hover{ background: rgba(255,255,255,0.14); }
+
+.topbar{
+    position: sticky;
+    top: 0;
+    z-index: 501;
+    background:var(--bg-panel);
+    border-bottom:1px solid var(--line);
+    padding:8px 14px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-shrink:0;
+    font-size:13px;
+}
+.topbar a{ color:var(--text-dim); text-decoration:none; }
+.topbar a:hover{ color:var(--text-main); }
+.topbar .logout{ border:1px solid var(--line); padding:5px 12px; border-radius:8px; }
+.topbar .logout:hover{ border-color:var(--text-dim); }
+
+.header{
+    position: sticky;
+    top: 0;
+    z-index: 500;
+    background:var(--bg-panel);
+    border-bottom:1px solid var(--line);
+    color:var(--text-main);
+    padding:14px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:12px;
+    flex-shrink:0;
+}
+
+.header h1{
+    font-family:var(--font-display);
+    font-weight:700;
+    letter-spacing:-0.01em;
+    font-size:1.6rem;
+    color:var(--text-main);
+}
+.header h1::before{
+    content:"Modul 01";
+    display:block;
+    font-family:var(--font-body);
+    text-transform:uppercase;
+    letter-spacing:0.14em;
+    font-size:11px;
+    color:var(--accent);
+    font-weight:700;
+}
+
+/* ===== UHRZEIT ANZEIGE ===== */
+.header-clock {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    background: rgba(255,255,255,0.06);
+    padding: 4px 14px 4px 12px;
+    border-radius: 30px;
+    border: 1px solid var(--line);
+    white-space: nowrap;
+}
+
+.header-clock .clock-icon {
+    font-size: 0.9rem;
+}
+.header-clock .clock-time {
+    font-weight: 600;
+    color: var(--text-main);
+    font-variant-numeric: tabular-nums;
+}
+.header-clock .clock-date {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+}
+
+.header-controls{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+}
+
+button,
+select,
+input{
+    border:none;
+    border-radius:12px;
+    padding:10px 14px;
+    font-size:1rem;
+    touch-action: manipulation;
+}
+
+button{
+    cursor:pointer;
+    background:var(--accent);
+    color:#05161e;
+    font-weight:700;
+    touch-action: manipulation;
+    transition: transform 0.1s, background 0.15s;
+}
+button:hover{ background:var(--accent-hover); }
+
+button:active {
+    transform: scale(0.95);
+}
+
+.layout{
+    flex: 1;
+    padding:16px;
+    overflow: hidden;
+    min-height: 0;
+}
+
+.arena{
+    width:100%;
+    max-width:1200px;
+    height:100%;
+    background:white;
+    border-radius:22px;
+    overflow:hidden;
+    box-shadow:0 10px 30px rgba(0,0,0,.3);
+    display:flex;
+    flex-direction:column;
+    margin: 0 auto;
+}
+
+.arena-header{
+    background:var(--light);
+    padding:12px 16px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-shrink:0;
+}
+
+.arena-title{
+    font-size:1.6rem;
+    font-weight:900;
+    color:var(--green);
+    text-align:center;
+}
+
+.scoreboard{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    padding:0 14px 14px;
+    flex-shrink:0;
+}
+
+.score-card{
+    background:#f7faf5;
+    border-radius:18px;
+    padding:16px 20px;
+    text-align:center;
+    border-bottom:8px solid var(--green);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.score-card.red{
+    border-bottom-color:var(--red);
+}
+
+.team-info{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:2px;
+}
+
+.team-name{
+    font-size:1.2rem;
+    font-weight:900;
+}
+
+.team-score{
+    font-size:3.4rem;
+    font-weight:900;
+    color:var(--green);
+    line-height:1;
+}
+
+.score-card.red .team-score{
+    color:var(--red);
+}
+
+.team-wins{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:var(--dark);
+    color:white;
+    padding:6px 16px;
+    border-radius:10px;
+    font-weight:700;
+    font-size:1.2rem;
+    white-space:nowrap;
+}
+
+.team-wins span{
+    font-size:1.4rem;
+}
+
+.kehren-wrapper{
+    flex:1;
+    overflow-y:auto;
+    padding:0 14px 14px;
+    min-height:0;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+}
+
+.kehren-wrapper::-webkit-scrollbar{
+    width:8px;
+}
+
+.kehren-wrapper::-webkit-scrollbar-track{
+    background:#f0f0f0;
+    border-radius:10px;
+}
+
+.kehren-wrapper::-webkit-scrollbar-thumb{
+    background:var(--green);
+    border-radius:10px;
+}
+
+.kehren-wrapper::-webkit-scrollbar-thumb:hover{
+    background:#0d3d22;
+}
+
+.kehren{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+}
+
+.kehren-title{
+    text-align:center;
+    font-weight:900;
+    margin-bottom:8px;
+}
+
+.kehre-row{
+    display:grid;
+    grid-template-columns:90px 1fr 45px;
+    gap:8px;
+    align-items:center;
+    background:white;
+    border:2px solid var(--border);
+    border-radius:14px;
+    padding:8px;
+    margin-bottom:8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.kehre-row:active {
+    transform: scale(0.98);
+}
+
+.kehre-row.active{
+    border:3px solid #4caf50;
+    background:#f3fff2;
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.2);
+}
+
+.kehre-row.completed{
+    border:3px solid #ff9800;
+    background:#fff8e1;
+}
+
+.kehre-number{
+    font-size:.9rem;
+    font-weight:900;
+    text-align:center;
+}
+
+.points{
+    display:flex;
+    gap:6px;
+    justify-content:center;
+    flex-wrap:wrap;
+}
+
+.point-btn{
+    width:44px;
+    height:44px;
+    border-radius:10px;
+    border:2px solid var(--border);
+    background:white;
+    color:black;
+    font-weight:900;
+    font-size:16px;
+    touch-action: manipulation;
+    transition: all 0.15s;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.point-btn:active {
+    transform: scale(0.92);
+    background:var(--green);
+    color:white;
+}
+
+.point-btn.active-point{
+    background:var(--green);
+    color:white;
+    border-color:var(--green);
+}
+
+.kehre-value{
+    text-align:center;
+    font-weight:900;
+    font-size:1.1rem;
+}
+
+.footer{
+    position: sticky;
+    bottom: 0;
+    z-index: 100;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+    padding:14px;
+    border-top:1px solid var(--border);
+    flex-shrink:0;
+    background: white;
+}
+
+.footer .footer-left {
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    justify-content:center;
+}
+
+.footer .footer-right {
+    font-size:0.85rem;
+    color:#555;
+    background:var(--light);
+    padding:4px 14px;
+    border-radius:30px;
+    font-weight:500;
+    letter-spacing:0.3px;
+    margin-left:20px;
+}
+
+.gold{
+    background:var(--gold);
+    color:black;
+}
+
+.gold:active{
+    background:#f0c860;
+}
+
+.toast{
+    position:fixed;
+    bottom:20px;
+    left:50%;
+    transform:translateX(-50%);
+    background:#111;
+    color:white;
+    padding:14px 20px;
+    border-radius:14px;
+    opacity:0;
+    transition:.3s;
+    z-index:9999;
+    pointer-events: none;
+    font-size:1rem;
+}
+
+.toast.show{
+    opacity:1;
+}
+
+.player-selector{
+    display:flex;
+    gap:8px;
+    align-items:center;
+    background:rgba(255,255,255,0.15);
+    padding:4px 12px 4px 8px;
+    border-radius:40px;
+}
+
+.player-selector label{
+    font-weight:600;
+    font-size:0.9rem;
+}
+
+.player-selector select{
+    background:white;
+    color:black;
+    padding:6px 10px;
+    border-radius:30px;
+    font-weight:700;
+}
+
+/* Dialog für Kehrenauswahl */
+.kehren-dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    touch-action: manipulation;
+}
+
+.kehren-dialog-overlay.show {
+    display: flex;
+}
+
+.kehren-dialog {
+    background: white;
+    border-radius: 22px;
+    padding: 30px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    touch-action: manipulation;
+}
+
+.kehren-dialog h3 {
+    margin-bottom: 16px;
+    color: var(--green);
+    font-size: 1.4rem;
+}
+
+.kehren-dialog select {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+    min-height: 50px;
+    touch-action: manipulation;
+}
+
+.kehren-dialog .dialog-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.kehren-dialog .dialog-buttons button {
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 700;
+    min-height: 50px;
+    min-width: 90px;
+    touch-action: manipulation;
+}
+
+.kehren-dialog .dialog-buttons .btn-cancel {
+    background: #ccc;
+    color: #333;
+}
+
+.kehren-dialog .dialog-buttons .btn-confirm {
+    background: var(--red);
+    color: white;
+}
+
+/* ===== RESPONSIVE FÜR TABLETS ===== */
+@media (max-width: 900px) {
+    .scoreboard {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .kehren {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .point-btn {
+        width: 58px;
+        height: 58px;
+        font-size: 22px;
+        border-radius: 12px;
+    }
+    
+    .team-score {
+        font-size: 4rem;
+    }
+    
+    .kehre-row {
+        grid-template-columns: 80px 1fr 50px;
+        padding: 10px;
+        border-radius: 16px;
+    }
+    
+    .kehre-number {
+        font-size: 1rem;
+    }
+    
+    .kehre-value {
+        font-size: 1.3rem;
+    }
+    
+    .header h1 {
+        font-size: 1.3rem;
+    }
+    
+    .footer .footer-right {
+        margin-left: 0;
+    }
+    
+    .header-clock {
+        font-size: 0.7rem;
+        padding: 3px 10px 3px 8px;
+    }
+    .header-clock .clock-date {
+        display: none;
+    }
+}
+
+@media (max-width: 600px) {
+    .point-btn {
+        width: 48px;
+        height: 48px;
+        font-size: 18px;
+    }
+    
+    .kehre-row {
+        grid-template-columns: 60px 1fr 40px;
+        padding: 6px;
+        gap: 4px;
+    }
+    
+    .team-score {
+        font-size: 3rem;
+    }
+    
+    .header h1 {
+        font-size: 1.1rem;
+    }
+    
+    .header-controls select,
+    .header-controls button {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+    }
+    
+    .header-clock {
+        font-size: 0.6rem;
+        padding: 2px 8px 2px 6px;
+        gap: 4px;
+    }
+    .header-clock .clock-time {
+        font-size: 0.65rem;
+    }
+    .header-clock .clock-date {
+        display: none;
+    }
+    .header-left {
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+    <div class="app-header-title">
+        <svg class="app-header-logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="100" cy="100" r="95" fill="#1f5e3a" stroke="#ffdf8c" stroke-width="4"/>
+            <text x="100" y="90" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="42" fill="#ffdf8c" letter-spacing="1.5">ESV</text>
+            <text x="100" y="130" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="26" fill="#c8e6c9" letter-spacing="2.5">GREIN</text>
+        </svg>
+        Trainingsmodus
+    </div>
+    <div class="app-header-controls">
+        <a class="app-header-back" href="dashboard.html">⬅ Dashboard</a>
+        <a class="logout" href="#" onclick="logout(); return false;">Abmelden</a>
+    </div>
+</div>
+
+<div class="header">
+    <div class="header-left">
+        <h1>Trainingsmodus</h1>
+
+        <!-- ===== UHRZEIT DIREKT NEBEN TRAININGSMODUS ===== -->
+        <div class="header-clock" id="moduleClockContainer">
+            <span class="clock-icon">🕐</span>
+            <span class="clock-time" id="moduleClock">--:--:--</span>
+            <span class="clock-date" id="moduleDate">📅 --</span>
+        </div>
+    </div>
+
+    <div class="header-controls">
+        <div class="player-selector">
+            <label for="playerCount">👥</label>
+            <select id="playerCount">
+                <option value="3">3 Spieler</option>
+                <option value="4"selected>4 Spieler</option>
+                <option value="5">5 Spieler</option>
+                <option value="6">6 Spieler</option>
+            </select>
+        </div>
+
+        <select id="gamesSelect">
+            <option value="2"selected>2 Siege</option>
+            <option value="3">3 Siege</option>
+            <option value="4">4 Siege</option>
+            <option value="5">5 Siege</option>
+            <option value="6">6 Siege</option>
+        </select>
+
+        <select id="kehrenSelect">
+            <option value="4">4 Kehren</option>
+            <option value="6" selected>6 Kehren</option>
+            <option value="8">8 Kehren</option>
+        </select>
+
+        <button onclick="fullReset()" style="background:#b93a32;">↺</button>
+    </div>
+</div>
+
+<div class="layout" id="layout"></div>
+
+<!-- Dialog für Kehrenauswahl -->
+<div class="kehren-dialog-overlay" id="kehrenDialog" onclick="closeKehrenDialog(event)">
+    <div class="kehren-dialog" onclick="event.stopPropagation();">
+        <h3>Kehre löschen</h3>
+        <p style="margin-bottom:12px;color:#666;">Wählen Sie die zu löschende Kehre:</p>
+        <select id="kehrenSelectDialog"></select>
+        <div class="dialog-buttons">
+            <button class="btn-cancel" onclick="closeKehrenDialog()">Abbrechen</button>
+            <button class="btn-confirm" onclick="confirmDeleteKehre()">Löschen</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="auth.js"></script>
+<script>
+requireGate();
+requireLogin();
+
+// ============================================================
+// UHRZEIT & DATUM FÜR MODUL
+// ============================================================
+function updateModuleClock() {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const dateStr = now.toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
+    
+    const clockEl = document.getElementById('moduleClock');
+    const dateEl = document.getElementById('moduleDate');
+    if (clockEl) clockEl.textContent = timeStr;
+    if (dateEl) dateEl.textContent = '📅 ' + dateStr;
+}
+
+// Initial aktualisieren und dann jede Sekunde
+updateModuleClock();
+setInterval(updateModuleClock, 1000);
+
+// ============================================================
+// TRAININGSMODUS LOGIK
+// ============================================================
+const state = {
+    kehren: 6,
+    winsToChampion: 2,
+    playerCount: 4,
+    arena: createArena(1)
+};
+
+function createArena(id) {
+    return {
+        id,
+        teamA: 'Mannschaft W',
+        teamB: 'Mannschaft E',
+        pointsA: Array(6).fill(null),
+        pointsB: Array(6).fill(null),
+        winsA: 0,
+        winsB: 0
+    };
+}
+
+function render() {
+    document.getElementById('layout').innerHTML = renderArena(state.arena);
+    scrollToActiveKehre();
+}
+
+function renderArena(arena) {
+    const scoreA = sum(arena.pointsA);
+    const scoreB = sum(arena.pointsB);
+
+    return `
+    <div class="arena">
+        <div class="arena-header">
+            <div class="arena-title">🥌 ESV Grein – Training</div>
+        </div>
+
+        <div class="scoreboard">
+            <div class="score-card">
+                <div class="team-info">
+                    <div class="team-name">⚪ Mannschaft W</div>
+                    <div class="team-score">${scoreA}</div>
+                </div>
+                <div class="team-wins">
+                    <span>🏆</span> ${arena.winsA}
+                </div>
+            </div>
+
+            <div class="score-card red">
+                <div class="team-info">
+                    <div class="team-name">🔴 Mannschaft E</div>
+                    <div class="team-score">${scoreB}</div>
+                </div>
+                <div class="team-wins">
+                    <span>🏆</span> ${arena.winsB}
+                </div>
+            </div>
+        </div>
+
+        <div class="kehren-wrapper" id="kehrenWrapper">
+            <div class="kehren">
+                <div>
+                    <div class="kehren-title">⚪ Mannschaft W</div>
+                    ${renderKehren(arena, 'A')}
+                </div>
+                <div>
+                    <div class="kehren-title">🔴 Mannschaft E</div>
+                    ${renderKehren(arena, 'B')}
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-left">
+                <button class="gold" onclick="evaluateGame()">Spiel Werten</button>
+                <button onclick="resetGame()">Neues Spiel Starten</button>
+                <button onclick="openKehrenDialog()">Kehre Löschen</button>
+            </div>
+            <div class="footer-right">@Roland Koll Version 1.1</div>
+        </div>
+    </div>
+    `;
+}
+
+function renderKehren(arena, team) {
+    let html = '';
+    const arr = team === 'A' ? arena.pointsA : arena.pointsB;
+    const activeIndex = activeKehre(arena) - 1;
+
+    for (let i = 0; i < state.kehren; i++) {
+        const active = activeIndex === i;
+        const isCompleted = arr[i] !== null;
+        const maxPoints = state.playerCount;
+
+        html += `
+        <div class="kehre-row ${active ? 'active' : ''} ${isCompleted ? 'completed' : ''}" 
+             data-kehre="${i}" 
+             data-team="${team}"
+             onclick="handleKehreClick(${i}, '${team}')">
+            <div class="kehre-number">${i + 1}</div>
+            <div class="points">
+                ${Array.from({length: maxPoints + 1}, (_, v) => `
+                    <button class="point-btn ${arr[i] === v ? 'active-point' : ''}"
+                            onclick="event.stopPropagation(); setPoints('${team}', ${i}, ${v})"
+                            data-value="${v}">
+                        ${v}
+                    </button>
+                `).join('')}
+            </div>
+            <div class="kehre-value">${arr[i] ?? '-'}</div>
+        </div>
+        `;
+    }
+
+    return html;
+}
+
+// ===== VERBESSERTE setPoints Funktion =====
+function setPoints(team, index, value) {
+    const arena = state.arena;
+
+    if (hasWinner(arena)) {
+        toast('Training beendet');
+        return;
+    }
+
+    // Punkte setzen. Wenn eine Mannschaft in dieser Kehre Punkte (1-N) erhält,
+    // wird die Gegner-Mannschaft automatisch mit 0 gewertet, sofern dort noch
+    // kein Wert eingetragen wurde (nur eine Mannschaft kann pro Kehre punkten).
+    if (team === 'A') {
+        arena.pointsA[index] = value;
+        if (arena.pointsB[index] === null) {
+            arena.pointsB[index] = 0;
+        }
+    } else {
+        arena.pointsB[index] = value;
+        if (arena.pointsA[index] === null) {
+            arena.pointsA[index] = 0;
+        }
+    }
+
+    // Nur neu rendern
+    render();
+}
+
+// ===== NEU: Klick auf Kehre für Lösch-Dialog =====
+function handleKehreClick(index, team) {
+    const arena = state.arena;
+    if (hasWinner(arena)) {
+        toast('Training beendet');
+        return;
+    }
+
+    // Prüfen ob die Kehre Werte hat
+    const hasValue = arena.pointsA[index] !== null || arena.pointsB[index] !== null;
+    if (!hasValue) {
+        toast(`Kehre ${index + 1} ist bereits leer`);
+        return;
+    }
+
+    // Dialog öffnen mit vorausgewählter Kehre
+    openKehrenDialog(index);
+}
+
+function scrollToActiveKehre() {
+    setTimeout(() => {
+        const wrapper = document.getElementById('kehrenWrapper');
+        if (!wrapper) return;
+
+        const activeRow = wrapper.querySelector('.kehre-row.active');
+        if (activeRow) {
+            const wrapperRect = wrapper.getBoundingClientRect();
+            const rowRect = activeRow.getBoundingClientRect();
+
+            const isVisible = 
+                rowRect.top >= wrapperRect.top + 10 &&
+                rowRect.bottom <= wrapperRect.bottom - 10;
+
+            if (!isVisible) {
+                activeRow.scrollIntoView({
+                    block: 'center',
+                    behavior: 'smooth'
+                });
+            }
+        }
+    }, 50);
+}
+
+function evaluateGame() {
+    const arena = state.arena;
+
+    if (hasWinner(arena)) {
+        toast('Training beendet');
+        return;
+    }
+
+    for (let i = 0; i < state.kehren; i++) {
+        if (arena.pointsA[i] === null || arena.pointsB[i] === null) {
+            toast('Bitte alle Kehren ausfüllen');
+            return;
+        }
+    }
+
+    const a = sum(arena.pointsA);
+    const b = sum(arena.pointsB);
+
+    if (a > b) {
+        arena.winsA++;
+        toast(`⚪ Mannschaft W gewinnt (${a}:${b})`);
+    } else if (b > a) {
+        arena.winsB++;
+        toast(`🔴 Mannschaft E gewinnt (${a}:${b})`);
+    } else {
+        toast(`Unentschieden (${a}:${b})`);
+    }
+
+    arena.pointsA = Array(state.kehren).fill(null);
+    arena.pointsB = Array(state.kehren).fill(null);
+
+    if (hasWinner(arena)) {
+        toast(`🏆 ${winnerName(arena)} gewinnt das Training!`);
+    }
+
+    render();
+}
+
+function activeKehre(arena) {
+    for (let i = 0; i < state.kehren; i++) {
+        if (arena.pointsA[i] === null || arena.pointsB[i] === null) {
+            return i + 1;
+        }
+    }
+    return state.kehren;
+}
+
+function hasWinner(arena) {
+    return arena.winsA >= state.winsToChampion || arena.winsB >= state.winsToChampion;
+}
+
+function winnerName(arena) {
+    if (arena.winsA >= state.winsToChampion) return 'Mannschaft W';
+    if (arena.winsB >= state.winsToChampion) return 'Mannschaft E';
+    return '';
+}
+
+function sum(arr) {
+    return arr.reduce((a, b) => a + (b || 0), 0);
+}
+
+function resetGame() {
+    const arena = state.arena;
+    arena.pointsA = Array(state.kehren).fill(null);
+    arena.pointsB = Array(state.kehren).fill(null);
+    arena.winsA = 0;
+    arena.winsB = 0;
+    render();
+    toast('Spiel neu gestartet');
+}
+
+// ===== VERBESSERTE Dialog-Funktionen =====
+function openKehrenDialog(preSelectedIndex) {
+    const arena = state.arena;
+    if (hasWinner(arena)) {
+        toast('Training beendet');
+        return;
+    }
+
+    const dialog = document.getElementById('kehrenDialog');
+    const select = document.getElementById('kehrenSelectDialog');
+
+    select.innerHTML = '';
+    let hasValues = false;
+
+    for (let i = 0; i < state.kehren; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        const hasValue = arena.pointsA[i] !== null || arena.pointsB[i] !== null;
+        if (hasValue) hasValues = true;
+        option.textContent = `Kehre ${i + 1} ${hasValue ? '✏️' : '⬜'}`;
+        select.appendChild(option);
+    }
+
+    if (!hasValues) {
+        toast('Alle Kehren sind bereits leer');
+        return;
+    }
+
+    // Wenn eine Kehre vorausgewählt wurde
+    if (preSelectedIndex !== undefined) {
+        select.value = preSelectedIndex;
+    }
+
+    dialog.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeKehrenDialog(event) {
+    if (event && event.target !== event.currentTarget) return;
+    document.getElementById('kehrenDialog').classList.remove('show');
+    document.body.style.overflow = '';
+}
+
+function confirmDeleteKehre() {
+    const arena = state.arena;
+    const select = document.getElementById('kehrenSelectDialog');
+    const index = parseInt(select.value);
+
+    if (arena.pointsA[index] === null && arena.pointsB[index] === null) {
+        toast(`Kehre ${index + 1} ist bereits leer`);
+        closeKehrenDialog();
+        return;
+    }
+
+    arena.pointsA[index] = null;
+    arena.pointsB[index] = null;
+
+    render();
+    toast(`Kehre ${index + 1} gelöscht`);
+    closeKehrenDialog();
+}
+
+function fullReset() {
+    state.arena = createArena(1);
+    render();
+    toast('Kompletter Reset');
+}
+
+function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._timeout);
+    t._timeout = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ===== EVENT-LISTENER =====
+document.getElementById('playerCount').addEventListener('change', function(e) {
+    state.playerCount = Number(e.target.value);
+    render();
+    toast(`👥 ${state.playerCount} Spieler`);
+});
+
+document.getElementById('kehrenSelect').addEventListener('change', function(e) {
+    state.kehren = Number(e.target.value);
+    state.arena.pointsA = Array(state.kehren).fill(null);
+    state.arena.pointsB = Array(state.kehren).fill(null);
+    render();
+});
+
+document.getElementById('gamesSelect').addEventListener('change', function(e) {
+    state.winsToChampion = Number(e.target.value);
+    render();
+});
+
+// ===== HÖHENKORREKTUR =====
+function setCorrectHeight() {
+    const vh = window.innerHeight;
+    document.documentElement.style.setProperty('height', vh + 'px');
+    document.body.style.setProperty('height', vh + 'px');
+}
+
+window.addEventListener('resize', setCorrectHeight);
+window.addEventListener('orientationchange', function() {
+    setTimeout(setCorrectHeight, 300);
+});
+setCorrectHeight();
+
+render();
+</script>
+
+</body>
+</html>

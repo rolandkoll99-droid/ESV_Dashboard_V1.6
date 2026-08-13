@@ -1,0 +1,3278 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Trainingsanalyse – Trainingsportal ESV Grein</title>
+    <style>
+        /* ============================================================
+           BASIS-STYLES
+           ============================================================ */
+        :root {
+            --bg-main: #0a0e14;
+            --line: rgba(255,255,255,0.08);
+            --text-dim: #8a97a6;
+            --accent: #ffdf8c;
+            --green: #1f5e3a;
+            --gold: #ffdf8c;
+            --font-display: "Space Grotesk","Inter",sans-serif;
+            --card-bg: #ffffff;
+            --card-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --border-radius: 16px;
+        }
+        * {
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, 'Segoe UI', Roboto, system-ui, sans-serif;
+            margin: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            background: linear-gradient(135deg, #17351f, #0d1f13);
+            min-height: 100vh;
+            padding: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .app-header{
+            position: sticky;
+            top: 0;
+            z-index: 501;
+            background: var(--green);
+            color: #fff;
+            padding: 8px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 14px;
+            border-radius: 12px;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto 10px;
+        }
+        .app-header .app-header-title{
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: .02em;
+        }
+        .app-header .app-header-logo{ width: 26px; height: 26px; flex-shrink: 0; }
+        .app-header .app-header-controls{ display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .app-header a, .app-header button{
+            color: #fff;
+            text-decoration: none;
+            background: rgba(255,255,255,0.14);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background .15s ease;
+        }
+        .app-header a:hover, .app-header button:hover{ background: rgba(255,255,255,0.24); }
+        .app-header .app-header-back{ background: transparent; padding: 6px 4px; }
+        .app-header .app-header-back:hover{ background: rgba(255,255,255,0.14); }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto 10px;
+            font-size: 14px;
+            color: var(--text-dim);
+        }
+        .topbar a { color: var(--text-dim); text-decoration: none; }
+        .topbar a:hover { color: #1a3a5a; }
+        .topbar .logout { 
+            border: 1px solid #dce5ef; 
+            padding: 5px 12px; 
+            border-radius: 8px;
+            cursor: pointer;
+            background: transparent;
+            font-size: 14px;
+            color: var(--text-dim);
+        }
+        .topbar .logout:hover { border-color: #dc3545; color: #dc3545; }
+        .card {
+            max-width: 1200px;
+            width: 100%;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            padding: 1.2rem 1.5rem 1.5rem;
+            margin: 0 auto;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid #e8eff5;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+        }
+        .header h1 {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            color: #0b2b44;
+        }
+        .header small {
+            font-size: 0.7rem;
+            font-weight: 400;
+            color: #3e6a8c;
+            background: #eef3fa;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            white-space: nowrap;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 0.15rem 0.6rem;
+            border-radius: 30px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            margin-left: 4px;
+        }
+        .status-badge.online { background: #d4edda; color: #155724; }
+        .status-badge.offline { background: #f8d7da; color: #721c24; }
+        .status-badge.waiting { background: #fff3cd; color: #856404; }
+        .tabs {
+            display: flex;
+            gap: 0.3rem;
+            margin: 0.8rem 0 0.6rem;
+            background: #f5f9fe;
+            border-radius: 14px;
+            padding: 0.3rem;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            flex: 1;
+            min-width: 70px;
+            padding: 0.6rem 0.4rem;
+            border: none;
+            border-radius: 12px;
+            background: transparent;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #4a6f8f;
+            cursor: pointer;
+            transition: background-color 0.15s, color 0.15s;
+            touch-action: manipulation;
+            text-align: center;
+        }
+        .tab-btn.active {
+            background: white;
+            color: #1a5f8b;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        .tab-btn:active { transform: scale(0.96); }
+        .tab-content { display: none; animation: fadeIn 0.25s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+            margin-bottom: 0.5rem;
+        }
+        .field-group label {
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            color: #1f4a6e;
+        }
+        .field-group input,
+        .field-group select,
+        .field-group textarea {
+            background: #f8fafc;
+            border: 1.5px solid #dce5ef;
+            border-radius: 12px;
+            padding: 0.6rem 0.8rem;
+            font-size: 0.95rem;
+            transition: 0.15s;
+            width: 100%;
+            outline: none;
+            color: #0a1e2f;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        .field-group input:focus,
+        .field-group select:focus,
+        .field-group textarea:focus {
+            border-color: #2a7bb0;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(42,123,176,0.1);
+        }
+        .field-group select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234a6f8f' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.8rem center;
+            padding-right: 2.2rem;
+        }
+        .field-group textarea {
+            resize: vertical;
+            min-height: 40px;
+            font-family: inherit;
+        }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 0.8rem; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.4rem; }
+        .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 0.4rem; }
+        .section-title {
+            font-weight: 600;
+            color: #1a4b6e;
+            font-size: 0.95rem;
+            margin: 0.8rem 0 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-title .badge {
+            background: #e8eff5;
+            padding: 0.15rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 500;
+            color: #3e6a8c;
+        }
+        .spieler-select-wrapper {
+            background: #f8fafc;
+            border-radius: 14px;
+            padding: 0.8rem 1rem;
+            border: 1.5px solid #e1ecf7;
+            margin-bottom: 0.5rem;
+        }
+        .spieler-select-wrapper select {
+            font-size: 1.1rem;
+            padding: 0.7rem 1rem;
+            background: white;
+            border: 2px solid #dce5ef;
+            border-radius: 12px;
+            width: 100%;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .spieler-select-wrapper select:focus {
+            border-color: #2a7bb0;
+            box-shadow: 0 0 0 3px rgba(42,123,176,0.1);
+        }
+        .uebung-card {
+            background: #f8fafc;
+            border-radius: var(--border-radius);
+            padding: 1rem 1.2rem;
+            margin-bottom: 0.8rem;
+            border: 1.5px solid #e8eff5;
+            transition: border-color 0.2s;
+        }
+        .uebung-card.active { border-color: #1a5f8b; background: #f0f6fe; }
+        .uebung-card .uebung-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .uebung-card .uebung-title { font-weight: 700; font-size: 1rem; color: #1f4a6e; }
+        .uebung-card .uebung-stats {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            font-size: 0.75rem;
+        }
+        .uebung-card .uebung-stats span {
+            background: white;
+            padding: 0.15rem 0.7rem;
+            border-radius: 20px;
+            border: 1px solid #dce5ef;
+        }
+        .versuche-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+            gap: 0.4rem;
+            margin: 0.4rem 0;
+        }
+        .versuch-btn {
+            padding: 0.3rem 0.2rem;
+            border: 2px solid #dce5ef;
+            border-radius: 10px;
+            background: white;
+            font-size: 0.55rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-align: center;
+            touch-action: manipulation;
+            min-height: 65px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.25;
+        }
+        .versuch-btn:active { transform: scale(0.95); }
+        .versuch-btn.treffer { border-color: #28a745; background: #f0fff4; color: #28a745; }
+        .versuch-btn.fehler { border-color: #dc3545; background: #fff5f5; color: #dc3545; }
+        .versuch-btn.active { border-color: #1a5f8b; border-width: 3px; background: #e8f4fd; }
+        .versuch-btn .v-nr { font-size: 0.5rem; color: #6c8ba8; }
+        .versuch-btn .v-pkt { font-size: 0.7rem; font-weight: 700; }
+        .versuch-btn .v-ring { font-size: 0.45rem; color: #6c8ba8; }
+        .versuch-btn .v-abw { font-size: 0.4rem; color: #6c8ba8; line-height: 1.1; }
+        .versuch-btn .v-status { font-size: 0.4rem; color: #6c8ba8; }
+        .versuch-btn .v-platte { font-size: 0.4rem; color: #6c8ba8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70px; }
+        .ring-1 { border-color: #ffd700 !important; background: #fffde7 !important; }
+        .ring-2 { border-color: #c0c0c0 !important; background: #f5f5f5 !important; }
+        .ring-3 { border-color: #cd7f32 !important; background: #fdf5e6 !important; }
+        .ring-4 { border-color: #8B4513 !important; background: #f5ebe0 !important; }
+        .ring-5 { border-color: #2F4F4F !important; background: #e8f0f0 !important; }
+        .ring-aussen { border-color: #dc3545 !important; background: #fff5f5 !important; }
+        .status-eigen { border-left: 4px solid #28a745 !important; }
+        .status-fremd { border-left: 4px solid #dc3545 !important; }
+        .status-beide { border-left: 4px solid #ffc107 !important; }
+        .status-eigen-aussen { border-left: 4px solid #fd7e14 !important; }
+        .status-beide-im-feld { border-left: 4px solid #17a2b8 !important; }
+        .eingabe-box {
+            background: white;
+            border-radius: 12px;
+            padding: 0.8rem 1rem;
+            border: 2px solid #1a5f8b;
+            margin: 0.4rem 0;
+        }
+        .eingabe-box .eingabe-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.4rem;
+        }
+        .eingabe-box .eingabe-header .aktueller-versuch {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #1a5f8b;
+        }
+        .eingabe-box .eingabe-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0.4rem;
+        }
+        .eingabe-box .eingabe-grid select,
+        .eingabe-box .eingabe-grid input {
+            padding: 0.4rem 0.5rem;
+            border: 1.5px solid #dce5ef;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            background: #f8fafc;
+            width: 100%;
+        }
+        .eingabe-box .eingabe-grid label {
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: #1f4a6e;
+            display: block;
+        }
+        .eingabe-box .eingabe-actions {
+            display: flex;
+            gap: 0.4rem;
+            margin-top: 0.4rem;
+        }
+        .eingabe-box .eingabe-actions .btn { flex: 1; padding: 0.4rem; font-size: 0.75rem; }
+        .training-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+            flex-wrap: wrap;
+        }
+        .training-buttons .btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 0.8rem 0.6rem;
+            font-size: 0.9rem;
+            border-radius: 12px;
+        }
+        .training-buttons .btn-mass {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            border-color: #28a745;
+            color: white;
+        }
+        .training-buttons .btn-stock {
+            background: linear-gradient(135deg, #007bff, #17a2b8);
+            border-color: #007bff;
+            color: white;
+        }
+        .training-buttons .btn-mass.active { box-shadow: 0 0 0 4px rgba(40,167,69,0.4); }
+        .training-buttons .btn-stock.active { box-shadow: 0 0 0 4px rgba(0,123,255,0.4); }
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 0.5rem;
+            background: #f8fafc;
+            padding: 0.8rem;
+            border-radius: var(--border-radius);
+            border: 1.5px solid #e8eff5;
+            margin-bottom: 0.5rem;
+        }
+        .config-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.1rem;
+        }
+        .config-item label {
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: #1f4a6e;
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+        }
+        .config-item input,
+        .config-item select {
+            padding: 0.4rem 0.6rem;
+            border: 1.5px solid #dce5ef;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            background: white;
+            width: 100%;
+        }
+        .ring-legend {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+            align-items: center;
+            padding: 0.4rem 0;
+        }
+        .ring-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.6rem;
+            padding: 0.15rem 0.6rem;
+            border-radius: 4px;
+            border: 1px solid #dce5ef;
+        }
+        .ring-legend-item .color-dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin: 0.6rem 0;
+        }
+        .btn {
+            flex: 1;
+            min-width: 70px;
+            padding: 0.6rem 0.8rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background-color 0.12s, color 0.12s, border-color 0.12s, transform 0.08s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            touch-action: manipulation;
+            user-select: none;
+            border: none;
+            background: #f7faff;
+            color: #1f4a6e;
+            border: 1.5px solid #d0dceb;
+        }
+        .btn:active { transform: scale(0.95); }
+        .btn-primary { background: #1a5f8b; border-color: #1a5f8b; color: white; box-shadow: 0 3px 10px -3px rgba(26,95,139,0.3); }
+        .btn-success { background: #28a745; border-color: #28a745; color: white; box-shadow: 0 3px 10px -3px rgba(40,167,69,0.3); }
+        .btn-danger { background: #dc3545; border-color: #dc3545; color: white; box-shadow: 0 3px 10px -3px rgba(220,53,69,0.3); }
+        .btn-warning { background: #ffc107; border-color: #ffc107; color: #1a3a5a; }
+        .btn-excel { background: #217346; border-color: #217346; color: white; box-shadow: 0 3px 10px -3px rgba(33,115,70,0.3); }
+        .btn-outline { background: transparent; border-color: #c5d5e6; }
+        .btn-sm { flex: 0 1 auto; padding: 0.35rem 0.7rem; font-size: 0.7rem; }
+        .btn-xs { flex: 0 1 auto; padding: 0.25rem 0.6rem; font-size: 0.65rem; }
+        .btn-file { position: relative; overflow: hidden; }
+        .btn-file input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        .btn-start-training {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+            padding: 1rem 2rem;
+            border-radius: 40px;
+            box-shadow: 0 6px 20px rgba(40,167,69,0.4);
+            transition: transform 0.15s, box-shadow 0.15s;
+            width: 100%;
+        }
+        .btn-start-training:hover { transform: scale(1.02); box-shadow: 0 8px 30px rgba(40,167,69,0.5); }
+        .btn-start-training:active { transform: scale(0.96); }
+        .analysis-container { display: flex; flex-direction: column; gap: 0.8rem; }
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 0.6rem;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 14px;
+            padding: 0.8rem 1rem;
+            border: 1.5px solid #e1ecf7;
+            text-align: center;
+        }
+        .stat-card .stat-value { font-size: 2rem; font-weight: 800; color: #0a2b44; }
+        .stat-card .stat-label { font-size: 0.65rem; text-transform: uppercase; color: #3f6b8e; letter-spacing: 0.5px; margin-top: 0.1rem; }
+        .stat-card .stat-sub { font-size: 0.55rem; color: #6c8ba8; margin-top: 0.15rem; }
+        .stat-card.green .stat-value { color: #28a745; }
+        .stat-card.blue .stat-value { color: #007bff; }
+        .stat-card.gold .stat-value { color: #d4a017; }
+        .stat-card.red .stat-value { color: #dc3545; }
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+        .detail-card {
+            background: white;
+            border-radius: 14px;
+            padding: 0.8rem 1rem;
+            border: 1.5px solid #e1ecf7;
+        }
+        .detail-card .detail-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #1f4a6e;
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .detail-card .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.2rem 0;
+            font-size: 0.75rem;
+            border-bottom: 1px solid #f0f4f9;
+        }
+        .detail-card .detail-row:last-child { border-bottom: none; }
+        .detail-card .detail-row .label { color: #4a6f8f; }
+        .detail-card .detail-row .value { font-weight: 600; color: #0a2b44; font-size: 0.8rem; }
+        .detail-card .detail-row .value.green { color: #28a745; }
+        .detail-card .detail-row .value.red { color: #dc3545; }
+        .detail-card .detail-row .value.gold { color: #d4a017; }
+        .detail-card .detail-row .value.blue { color: #007bff; }
+        .progress-bar-small {
+            width: 100%;
+            height: 6px;
+            background: #e8eff5;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 0.15rem 0;
+        }
+        .progress-bar-small .fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.6s ease;
+        }
+        .progress-bar-small .fill.green { background: #28a745; }
+        .progress-bar-small .fill.blue { background: #007bff; }
+        .progress-bar-small .fill.red { background: #dc3545; }
+        .progress-bar-small .fill.gold { background: #d4a017; }
+        .form-trend-grid {
+            display: flex;
+            gap: 0.3rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 0.3rem 0;
+        }
+        .form-dot-large {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: white;
+        }
+        .form-dot-large.green { background: #28a745; }
+        .form-dot-large.red { background: #dc3545; }
+        .form-dot-large.empty { background: #e8eff5; color: #6c8ba8; }
+        .ring-table { width: 100%; font-size: 0.7rem; border-collapse: collapse; }
+        .ring-table td { padding: 0.2rem 0.3rem; border-bottom: 1px solid #f0f4f9; }
+        .ring-table .ring-dot {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            margin-right: 0.3rem;
+            vertical-align: middle;
+        }
+        .ring-table .ring-bar {
+            height: 8px;
+            border-radius: 6px;
+            background: #e8eff5;
+            overflow: hidden;
+            width: 100%;
+        }
+        .ring-table .ring-bar .fill { height: 100%; border-radius: 6px; transition: width 0.6s ease; }
+        .status-icons { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.7rem;
+            background: #f8fafc;
+            padding: 0.2rem 0.6rem;
+            border-radius: 14px;
+        }
+        .status-item .count { font-weight: 700; color: #0a2b44; font-size: 0.85rem; }
+        .trainer-card {
+            background: linear-gradient(135deg, #f8fafc, #e8f4fd);
+            border-radius: 14px;
+            padding: 0.8rem 1rem;
+            border: 1.5px solid #d0dceb;
+        }
+        .trainer-card .trainer-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #1f4a6e;
+            margin-bottom: 0.3rem;
+        }
+        .trainer-card .trainer-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.2rem 0;
+            font-size: 0.75rem;
+        }
+        .trainer-card .trainer-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        .trainer-dot.green { background: #28a745; }
+        .trainer-dot.yellow { background: #d4a017; }
+        .trainer-dot.red { background: #dc3545; }
+        .trainer-dot.blue { background: #007bff; }
+        .trainer-dot.orange { background: #fd7e14; }
+        .trainer-card .trainer-emphasis {
+            background: #1a5f8b;
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+        .history-list { max-height: 400px; overflow-y: auto; }
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0.8rem;
+            border-bottom: 1px solid #e8eff5;
+            font-size: 0.8rem;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+            cursor: pointer;
+            transition: background-color 0.15s;
+        }
+        .history-item:hover { background: #f0f6fe; }
+        .history-item .h-date { color: #1f4a6e; font-weight: 600; }
+        .history-item .h-rate { font-weight: 700; font-size: 0.9rem; }
+        .history-item .h-rate.green { color: #28a745; }
+        .history-item .h-rate.yellow { color: #d4a017; }
+        .history-item .h-rate.red { color: #dc3545; }
+        .history-item .h-detail { font-size: 0.65rem; color: #6c8ba8; }
+        .history-item .h-load { font-size: 0.55rem; color: #1a5f8b; text-decoration: underline; cursor: pointer; }
+        .video-placeholder {
+            background: #f0f4f9;
+            border-radius: var(--border-radius);
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            border: 2px dashed #dce5ef;
+        }
+        .video-placeholder i { font-size: 4rem; color: #6c8ba8; display: block; margin-bottom: 0.5rem; }
+        .video-placeholder h3 { color: #1f4a6e; font-size: 1.2rem; }
+        .video-placeholder p { color: #6c8ba8; font-size: 0.85rem; }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #1f4a6e;
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: all 0.35s ease;
+            z-index: 999;
+            max-width: 90%;
+            text-align: center;
+            pointer-events: none;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast.success { background: #28a745; }
+        .toast.error { background: #dc3545; }
+        .toast.info { background: #1a5f8b; }
+        @media (max-width: 992px) {
+            .analysis-grid { grid-template-columns: 1fr 1fr; }
+            .detail-grid { grid-template-columns: 1fr; }
+            .card { padding: 1rem; }
+        }
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; gap: 0.3rem; }
+            .grid-4 { grid-template-columns: 1fr 1fr; }
+            .analysis-grid { grid-template-columns: 1fr 1fr; }
+            .versuche-grid { grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); }
+            .tab-btn { font-size: 0.7rem; padding: 0.4rem 0.2rem; min-width: 45px; }
+            .config-grid { grid-template-columns: 1fr 1fr; }
+            .eingabe-box .eingabe-grid { grid-template-columns: 1fr 1fr; }
+            .training-buttons .btn { min-width: 90px; font-size: 0.8rem; padding: 0.6rem; }
+            .stat-card .stat-value { font-size: 1.6rem; }
+            .header h1 { font-size: 1.3rem; }
+            .btn-start-training { font-size: 1rem; padding: 0.8rem 1.5rem; }
+        }
+        @media (max-width: 500px) {
+            .versuche-grid { grid-template-columns: repeat(5, 1fr); }
+            .uebung-card { padding: 0.6rem; }
+            .btn { font-size: 0.65rem; padding: 0.4rem 0.4rem; min-width: 50px; }
+            .grid-4 { grid-template-columns: 1fr 1fr; }
+            .analysis-grid { grid-template-columns: 1fr 1fr; }
+            .eingabe-box .eingabe-grid { grid-template-columns: 1fr; }
+            .training-buttons .btn { min-width: 70px; font-size: 0.7rem; padding: 0.5rem; }
+            .stat-card .stat-value { font-size: 1.3rem; }
+            .stat-card { padding: 0.5rem 0.6rem; }
+            .detail-card { padding: 0.5rem 0.6rem; }
+            .form-dot-large { width: 26px; height: 26px; font-size: 0.6rem; }
+            .btn-start-training { font-size: 0.9rem; padding: 0.6rem 1rem; }
+        }
+        @media (max-width: 400px) {
+            .versuche-grid { grid-template-columns: repeat(4, 1fr); }
+            .tab-btn { font-size: 0.55rem; padding: 0.3rem 0.1rem; min-width: 35px; }
+            .config-grid { grid-template-columns: 1fr; }
+            .analysis-grid { grid-template-columns: 1fr; }
+        }
+        @media print {
+            body { background: white; padding: 0.2rem; }
+            .card { box-shadow: none; padding: 0.5rem; max-width: 100%; }
+            .btn, .btn-group, .tabs, .tab-btn { display: none !important; }
+            .tab-content { display: block !important; }
+            .toast { display: none !important; }
+            .analysis-grid { grid-template-columns: 1fr 1fr 1fr 1fr; }
+            .detail-grid { grid-template-columns: 1fr 1fr; }
+            .stat-card .stat-value { font-size: 1.5rem; }
+        }
+        html.pi-performance *,
+        html.pi-performance *::before,
+        html.pi-performance *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+    </style>
+</head>
+<body class="pi-performance">
+
+<div class="app-header">
+    <div class="app-header-title">
+        <svg class="app-header-logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="100" cy="100" r="95" fill="#1f5e3a" stroke="#ffdf8c" stroke-width="4"/>
+            <text x="100" y="90" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="42" fill="#ffdf8c" letter-spacing="1.5">ESV</text>
+            <text x="100" y="130" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="26" fill="#c8e6c9" letter-spacing="2.5">GREIN</text>
+        </svg>
+        Trainingsanalyse
+    </div>
+    <div class="app-header-controls">
+        <a class="app-header-back" href="dashboard.html">⬅ Dashboard</a>
+        <a class="logout" href="#" onclick="logout(); return false;">Abmelden</a>
+    </div>
+</div>
+
+<div class="card" id="app">
+    <div class="header">
+        <h1>Trainingsanalyse V2.4.0</h1>
+        <small>IndexedDB · <span id="connectionStatus" class="status-badge online">● Online</span></small>
+    </div>
+
+    <div class="tabs" id="tabContainer">
+        <button class="tab-btn active" data-tab="tab-player">👤 Spieler</button>
+        <button class="tab-btn" data-tab="tab-training">🎯 Training</button>
+        <button class="tab-btn" data-tab="tab-analysis">📊 Auswertung</button>
+        <button class="tab-btn" data-tab="tab-trainer">🧠 Traineranalyse</button>
+        <button class="tab-btn" data-tab="tab-history">📅 Historie</button>
+        <button class="tab-btn" data-tab="tab-export">💾 Export</button>
+    </div>
+
+    <!-- TAB: SPIELER -->
+    <div class="tab-content active" id="tab-player">
+        <div class="section-title">👤 Spielerauswahl <span class="badge" id="playerCountBadge">0 Spieler</span></div>
+        
+        <!-- Dropdown für Spielerauswahl -->
+        <div class="spieler-select-wrapper">
+            <label style="font-size:0.75rem; font-weight:600; color:#1f4a6e; text-transform:uppercase; letter-spacing:0.3px; display:block; margin-bottom:0.3rem;">Spieler auswählen</label>
+            <select id="playerSelect">
+                <option value="">– Bitte Spieler wählen –</option>
+            </select>
+        </div>
+        
+        <div style="display:flex; gap:0.3rem; margin-top:0.3rem; flex-wrap:wrap;">
+            <button class="btn btn-primary btn-sm" id="refreshPlayerBtn">🔄 Aktualisieren</button>
+            <button class="btn btn-excel btn-sm" id="openPlayerManagerBtn">📋 Spieler verwalten</button>
+            <button class="btn btn-success btn-sm" id="loadSelectedPlayerBtn">📂 Ausgewählten laden</button>
+        </div>
+        
+        <div class="grid-2" style="margin-top:0.5rem;">
+            <div class="field-group">
+                <label>Spieler-ID</label>
+                <input type="text" id="playerId" placeholder="z.B. SP-001" readonly style="background:#e8eff5;">
+            </div>
+            <div class="field-group">
+                <label>Spielername</label>
+                <input type="text" id="playerName" placeholder="Name" readonly style="background:#e8eff5;">
+            </div>
+        </div>
+        
+        <div class="section-title">📋 Basis-Daten</div>
+        <div class="grid-2">
+            <div class="field-group">
+                <label>📅 Datum</label>
+                <input type="date" id="sessionDate">
+            </div>
+            <div class="field-group">
+                <label>📍 Ort</label>
+                <input type="text" id="location" placeholder="Trainingsstätte" value="ESV Grein">
+            </div>
+            <div class="field-group">
+                <label>🌡️ Temperatur</label>
+                <input type="text" id="temperature" placeholder="z.B. 22°C" value="24°C">
+            </div>
+            <div class="field-group">
+                <label>⏰ Beginn Training</label>
+                <input type="time" id="trainingStart">
+            </div>
+        </div>
+        <div class="section-title">🏒 Stiel & Platten</div>
+        <div class="grid-2">
+            <div class="field-group">
+                <label>Stiel Auswahl</label>
+                <select id="gameType"></select>
+            </div>
+            <div style="display:flex; gap:0.3rem; align-items:flex-end; margin-bottom:0.5rem;">
+                <input type="text" id="newStickInput" placeholder="Neuer Stiel (z.B. 24/A)" style="flex:1; padding:0.4rem 0.7rem; border-radius:12px; border:1.5px solid #dce5ef; background:#f8fafc; font-size:0.9rem;">
+                <button class="btn btn-success btn-sm" id="addStickBtn">➕</button>
+            </div>
+        </div>
+        <div style="display:flex; gap:0.3rem; flex-wrap:wrap; align-items:center; margin-top:0.3rem;">
+            <input type="text" id="newPlateInput" placeholder="Neue Platte" style="flex:1; min-width:100px; padding:0.4rem 0.7rem; border-radius:12px; border:1.5px solid #dce5ef; background:#f8fafc; font-size:0.9rem;">
+            <button class="btn btn-success btn-sm" id="addPlateBtn">➕</button>
+            <button class="btn btn-primary btn-sm" id="savePlatesBtn">💾</button>
+        </div>
+
+        <!-- Training beginnen Button -->
+        <div style="margin-top:1.5rem; margin-bottom:0.5rem;">
+            <button class="btn-start-training" id="startTrainingBtn">🚀 Training beginnen</button>
+        </div>
+        <div style="font-size:0.7rem; color:#6c8ba8; text-align:center;">
+            Wählen Sie einen Spieler aus und klicken Sie dann auf "Training beginnen".
+        </div>
+    </div>
+
+    <!-- TAB: TRAINING -->
+    <div class="tab-content" id="tab-training">
+        <div class="section-title">⚙️ Konfiguration <span class="badge">Versuche & Ringe</span></div>
+        <div class="config-grid">
+            <div class="config-item">
+                <label>Maß-Versuche</label>
+                <select id="massAnzahl">
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20" selected>20</option>
+                    <option value="25">25</option>
+                    <option value="30">30</option>
+                </select>
+            </div>
+            <div class="config-item">
+                <label>Stock-Versuche</label>
+                <select id="stockAnzahl">
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20" selected>20</option>
+                    <option value="25">25</option>
+                    <option value="30">30</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="ring-legend">
+            <span style="font-size:0.65rem; font-weight:600; color:#1f4a6e; margin-right:0.3rem;">Ringe:</span>
+            <span class="ring-legend-item"><span class="color-dot" style="background:#ffd700;"></span> Ring 1</span>
+            <span class="ring-legend-item"><span class="color-dot" style="background:#c0c0c0;"></span> Ring 2</span>
+            <span class="ring-legend-item"><span class="color-dot" style="background:#cd7f32;"></span> Ring 3</span>
+            <span class="ring-legend-item"><span class="color-dot" style="background:#8B4513;"></span> Ring 4</span>
+            <span class="ring-legend-item"><span class="color-dot" style="background:#2F4F4F;"></span> Ring 5</span>
+            <span class="ring-legend-item"><span class="color-dot" style="background:#dc3545;"></span> Außerhalb</span>
+        </div>
+
+        <div class="training-buttons">
+            <button class="btn btn-mass active" id="btnMassTraining">🎯 Maßversuch</button>
+            <button class="btn btn-stock" id="btnStockTraining">🏒 Stockversuch</button>
+        </div>
+
+        <div class="section-title">🎯 Übungen <span class="badge" id="aktiveUebungLabel">Maßversuch</span></div>
+
+        <!-- Maßversuch -->
+        <div class="uebung-card" id="massUebung">
+            <div class="uebung-header">
+                <span class="uebung-title">🎯 Maßversuch (zur Taube/Zielstock)</span>
+                <div class="uebung-stats">
+                    <span id="massStats">0 / 20</span>
+                    <span id="massPoints">0 Pkt</span>
+                    <span id="massTrefferquote">0%</span>
+                </div>
+            </div>
+            <div class="eingabe-box" id="massEingabe">
+                <div class="eingabe-header">
+                    <span class="aktueller-versuch">📍 Versuch <span id="massAktuellerVersuch">1</span></span>
+                    <span style="font-size:0.65rem; color:#6c8ba8;">Daten eingeben und speichern</span>
+                </div>
+                <div class="eingabe-grid">
+                    <div>
+                        <label>Treffer?</label>
+                        <select id="massTrefferSelect">
+                            <option value="true">✅ Treffer</option>
+                            <option value="false">❌ Fehler</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Ring</label>
+                        <select id="massRingSelect">
+                            <option value="">–</option>
+                            <option value="1">Ring 1</option>
+                            <option value="2">Ring 2</option>
+                            <option value="3">Ring 3</option>
+                            <option value="4">Ring 4</option>
+                            <option value="5">Ring 5</option>
+                            <option value="aussen">Außerhalb</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Stock-Status</label>
+                        <select id="massStockStatus">
+                            <option value="eigen">Spielstock im Feld</option>
+                            <option value="eigen_aussen">Spielstock außerhalb</option>
+                            <option value="fremd">Zielstock außerhalb</option>
+                            <option value="beide">Beide Stöcke außerhalb</option>
+                            <option value="beide_im_feld">Beide Stöcke im Feld</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Abweichung/Treffer links/rechts</label>
+                        <select id="massAbwLRSelect">
+                            <option value="0">✅ Mitte</option>
+                            <option value="links">⬅️ Links</option>
+                            <option value="rechts">➡️ Rechts</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Abweichung kurz/lang</label>
+                        <select id="massAbwKLSelect">
+                            <option value="0">✅ Mitte</option>
+                            <option value="kurz">⬆️ Kurz</option>
+                            <option value="lang">⬇️ Lang</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Abweichung cm</label>
+                        <input type="number" id="massAbwCm" placeholder="cm" step="0.5" min="0" value="0">
+                    </div>
+                </div>
+                <div style="margin-top:0.3rem;">
+                    <label style="font-size:0.6rem; font-weight:600; color:#1f4a6e; display:block;">🏒 Platte für diesen Versuch</label>
+                    <select id="massPlatteSelect" style="width:100%; padding:0.4rem 0.5rem; border:1.5px solid #dce5ef; border-radius:8px; font-size:0.8rem; background:#f8fafc;">
+                        <option value="">– Platte wählen –</option>
+                    </select>
+                </div>
+                <div class="eingabe-actions">
+                    <button class="btn btn-success" id="massSpeichernBtn">💾 Speichern & nächster Versuch</button>
+                </div>
+            </div>
+            <div class="versuche-grid" id="massVersuche"></div>
+            <div class="field-group" style="margin-top:0.4rem;">
+                <label>📝 Anmerkung</label>
+                <textarea id="massAnmerkung" placeholder="Besonderheiten beim Maßversuch..." rows="1"></textarea>
+            </div>
+            <div class="btn-group" style="margin-top:0.3rem;">
+                <button class="btn btn-danger btn-sm" id="massResetBtn">↺ Zurücksetzen</button>
+                <button class="btn btn-primary btn-sm" id="massCompleteBtn">✅ Alle als Fehler markieren</button>
+            </div>
+        </div>
+
+        <!-- Stockversuch -->
+        <div class="uebung-card" id="stockUebung" style="display:none;">
+            <div class="uebung-header">
+                <span class="uebung-title">🏒 Stockversuch (zum Zielstock)</span>
+                <div class="uebung-stats">
+                    <span id="stockStats">0 / 20</span>
+                    <span id="stockPoints">0 Pkt</span>
+                    <span id="stockTrefferquote">0%</span>
+                </div>
+            </div>
+            <div class="eingabe-box" id="stockEingabe">
+                <div class="eingabe-header">
+                    <span class="aktueller-versuch">📍 Versuch <span id="stockAktuellerVersuch">1</span></span>
+                    <span style="font-size:0.65rem; color:#6c8ba8;">Daten eingeben und speichern</span>
+                </div>
+                <div class="eingabe-grid">
+                    <div>
+                        <label>Treffer?</label>
+                        <select id="stockTrefferSelect">
+                            <option value="true">✅ Treffer</option>
+                            <option value="false">❌ Fehler</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Ring</label>
+                        <select id="stockRingSelect">
+                            <option value="">–</option>
+                            <option value="1">Ring 1</option>
+                            <option value="2">Ring 2</option>
+                            <option value="3">Ring 3</option>
+                            <option value="4">Ring 4</option>
+                            <option value="5">Ring 5</option>
+                            <option value="aussen">Außerhalb</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Stock-Status</label>
+                        <select id="stockStockStatus">
+                            <option value="eigen">🏠 Spielstock im Feld</option>
+                            <option value="eigen_aussen">🚪 Spielstock außerhalb</option>
+                            <option value="fremd">🚫 Zielstock  außerhalb</option>
+                            <option value="beide">⚠️ Beide Stöcke außerhalb</option>
+                            <option value="beide_im_feld">🏒 Beide Stöcke im Feld</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Abweichung/Treffer links/rechts</label>
+                        <select id="stockAbwLRSelect">
+                            <option value="0">✅ Mitte</option>
+                            <option value="links">⬅️ Links</option>
+                            <option value="rechts">➡️ Rechts</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Abweichung kurz/lang</label>
+                        <select id="stockAbwKLSelect">
+                            <option value="0">✅ Mitte</option>
+                            <option value="kurz">⬆️ Kurz</option>
+                            <option value="lang">⬇️ Lang</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Abweichung cm</label>
+                        <input type="number" id="stockAbwCm" placeholder="cm" step="0.5" min="0" value="0">
+                    </div>
+                </div>
+                <div style="margin-top:0.3rem;">
+                    <label style="font-size:0.6rem; font-weight:600; color:#1f4a6e; display:block;">🏒 Platte für diesen Versuch</label>
+                    <select id="stockPlatteSelect" style="width:100%; padding:0.4rem 0.5rem; border:1.5px solid #dce5ef; border-radius:8px; font-size:0.8rem; background:#f8fafc;">
+                        <option value="">– Platte wählen –</option>
+                    </select>
+                </div>
+                <div class="eingabe-actions">
+                    <button class="btn btn-success" id="stockSpeichernBtn">💾 Speichern & nächster Versuch</button>
+                </div>
+            </div>
+            <div class="versuche-grid" id="stockVersuche"></div>
+            <div class="field-group" style="margin-top:0.4rem;">
+                <label>📝 Anmerkung</label>
+                <textarea id="stockAnmerkung" placeholder="Besonderheiten beim Stockversuch..." rows="1"></textarea>
+            </div>
+            <div class="btn-group" style="margin-top:0.3rem;">
+                <button class="btn btn-danger btn-sm" id="stockResetBtn">↺ Zurücksetzen</button>
+                <button class="btn btn-primary btn-sm" id="stockCompleteBtn">✅ Alle als Fehler markieren</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: AUSWERTUNG -->
+    <div class="tab-content" id="tab-analysis">
+        <div class="section-title">📊 Auswertung <span class="badge" id="analysisDate"></span></div>
+        <div id="analysisContent">
+            <p style="color:#6c8ba8; font-size:0.9rem;">Bitte trainiere zuerst, um Analyse-Daten zu generieren.</p>
+        </div>
+    </div>
+
+    <!-- TAB: TRAINERANALYSE -->
+    <div class="tab-content" id="tab-trainer">
+        <div class="section-title">🧠 Traineranalyse <span class="badge">Automatische Auswertung</span></div>
+        <div id="trainerContent">
+            <p style="color:#6c8ba8; font-size:0.9rem;">Bitte trainiere zuerst, um eine Traineranalyse zu generieren.</p>
+        </div>
+    </div>
+
+    <!-- TAB: HISTORIE -->
+    <div class="tab-content" id="tab-history">
+        <div class="section-title">📅 Trainingshistorie</div>
+        <div id="historyContent">
+            <p style="color:#6c8ba8; font-size:0.9rem;">Noch keine gespeicherten Trainings vorhanden.</p>
+        </div>
+    </div>
+
+    <!-- TAB: EXPORT -->
+    <div class="tab-content" id="tab-export">
+        <div class="section-title">💾 Export & Speichern</div>
+        <div class="btn-group">
+            <button class="btn btn-excel" id="excelExportBtn">📊 Excel Export</button>
+            <button class="btn btn-pdf" id="pdfExportBtn">📄 PDF Export</button>
+            <button class="btn btn-success" id="saveToDatabaseBtn">💾 In Datenbank speichern</button>
+        </div>
+        <div class="btn-group" style="margin-top:0;">
+            <button class="btn btn-outline btn-sm" id="saveLocalBtn">💾 Lokal speichern</button>
+            <button class="btn btn-outline btn-sm" id="resetBtn">↺ Reset</button>
+            <button class="btn btn-danger btn-sm" id="clearBtn">🧹 Leeren</button>
+            <button class="btn btn-outline btn-sm btn-file">
+                📂 Import
+                <input type="file" id="importBtn" accept=".csv,.json,.xlsx">
+            </button>
+        </div>
+        <div style="margin-top:0.5rem; font-size:0.8rem; color:#6c8ba8;">
+            <strong>Hinweis:</strong> Excel-Export speichert die Datei im selben Ordner wie diese HTML-Datei.
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js">
+</script>
+<script src="auth.js"></script>
+<script>
+requireGate();
+requireLogin();
+// ============================================================
+// SPIELERLISTE AUS ZENTRALER VERWALTUNG
+// ============================================================
+const PLAYER_STORAGE_KEY = 'esv_grein_spielerliste';
+
+function loadCentralPlayerList() {
+    try {
+        const data = localStorage.getItem(PLAYER_STORAGE_KEY);
+        if (data) {
+            const parsed = JSON.parse(data);
+            if (Array.isArray(parsed) && parsed.length) {
+                return parsed;
+            }
+        }
+    } catch (e) {}
+    // Fallback: Standard-Liste aus Excel
+    return [
+        { id: 'SP-001', name: 'Andreas Hinterkörner', verein: 'ESV Grein' },
+        { id: 'SP-002', name: 'Peter Tischler', verein: 'ESV Grein' },
+        { id: 'SP-003', name: 'Ernst Aigen', verein: 'ESV Grein' },
+        { id: 'SP-004', name: 'Mario Leimhofer', verein: 'ESV Grein' },
+        { id: 'SP-005', name: 'Johann Kronsteiner', verein: 'ESV Grein' },
+        { id: 'SP-006', name: 'Roland Koll', verein: 'ESV Grein' },
+        { id: 'SP-007', name: 'Sabine Pils', verein: 'ESV Grein' },
+        { id: 'SP-008', name: 'Irmgard Kronsteiner', verein: 'ESV Grein' },
+        { id: 'SP-009', name: 'Willibald Scheiber', verein: 'ESV Grein' },
+        { id: 'SP-010', name: 'Martin Nothnagl', verein: 'ESV Grein' },
+        { id: 'SP-011', name: 'Rupert Lehbrunner', verein: 'ESV Grein' },
+        { id: 'SP-012', name: 'Sebastian Wimhofer', verein: 'ESV Grein' },
+        { id: 'SP-013', name: 'Sandra Wimhofer', verein: 'ESV Grein' },
+        { id: 'SP-014', name: 'Heidi Tischler', verein: 'ESV Grein' },
+        { id: 'SP-015', name: 'Pierre Sperl', verein: 'ESV Grein' },
+        { id: 'SP-016', name: 'Theresia Rathgeb', verein: 'ESV Grein' },
+        { id: 'SP-017', name: 'Maria Radinger', verein: 'ESV Grein' },
+        { id: 'SP-018', name: 'Franz Pichlmayr', verein: 'ESV Grein' },
+        { id: 'SP-019', name: 'Friedrich Nösterer', verein: 'ESV Grein' },
+        { id: 'SP-020', name: 'Herbert Hinterkörner', verein: 'ESV Grein' },
+        { id: 'SP-021', name: 'Stefan Aichinger', verein: 'ESV Grein' },
+        { id: 'SP-022', name: 'Walter Gstöttmaier', verein: 'ESV Grein' }
+    ];
+}
+
+// ============================================================
+// PUNKTESYSTEM
+// ============================================================
+const PUNKTE_TREFFER = 10;
+const PUNKTE_RING = { '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, 'aussen': 0 };
+const PUNKTE_STATUS = { 
+    'eigen': 4, 
+    'eigen_aussen': 0, 
+    'fremd': 3, 
+    'beide': 1,
+    'beide_im_feld': 2 
+};
+const PUNKTE_ABWLR = { '0': 3, 'links': 1, 'rechts': 1 };
+const PUNKTE_ABWKL = { '0': 3, 'kurz': 1, 'lang': 1 };
+
+// ============================================================
+// INDEXEDDB
+// ============================================================
+let db = null;
+const DB_NAME = 'ESVTrainingDB';
+const DB_VERSION = 1;
+const STORE_NAME = 'trainings';
+
+function openDB() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        request.onupgradeneeded = (e) => {
+            const d = e.target.result;
+            if (!d.objectStoreNames.contains(STORE_NAME)) {
+                const store = d.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+                store.createIndex('playerId', 'playerId', { unique: false });
+                store.createIndex('datum', 'datum', { unique: false });
+                store.createIndex('playerId_datum', ['playerId', 'datum'], { unique: false });
+            }
+        };
+        request.onsuccess = (e) => {
+            db = e.target.result;
+            resolve(db);
+        };
+        request.onerror = (e) => {
+            reject(e.target.error);
+        };
+    });
+}
+
+async function saveTrainingToDB(data) {
+    if (!db) await openDB();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+        const request = store.add(data);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+async function getTrainingsByPlayer(playerId) {
+    if (!db) await openDB();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readonly');
+        const store = tx.objectStore(STORE_NAME);
+        const index = store.index('playerId');
+        const request = index.getAll(playerId);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+async function deleteTrainingFromDB(id) {
+    if (!db) await openDB();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+        const request = store.delete(id);
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+    });
+}
+
+// ============================================================
+// HILFSFUNKTIONEN
+// ============================================================
+function logout() {
+    if (confirm('Wirklich abmelden?')) {
+        showToast('👋 Abgemeldet. Daten bleiben erhalten.', 'info');
+        window.location.href = 'login.html';
+    }
+    return false;
+}
+
+function generateTrainingId() {
+    const now = new Date();
+    const date = now.toISOString().slice(0,10).replace(/-/g,'');
+    const time = now.toTimeString().slice(0,8).replace(/:/g,'');
+    return 'T' + date + '_' + time;
+}
+
+function getCurrentTimestamp() {
+    return new Date().toISOString();
+}
+
+function formatDate(dateStr) {
+    if (!dateStr) return '–';
+    try {
+        const d = new Date(dateStr + 'T00:00:00');
+        return d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    } catch { return dateStr; }
+}
+
+function getRingLabel(ring) {
+    if (!ring) return '';
+    if (ring === 'aussen') return 'Außen';
+    return 'R' + ring;
+}
+
+function getStockStatusLabel(status) {
+    const labels = {
+        'eigen': 'Spielstock im Feld',
+        'eigen_aussen': 'Spielstock außerhalb',
+        'fremd': 'Zielstock außerhalb',
+        'beide': 'Beide Stöcke außerhalb',
+        'beide_im_feld': 'Beide Stöcke im Feld'
+    };
+    return labels[status] || status || '';
+}
+
+function getStockStatusShort(status) {
+    const labels = {
+        'eigen': 'Eigen Feld',
+        'eigen_aussen': 'Eigen außen',
+        'fremd': 'Fremd außen',
+        'beide': 'Beide außen',
+        'beide_im_feld': 'Beide Feld'
+    };
+    return labels[status] || status || '';
+}
+
+function getAbwLabel(value) {
+    if (value === '0') return 'Mitte';
+    if (value === 'links') return '⬅️ Links';
+    if (value === 'rechts') return '➡️ Rechts';
+    if (value === 'kurz') return '⬆️ Kurz';
+    if (value === 'lang') return '⬇️ Lang';
+    return value;
+}
+
+function getRingColor(ring) {
+    const colors = {
+        '1': '#ffd700',
+        '2': '#c0c0c0',
+        '3': '#cd7f32',
+        '4': '#8B4513',
+        '5': '#2F4F4F',
+        'aussen': '#dc3545'
+    };
+    return colors[ring] || '#6c8ba8';
+}
+
+function getPlatteKurz(platte) {
+    if (!platte) return '';
+    const kurz = platte.replace('Type ', '').replace('/Profil', '').replace('/glatt', '');
+    if (kurz.length > 12) return kurz.substring(0, 10) + '…';
+    return kurz;
+}
+
+function getStatusClass(status) {
+    const classes = {
+        'eigen': 'status-eigen',
+        'eigen_aussen': 'status-eigen-aussen',
+        'fremd': 'status-fremd',
+        'beide': 'status-beide',
+        'beide_im_feld': 'status-beide-im-feld'
+    };
+    return classes[status] || '';
+}
+
+function berechnePunkte(versuch) {
+    if (!versuch || versuch.treffer === null || versuch.treffer === undefined) return 0;
+    if (versuch.treffer === false) return 0;
+    let summe = PUNKTE_TREFFER;
+    summe += PUNKTE_RING[versuch.ring] || 0;
+    summe += PUNKTE_STATUS[versuch.stockStatus] || 0;
+    summe += PUNKTE_ABWLR[versuch.abwLR] || 0;
+    summe += PUNKTE_ABWKL[versuch.abwKL] || 0;
+    return summe;
+}
+
+function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+// ============================================================
+// SPIELER-AUSWAHL (Dropdown)
+// ============================================================
+let centralPlayers = loadCentralPlayerList();
+
+function renderCentralPlayerList() {
+    const select = document.getElementById('playerSelect');
+    const currentId = document.getElementById('playerId').value.trim() || '';
+    
+    select.innerHTML = '<option value="">– Bitte Spieler wählen –</option>';
+    
+    centralPlayers.forEach(p => {
+        const option = document.createElement('option');
+        option.value = p.id;
+        option.textContent = p.name + (p.verein ? ' (' + p.verein + ')' : '');
+        if (p.id === currentId) {
+            option.selected = true;
+        }
+        select.appendChild(option);
+    });
+    
+    document.getElementById('playerCountBadge').textContent = centralPlayers.length + ' Spieler';
+}
+
+// Dropdown-Change
+document.getElementById('playerSelect').addEventListener('change', function() {
+    const selectedId = this.value;
+    if (selectedId) {
+        const player = centralPlayers.find(p => p.id === selectedId);
+        if (player) {
+            document.getElementById('playerId').value = player.id;
+            document.getElementById('playerName').value = player.name;
+            trainingData.playerId = player.id;
+            trainingData.playerName = player.name;
+            showToast('👤 ' + player.name + ' ausgewählt', 'info');
+            scheduleLocalSave();
+        }
+    } else {
+        document.getElementById('playerId').value = '';
+        document.getElementById('playerName').value = '';
+        trainingData.playerId = '';
+        trainingData.playerName = '';
+    }
+});
+
+function loadSelectedPlayer() {
+    const select = document.getElementById('playerSelect');
+    const selectedId = select.value;
+    if (selectedId) {
+        const player = centralPlayers.find(p => p.id === selectedId);
+        if (player) {
+            document.getElementById('playerId').value = player.id;
+            document.getElementById('playerName').value = player.name;
+            trainingData.playerId = player.id;
+            trainingData.playerName = player.name;
+            renderCentralPlayerList();
+            showToast('✅ ' + player.name + ' geladen', 'success');
+            scheduleLocalSave();
+        }
+    } else {
+        showToast('⚠️ Bitte einen Spieler auswählen', 'error');
+    }
+}
+
+function refreshPlayerList() {
+    centralPlayers = loadCentralPlayerList();
+    renderCentralPlayerList();
+    const count = centralPlayers.length;
+    showToast('🔄 Spielerliste aktualisiert (' + count + ' Spieler)', 'success');
+}
+
+function openPlayerManager() {
+    window.open('02_Spielerverwaltung', '_blank');
+    showToast('📋 Spielerverwaltung geöffnet. Nach Änderungen bitte "Aktualisieren" klicken.', 'info');
+}
+
+document.getElementById('refreshPlayerBtn').addEventListener('click', refreshPlayerList);
+document.getElementById('openPlayerManagerBtn').addEventListener('click', openPlayerManager);
+document.getElementById('loadSelectedPlayerBtn').addEventListener('click', loadSelectedPlayer);
+
+// ============================================================
+// DOM-REFERENZEN
+// ============================================================
+const toast = document.getElementById('toast');
+const connectionStatus = document.getElementById('connectionStatus');
+
+const playerIdInput = document.getElementById('playerId');
+const playerNameInput = document.getElementById('playerName');
+const sessionDateInput = document.getElementById('sessionDate');
+const locationInput = document.getElementById('location');
+const temperatureInput = document.getElementById('temperature');
+const trainingStartInput = document.getElementById('trainingStart');
+const gameTypeSelect = document.getElementById('gameType');
+
+const btnMassTraining = document.getElementById('btnMassTraining');
+const btnStockTraining = document.getElementById('btnStockTraining');
+const aktiveUebungLabel = document.getElementById('aktiveUebungLabel');
+
+const massUebung = document.getElementById('massUebung');
+const massContainer = document.getElementById('massVersuche');
+const massStats = document.getElementById('massStats');
+const massPoints = document.getElementById('massPoints');
+const massTrefferquote = document.getElementById('massTrefferquote');
+const massAnmerkung = document.getElementById('massAnmerkung');
+const massResetBtn = document.getElementById('massResetBtn');
+const massCompleteBtn = document.getElementById('massCompleteBtn');
+const massAktuellerVersuch = document.getElementById('massAktuellerVersuch');
+const massTrefferSelect = document.getElementById('massTrefferSelect');
+const massRingSelect = document.getElementById('massRingSelect');
+const massStockStatus = document.getElementById('massStockStatus');
+const massAbwLRSelect = document.getElementById('massAbwLRSelect');
+const massAbwKLSelect = document.getElementById('massAbwKLSelect');
+const massAbwCm = document.getElementById('massAbwCm');
+const massPlatteSelect = document.getElementById('massPlatteSelect');
+const massSpeichernBtn = document.getElementById('massSpeichernBtn');
+
+const stockUebung = document.getElementById('stockUebung');
+const stockContainer = document.getElementById('stockVersuche');
+const stockStats = document.getElementById('stockStats');
+const stockPoints = document.getElementById('stockPoints');
+const stockTrefferquote = document.getElementById('stockTrefferquote');
+const stockAnmerkung = document.getElementById('stockAnmerkung');
+const stockResetBtn = document.getElementById('stockResetBtn');
+const stockCompleteBtn = document.getElementById('stockCompleteBtn');
+const stockAktuellerVersuch = document.getElementById('stockAktuellerVersuch');
+const stockTrefferSelect = document.getElementById('stockTrefferSelect');
+const stockRingSelect = document.getElementById('stockRingSelect');
+const stockStockStatus = document.getElementById('stockStockStatus');
+const stockAbwLRSelect = document.getElementById('stockAbwLRSelect');
+const stockAbwKLSelect = document.getElementById('stockAbwKLSelect');
+const stockAbwCm = document.getElementById('stockAbwCm');
+const stockPlatteSelect = document.getElementById('stockPlatteSelect');
+const stockSpeichernBtn = document.getElementById('stockSpeichernBtn');
+
+const massAnzahlSelect = document.getElementById('massAnzahl');
+const stockAnzahlSelect = document.getElementById('stockAnzahl');
+
+const newPlateInput = document.getElementById('newPlateInput');
+const addPlateBtn = document.getElementById('addPlateBtn');
+const savePlatesBtn = document.getElementById('savePlatesBtn');
+const newStickInput = document.getElementById('newStickInput');
+const addStickBtn = document.getElementById('addStickBtn');
+
+const analysisContent = document.getElementById('analysisContent');
+const analysisDate = document.getElementById('analysisDate');
+const trainerContent = document.getElementById('trainerContent');
+const historyContent = document.getElementById('historyContent');
+
+const saveLocalBtn = document.getElementById('saveLocalBtn');
+const excelExportBtn = document.getElementById('excelExportBtn');
+const pdfExportBtn = document.getElementById('pdfExportBtn');
+const saveToDatabaseBtn = document.getElementById('saveToDatabaseBtn');
+const resetBtn = document.getElementById('resetBtn');
+const clearBtn = document.getElementById('clearBtn');
+const importBtn = document.getElementById('importBtn');
+const startTrainingBtn = document.getElementById('startTrainingBtn');
+
+let saveTimer = null;
+let aktiveUebung = 'mass';
+let plateOptions = [];
+let stickOptions = [];
+
+let trainingData = {
+    trainingId: '',
+    playerId: '',
+    playerName: '',
+    datum: '',
+    ort: 'ESV Grein',
+    temperatur: '24°C',
+    beginn: '',
+    stiel: '22/A',
+    mass: { platte: '', versuche: [], anmerkung: '' },
+    stock: { platte: '', versuche: [], anmerkung: '' },
+    config: { massAnzahl: 20, stockAnzahl: 20 },
+    timestamp: '',
+    abgeschlossen: false
+};
+
+// ============================================================
+// TOAST
+// ============================================================
+let toastTimeout;
+function showToast(message, type = 'info') {
+    clearTimeout(toastTimeout);
+    toast.textContent = message;
+    toast.className = `toast ${type}`;
+    setTimeout(() => toast.classList.add('show'), 10);
+    toastTimeout = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// ============================================================
+// PLATTEN & STIELE
+// ============================================================
+function getPlateOptionsHTML(selected) {
+    let html = '<option value="">– Platte wählen –</option>';
+    plateOptions.forEach(p => {
+        html += `<option value="${p}" ${p === selected ? 'selected' : ''}>${p}</option>`;
+    });
+    return html;
+}
+
+function getStickOptionsHTML(selected) {
+    let html = '';
+    stickOptions.forEach(s => {
+        html += `<option value="${s}" ${s === selected ? 'selected' : ''}>${s}</option>`;
+    });
+    return html;
+}
+
+function updateStickSelects() {
+    const current = gameTypeSelect.value;
+    gameTypeSelect.innerHTML = getStickOptionsHTML(current);
+    if (current && stickOptions.includes(current)) gameTypeSelect.value = current;
+}
+
+function updatePlatteSelects() {
+    const massVal = massPlatteSelect.value;
+    massPlatteSelect.innerHTML = getPlateOptionsHTML(massVal);
+    if (massVal && plateOptions.includes(massVal)) massPlatteSelect.value = massVal;
+
+    const stockVal = stockPlatteSelect.value;
+    stockPlatteSelect.innerHTML = getPlateOptionsHTML(stockVal);
+    if (stockVal && plateOptions.includes(stockVal)) stockPlatteSelect.value = stockVal;
+}
+
+function savePlatesToLocal() {
+    localStorage.setItem('customPlates', JSON.stringify(plateOptions));
+}
+
+function loadPlatesFromLocal() {
+    const saved = localStorage.getItem('customPlates');
+    if (saved) {
+        try {
+            const plates = JSON.parse(saved);
+            if (plates.length > 0) {
+                plateOptions = plates;
+                updatePlatteSelects();
+                return true;
+            }
+        } catch (e) {}
+    }
+    plateOptions = [
+        'Type 16/39/41/Glatt',
+        'Type 16/39/41/Profil',
+        'Type 15L/43-46/Profil',
+        'Type 15M/47',
+        'Type 14L/53/glatt',
+        'Type 14M/54'
+    ];
+    updatePlatteSelects();
+    return false;
+}
+
+function saveSticksToLocal() {
+    localStorage.setItem('customSticks', JSON.stringify(stickOptions));
+}
+
+function loadSticksFromLocal() {
+    const saved = localStorage.getItem('customSticks');
+    if (saved) {
+        try {
+            const sticks = JSON.parse(saved);
+            if (sticks.length > 0) {
+                stickOptions = sticks;
+                updateStickSelects();
+                return true;
+            }
+        } catch (e) {}
+    }
+    stickOptions = ['20/A', '21/A', '22/A', '23/A', '20/B', '21/B', '22/B', '23/B', '24/A', '24/B'];
+    updateStickSelects();
+    return false;
+}
+
+// ============================================================
+// TRAINING BEGINNEN
+// ============================================================
+function startTraining() {
+    const name = playerNameInput.value.trim();
+    if (!name) {
+        showToast('⚠️ Bitte zuerst einen Spieler auswählen!', 'error');
+        return;
+    }
+    if (!playerIdInput.value.trim()) {
+        const newId = 'SP-' + String(Date.now()).slice(-5);
+        playerIdInput.value = newId;
+        trainingData.playerId = newId;
+    }
+    trainingData.playerName = name;
+    trainingData.datum = sessionDateInput.value || new Date().toISOString().slice(0,10);
+    trainingData.beginn = trainingStartInput.value || new Date().toTimeString().slice(0,5);
+    trainingData.ort = locationInput.value || 'ESV Grein';
+    trainingData.temperatur = temperatureInput.value || '24°C';
+    trainingData.stiel = gameTypeSelect.value || '22/A';
+
+    trainingData.mass.versuche = [];
+    trainingData.stock.versuche = [];
+    trainingData.mass.anmerkung = '';
+    trainingData.stock.anmerkung = '';
+    trainingData.abgeschlossen = false;
+
+    renderVersuche('mass');
+    renderVersuche('stock');
+    scheduleLocalSave();
+
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelector('[data-tab="tab-training"]').classList.add('active');
+    document.getElementById('tab-training').classList.add('active');
+
+    showToast('🚀 Training gestartet für ' + name + '!', 'success');
+}
+
+startTrainingBtn.addEventListener('click', startTraining);
+
+// ============================================================
+// TRAININGS-ANSICHT UMSCHALTEN
+// ============================================================
+function switchTraining(type) {
+    aktiveUebung = type;
+    if (type === 'mass') {
+        massUebung.style.display = 'block';
+        stockUebung.style.display = 'none';
+        btnMassTraining.classList.add('active');
+        btnStockTraining.classList.remove('active');
+        aktiveUebungLabel.textContent = 'Maßversuch';
+    } else {
+        massUebung.style.display = 'none';
+        stockUebung.style.display = 'block';
+        btnStockTraining.classList.add('active');
+        btnMassTraining.classList.remove('active');
+        aktiveUebungLabel.textContent = 'Stockversuch';
+    }
+    renderVersuche(type);
+}
+
+btnMassTraining.addEventListener('click', () => switchTraining('mass'));
+btnStockTraining.addEventListener('click', () => switchTraining('stock'));
+
+// ============================================================
+// NÄCHSTEN VERSUCH FINDEN
+// ============================================================
+function getNextVersuch(type) {
+    const data = type === 'mass' ? trainingData.mass : trainingData.stock;
+    const anzahl = type === 'mass' ? trainingData.config.massAnzahl : trainingData.config.stockAnzahl;
+    for (let i = 1; i <= anzahl; i++) {
+        if (!data.versuche[i] || data.versuche[i].treffer === null) {
+            return i;
+        }
+    }
+    return null;
+}
+
+// ============================================================
+// VERSUCH SPEICHERN
+// ============================================================
+function speichereVersuch(type) {
+    const data = type === 'mass' ? trainingData.mass : trainingData.stock;
+    const anzahl = type === 'mass' ? trainingData.config.massAnzahl : trainingData.config.stockAnzahl;
+
+    const aktueller = getNextVersuch(type);
+    if (aktueller === null) {
+        showToast('⚠️ Alle Versuche sind bereits belegt!', 'error');
+        return;
+    }
+
+    const trefferSelect = type === 'mass' ? massTrefferSelect : stockTrefferSelect;
+    const ringSelect = type === 'mass' ? massRingSelect : stockRingSelect;
+    const stockStatusSelect = type === 'mass' ? massStockStatus : stockStockStatus;
+    const abwLRSelect = type === 'mass' ? massAbwLRSelect : stockAbwLRSelect;
+    const abwKLSelect = type === 'mass' ? massAbwKLSelect : stockAbwKLSelect;
+    const abwCm = type === 'mass' ? massAbwCm : stockAbwCm;
+    const platteSelect = type === 'mass' ? massPlatteSelect : stockPlatteSelect;
+
+    let treffer = trefferSelect.value === 'true';
+    const ring = ringSelect.value || '';
+    const stockStatus = stockStatusSelect.value || '';
+    const abwLR = abwLRSelect.value;
+    const abwKL = abwKLSelect.value;
+    const abwCmVal = parseFloat(abwCm.value) || 0;
+    const platte = platteSelect.value || '';
+
+    let abbruch = false;
+    let grund = '';
+
+    if (treffer === false) {
+        abbruch = true;
+        grund = 'Treffer = Fehler';
+    }
+
+    if (!abbruch && treffer === true) {
+        if (ring === 'aussen') {
+            abbruch = true;
+            grund = 'Ring außerhalb';
+            treffer = false;
+        } else if (ring === '') {
+            abbruch = true;
+            grund = 'Kein Ring ausgewählt (Fehler)';
+            treffer = false;
+        }
+    }
+
+    if (!abbruch && treffer === true) {
+        if (stockStatus === 'eigen_aussen' || stockStatus === 'beide') {
+            abbruch = true;
+            grund = 'Stock-Status führt zu Fehler: ' + getStockStatusLabel(stockStatus);
+            treffer = false;
+        } else if (stockStatus === '') {
+            abbruch = true;
+            grund = 'Kein Stock-Status ausgewählt (Fehler)';
+            treffer = false;
+        }
+    }
+
+    const versuch = {
+        nummer: aktueller,
+        treffer: treffer,
+        ring: ring,
+        stockStatus: stockStatus,
+        abwLR: abwLR,
+        abwKL: abwKL,
+        abwCm: abwCmVal,
+        platte: platte,
+        timestamp: getCurrentTimestamp()
+    };
+    versuch.punkte = berechnePunkte(versuch);
+
+    data.versuche[aktueller] = versuch;
+
+    ringSelect.value = '';
+    stockStatusSelect.value = 'eigen';
+    abwLRSelect.value = '0';
+    abwKLSelect.value = '0';
+    abwCm.value = '0';
+    platteSelect.value = '';
+
+    renderVersuche(type);
+    scheduleLocalSave();
+    updateAnalysis();
+    updateTrainerAnalysis();
+    updateHistory();
+
+    const naechster = getNextVersuch(type);
+    const versuchAnzeige = type === 'mass' ? massAktuellerVersuch : stockAktuellerVersuch;
+    if (naechster === null) {
+        versuchAnzeige.textContent = '✅ Fertig';
+        showToast(`✅ Alle ${type === 'mass' ? 'Maß' : 'Stock'}-Versuche abgeschlossen!`, 'success');
+    } else {
+        versuchAnzeige.textContent = naechster;
+        let meldung = `💾 Versuch ${aktueller} gespeichert`;
+        if (abbruch) {
+            meldung += ` (abgebrochen: ${grund})`;
+        }
+        showToast(meldung + ` - Versuch ${naechster} ist dran`, 'info');
+    }
+}
+
+massSpeichernBtn.addEventListener('click', () => speichereVersuch('mass'));
+stockSpeichernBtn.addEventListener('click', () => speichereVersuch('stock'));
+
+document.querySelectorAll('#massEingabe select, #massEingabe input').forEach(el => {
+    el.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') speichereVersuch('mass');
+    });
+});
+document.querySelectorAll('#stockEingabe select, #stockEingabe input').forEach(el => {
+    el.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') speichereVersuch('stock');
+    });
+});
+
+// ============================================================
+// VERSÜCHE RENDER
+// ============================================================
+function renderVersuche(type) {
+    const data = type === 'mass' ? trainingData.mass : trainingData.stock;
+    const container = type === 'mass' ? massContainer : stockContainer;
+    const statsEl = type === 'mass' ? massStats : stockStats;
+    const pointsEl = type === 'mass' ? massPoints : stockPoints;
+    const quoteEl = type === 'mass' ? massTrefferquote : stockTrefferquote;
+    const aktuellerEl = type === 'mass' ? massAktuellerVersuch : stockAktuellerVersuch;
+
+    const anzahl = type === 'mass' ? trainingData.config.massAnzahl : trainingData.config.stockAnzahl;
+
+    const naechster = getNextVersuch(type);
+    if (naechster === null) {
+        aktuellerEl.textContent = '✅ Fertig';
+    } else {
+        aktuellerEl.textContent = naechster;
+    }
+
+    let html = '';
+    let gesamtPunkte = 0;
+    let gesamtVersuche = 0;
+    let trefferCount = 0;
+
+    for (let i = 1; i <= anzahl; i++) {
+        const v = data.versuche[i] || { 
+            treffer: null, ring: '', stockStatus: '', 
+            abwLR: '0', abwKL: '0', abwCm: 0, platte: '', punkte: 0
+        };
+        let cls = 'versuch-btn';
+        if (v.treffer === true) cls += ' treffer';
+        else if (v.treffer === false) cls += ' fehler';
+        if (i === naechster) cls += ' active';
+
+        if (v.ring) cls += ` ring-${v.ring}`;
+        if (v.stockStatus) cls += ` ${getStatusClass(v.stockStatus)}`;
+
+        const pkt = v.treffer !== null ? v.punkte : '';
+        const ringLabel = v.ring ? getRingLabel(v.ring) : '';
+        const statusLabel = v.stockStatus ? getStockStatusShort(v.stockStatus) : '';
+        const platteKurz = v.platte ? getPlatteKurz(v.platte) : '';
+        const abwInfo = [];
+        if (v.abwLR && v.abwLR !== '0') abwInfo.push(getAbwLabel(v.abwLR));
+        if (v.abwKL && v.abwKL !== '0') abwInfo.push(getAbwLabel(v.abwKL));
+        if (v.abwCm > 0) abwInfo.push(v.abwCm + 'cm');
+        const abwText = abwInfo.length > 0 ? abwInfo.join(' ') : '';
+
+        html += `
+            <button class="${cls}" onclick="window.toggleVersuch('${type}', ${i})">
+                <span class="v-nr">#${i}</span>
+                <span class="v-pkt">${pkt !== '' ? pkt + 'P' : '–'}</span>
+                ${ringLabel ? `<span class="v-ring">${ringLabel}</span>` : ''}
+                ${statusLabel ? `<span class="v-status">${statusLabel}</span>` : ''}
+                ${platteKurz ? `<span class="v-platte">🏒${platteKurz}</span>` : ''}
+                ${abwText ? `<span class="v-abw">${abwText}</span>` : ''}
+            </button>
+        `;
+
+        if (v.treffer !== null) {
+            gesamtVersuche++;
+            gesamtPunkte += v.punkte || 0;
+            if (v.treffer === true) trefferCount++;
+        }
+    }
+    container.innerHTML = html;
+
+    const quote = gesamtVersuche > 0 ? Math.round((trefferCount / gesamtVersuche) * 100) : 0;
+    statsEl.textContent = `${gesamtVersuche} / ${anzahl}`;
+    pointsEl.textContent = `${gesamtPunkte} Pkt`;
+    quoteEl.textContent = `${quote}%`;
+
+    if (type === 'mass') {
+        massAnmerkung.value = data.anmerkung || '';
+    } else {
+        stockAnmerkung.value = data.anmerkung || '';
+    }
+}
+
+window.toggleVersuch = function(type, nr) {
+    const data = type === 'mass' ? trainingData.mass : trainingData.stock;
+    const anzahl = type === 'mass' ? trainingData.config.massAnzahl : trainingData.config.stockAnzahl;
+
+    if (nr > anzahl) return;
+
+    if (!data.versuche[nr]) {
+        data.versuche[nr] = { 
+            nummer: nr, treffer: null, ring: '', stockStatus: '', 
+            abwLR: '0', abwKL: '0', abwCm: 0, platte: '', punkte: 0
+        };
+    }
+
+    if (data.versuche[nr].treffer === null) {
+        data.versuche[nr].treffer = true;
+        data.versuche[nr].punkte = berechnePunkte(data.versuche[nr]);
+    } else if (data.versuche[nr].treffer === true) {
+        data.versuche[nr].treffer = false;
+        data.versuche[nr].punkte = 0;
+    } else {
+        data.versuche[nr].treffer = null;
+        data.versuche[nr].ring = '';
+        data.versuche[nr].stockStatus = '';
+        data.versuche[nr].abwLR = '0';
+        data.versuche[nr].abwKL = '0';
+        data.versuche[nr].abwCm = 0;
+        data.versuche[nr].platte = '';
+        data.versuche[nr].punkte = 0;
+    }
+
+    renderVersuche(type);
+    scheduleLocalSave();
+    updateAnalysis();
+    updateTrainerAnalysis();
+    updateHistory();
+};
+
+// ============================================================
+// RESET / COMPLETE
+// ============================================================
+function resetVersuche(type) {
+    if (!confirm(`Alle ${type === 'mass' ? 'Maß' : 'Stock'}-Versuche zurücksetzen?`)) return;
+    const data = type === 'mass' ? trainingData.mass : trainingData.stock;
+    data.versuche = [];
+    data.anmerkung = '';
+    renderVersuche(type);
+    scheduleLocalSave();
+    updateAnalysis();
+    updateTrainerAnalysis();
+    updateHistory();
+    showToast(`✅ ${type === 'mass' ? 'Maß' : 'Stock'}-Versuche zurückgesetzt`, 'info');
+}
+
+function completeVersuche(type) {
+    const data = type === 'mass' ? trainingData.mass : trainingData.stock;
+    const anzahl = type === 'mass' ? trainingData.config.massAnzahl : trainingData.config.stockAnzahl;
+    const offene = [];
+    for (let i = 1; i <= anzahl; i++) {
+        if (!data.versuche[i] || data.versuche[i].treffer === null) {
+            offene.push(i);
+        }
+    }
+    if (offene.length > 0) {
+        offene.forEach(i => {
+            data.versuche[i] = { 
+                nummer: i, treffer: false, ring: '', stockStatus: '', 
+                abwLR: '0', abwKL: '0', abwCm: 0, platte: '', punkte: 0
+            };
+        });
+        renderVersuche(type);
+        scheduleLocalSave();
+        updateAnalysis();
+        updateTrainerAnalysis();
+        updateHistory();
+        showToast(`✅ ${offene.length} offene Versuche als Fehler markiert`, 'info');
+    } else {
+        showToast(`✅ ${type === 'mass' ? 'Maß' : 'Stock'}-Versuche bereits vollständig`, 'info');
+    }
+}
+
+massResetBtn.addEventListener('click', () => resetVersuche('mass'));
+massCompleteBtn.addEventListener('click', () => completeVersuche('mass'));
+stockResetBtn.addEventListener('click', () => resetVersuche('stock'));
+stockCompleteBtn.addEventListener('click', () => completeVersuche('stock'));
+
+// ============================================================
+// KONFIGURATION
+// ============================================================
+function updateConfig() {
+    const mAnzahl = parseInt(massAnzahlSelect.value) || 20;
+    const sAnzahl = parseInt(stockAnzahlSelect.value) || 20;
+    trainingData.config.massAnzahl = mAnzahl;
+    trainingData.config.stockAnzahl = sAnzahl;
+    renderVersuche('mass');
+    renderVersuche('stock');
+    scheduleLocalSave();
+}
+
+massAnzahlSelect.addEventListener('change', updateConfig);
+stockAnzahlSelect.addEventListener('change', updateConfig);
+
+// ============================================================
+// ANMERKUNGEN
+// ============================================================
+massAnmerkung.addEventListener('change', function() {
+    trainingData.mass.anmerkung = this.value;
+    scheduleLocalSave();
+});
+stockAnmerkung.addEventListener('change', function() {
+    trainingData.stock.anmerkung = this.value;
+    scheduleLocalSave();
+});
+
+// ============================================================
+// PLATTEN & STIELE (Event-Listener)
+// ============================================================
+addPlateBtn.addEventListener('click', function() {
+    const value = newPlateInput.value.trim();
+    if (!value) { showToast('⚠️ Bitte Plattennamen eingeben!', 'error'); return; }
+    if (plateOptions.includes(value)) { showToast('⚠️ Platte existiert bereits!', 'error'); return; }
+    plateOptions.push(value);
+    updatePlatteSelects();
+    savePlatesToLocal();
+    newPlateInput.value = '';
+    showToast('✅ Platte hinzugefügt: ' + value, 'success');
+});
+savePlatesBtn.addEventListener('click', function() {
+    savePlatesToLocal();
+    showToast('✅ Platten gespeichert!', 'success');
+});
+newPlateInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') addPlateBtn.click();
+});
+
+addStickBtn.addEventListener('click', function() {
+    const value = newStickInput.value.trim();
+    if (!value) { showToast('⚠️ Bitte Stielnamen eingeben!', 'error'); return; }
+    if (stickOptions.includes(value)) { showToast('⚠️ Stiel existiert bereits!', 'error'); return; }
+    stickOptions.push(value);
+    updateStickSelects();
+    saveSticksToLocal();
+    newStickInput.value = '';
+    showToast('✅ Stiel hinzugefügt: ' + value, 'success');
+});
+newStickInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') addStickBtn.click();
+});
+
+gameTypeSelect.addEventListener('change', function() {
+    trainingData.stiel = this.value;
+    scheduleLocalSave();
+});
+
+// ============================================================
+// DATUM / ZEIT
+// ============================================================
+function setDateTime() {
+    const now = new Date();
+    const date = now.toISOString().slice(0,10);
+    const time = now.toTimeString().slice(0,5);
+    if (!sessionDateInput.value) sessionDateInput.value = date;
+    if (!trainingStartInput.value) trainingStartInput.value = time;
+    trainingData.datum = sessionDateInput.value;
+    trainingData.beginn = trainingStartInput.value;
+}
+
+sessionDateInput.addEventListener('change', function() {
+    trainingData.datum = this.value;
+    scheduleLocalSave();
+});
+trainingStartInput.addEventListener('change', function() {
+    trainingData.beginn = this.value;
+    scheduleLocalSave();
+});
+locationInput.addEventListener('change', function() {
+    trainingData.ort = this.value;
+    scheduleLocalSave();
+});
+temperatureInput.addEventListener('change', function() {
+    trainingData.temperatur = this.value;
+    scheduleLocalSave();
+});
+
+// ============================================================
+// STATISTIK-FUNKTIONEN
+// ============================================================
+function getStats(type) {
+    const data = type === 'mass' ? trainingData.mass : trainingData.stock;
+    const anzahl = type === 'mass' ? trainingData.config.massAnzahl : trainingData.config.stockAnzahl;
+
+    const versuche = [];
+    for (let i = 1; i <= anzahl; i++) {
+        if (data.versuche[i] && data.versuche[i].treffer !== null) {
+            versuche.push(data.versuche[i]);
+        }
+    }
+
+    const treffer = versuche.filter(v => v.treffer === true);
+    const fehler = versuche.filter(v => v.treffer === false);
+    const gesamt = versuche.length;
+    const punkte = versuche.reduce((sum, v) => sum + (v.punkte || 0), 0);
+    const maxPunkte = gesamt * (PUNKTE_TREFFER + 5 + 4 + 3 + 3);
+    const quote = gesamt > 0 ? Math.round((treffer.length / gesamt) * 100) : 0;
+
+    const ringStats = {};
+    const platteStats = {};
+    versuche.forEach(v => {
+        if (v.ring) {
+            if (!ringStats[v.ring]) ringStats[v.ring] = { count: 0, treffer: 0 };
+            ringStats[v.ring].count++;
+            if (v.treffer) ringStats[v.ring].treffer++;
+        }
+        if (v.platte) {
+            if (!platteStats[v.platte]) platteStats[v.platte] = { count: 0, treffer: 0, punkte: 0 };
+            platteStats[v.platte].count++;
+            if (v.treffer) platteStats[v.platte].treffer++;
+            platteStats[v.platte].punkte += v.punkte || 0;
+        }
+    });
+
+    const statusStats = { eigen: 0, eigen_aussen: 0, fremd: 0, beide: 0, beide_im_feld: 0 };
+    versuche.forEach(v => {
+        if (v.stockStatus) {
+            statusStats[v.stockStatus] = (statusStats[v.stockStatus] || 0) + 1;
+        }
+    });
+
+    const abwStats = { links: 0, rechts: 0, kurz: 0, lang: 0 };
+    versuche.forEach(v => {
+        if (v.abwLR === 'links') abwStats.links++;
+        if (v.abwLR === 'rechts') abwStats.rechts++;
+        if (v.abwKL === 'kurz') abwStats.kurz++;
+        if (v.abwKL === 'lang') abwStats.lang++;
+    });
+
+    return { gesamt, treffer: treffer.length, fehler: fehler.length, punkte, quote, versuche, ringStats, platteStats, statusStats, abwStats, anzahl };
+}
+
+function getGesamtStats() {
+    const mass = getStats('mass');
+    const stock = getStats('stock');
+    const gesamtVersuche = mass.gesamt + stock.gesamt;
+    const gesamtPunkte = mass.punkte + stock.punkte;
+    const maxPunkte = (mass.anzahl + stock.anzahl) * (PUNKTE_TREFFER + 5 + 4 + 3 + 3);
+    const gesamtQuote = maxPunkte > 0 ? Math.round((gesamtPunkte / maxPunkte) * 100) : 0;
+
+    const ringStats = {};
+    ['mass', 'stock'].forEach(type => {
+        const data = type === 'mass' ? mass : stock;
+        Object.entries(data.ringStats).forEach(([ring, stats]) => {
+            if (!ringStats[ring]) ringStats[ring] = { count: 0, treffer: 0 };
+            ringStats[ring].count += stats.count;
+            ringStats[ring].treffer += stats.treffer;
+        });
+    });
+
+    const platteStats = {};
+    ['mass', 'stock'].forEach(type => {
+        const data = type === 'mass' ? mass : stock;
+        Object.entries(data.platteStats).forEach(([platte, stats]) => {
+            if (!platteStats[platte]) platteStats[platte] = { count: 0, treffer: 0, punkte: 0 };
+            platteStats[platte].count += stats.count;
+            platteStats[platte].treffer += stats.treffer;
+            platteStats[platte].punkte += stats.punkte || 0;
+        });
+    });
+
+    const statusStats = { eigen: 0, eigen_aussen: 0, fremd: 0, beide: 0, beide_im_feld: 0 };
+    ['mass', 'stock'].forEach(type => {
+        const data = type === 'mass' ? mass : stock;
+        Object.entries(data.statusStats).forEach(([status, count]) => {
+            statusStats[status] = (statusStats[status] || 0) + count;
+        });
+    });
+
+    const abwStats = { links: 0, rechts: 0, kurz: 0, lang: 0 };
+    ['mass', 'stock'].forEach(type => {
+        const data = type === 'mass' ? mass : stock;
+        abwStats.links += data.abwStats.links;
+        abwStats.rechts += data.abwStats.rechts;
+        abwStats.kurz += data.abwStats.kurz;
+        abwStats.lang += data.abwStats.lang;
+    });
+
+    return {
+        mass, stock,
+        gesamtVersuche,
+        gesamtPunkte,
+        maxPunkte,
+        gesamtQuote,
+        ringStats,
+        platteStats,
+        statusStats,
+        abwStats,
+        massPercent: gesamtVersuche > 0 ? Math.round((mass.gesamt / gesamtVersuche) * 100) : 0,
+        stockPercent: gesamtVersuche > 0 ? Math.round((stock.gesamt / gesamtVersuche) * 100) : 0,
+        massTrefferPercent: mass.gesamt > 0 ? Math.round((mass.treffer / mass.gesamt) * 100) : 0,
+        stockTrefferPercent: stock.gesamt > 0 ? Math.round((stock.treffer / stock.gesamt) * 100) : 0
+    };
+}
+
+// ============================================================
+// AUSWERTUNG (ANALYSE-TAB)
+// ============================================================
+function renderAnalysis() {
+    const stats = getGesamtStats();
+    if (stats.gesamtVersuche === 0) {
+        return `<p style="color:#6c8ba8; font-size:0.9rem;">Keine Trainingsdaten vorhanden. Bitte trainiere zuerst!</p>`;
+    }
+
+    const dateFormatted = trainingData.datum ? formatDate(trainingData.datum) : '–';
+    analysisDate.textContent = dateFormatted;
+
+    let formHtml = '';
+    const allVersuche = [];
+    ['mass', 'stock'].forEach(type => {
+        const data = type === 'mass' ? trainingData.mass : trainingData.stock;
+        const anzahl = type === 'mass' ? trainingData.config.massAnzahl : trainingData.config.stockAnzahl;
+        for (let i = 1; i <= anzahl; i++) {
+            if (data.versuche[i] && data.versuche[i].treffer !== null) {
+                allVersuche.push({ type, nr: i, treffer: data.versuche[i].treffer });
+            }
+        }
+    });
+    const last10 = allVersuche.slice(-10);
+    if (last10.length > 0) {
+        last10.forEach(v => {
+            const cls = v.treffer ? 'green' : 'red';
+            formHtml += `<div class="form-dot-large ${cls}">${v.treffer ? '✓' : '✗'}</div>`;
+        });
+    } else {
+        formHtml = '<span style="color:#6c8ba8;font-size:0.7rem;">Keine Daten</span>';
+    }
+
+    let trend = '↔', trendText = 'keine Tendenz';
+    if (allVersuche.length >= 6) {
+        const first5 = allVersuche.slice(0, 5).filter(v => v.treffer).length;
+        const last5 = allVersuche.slice(-5).filter(v => v.treffer).length;
+        if (last5 > first5 + 1) { trend = '↗'; trendText = 'steigende Form 📈'; }
+        else if (last5 < first5 - 1) { trend = '↘'; trendText = 'fallende Form 📉'; }
+        else { trend = '→'; trendText = 'stabile Form ➡️'; }
+    }
+
+    let bestSerie = 0, currentSerie = 0;
+    allVersuche.forEach(v => {
+        if (v.treffer) { currentSerie++; if (currentSerie > bestSerie) bestSerie = currentSerie; } 
+        else { currentSerie = 0; }
+    });
+
+    let ringHtml = '';
+    const ringOrder = ['1', '2', '3', '4', '5', 'aussen'];
+    const ringLabels = { '1': 'Ring 1', '2': 'Ring 2', '3': 'Ring 3', '4': 'Ring 4', '5': 'Ring 5', 'aussen': 'Außerhalb' };
+    ringOrder.forEach(ring => {
+        const s = stats.ringStats[ring];
+        if (s && s.count > 0) {
+            const rate = s.count > 0 ? Math.round((s.treffer / s.count) * 100) : 0;
+            ringHtml += `
+                <tr>
+                    <td><span class="ring-dot" style="background:${getRingColor(ring)};"></span> ${ringLabels[ring]}</td>
+                    <td style="font-weight:600;">${s.treffer}/${s.count}</td>
+                    <td style="font-weight:600; color:${rate >= 80 ? '#28a745' : rate >= 60 ? '#d4a017' : '#dc3545'}">${rate}%</td>
+                    <td>
+                        <div class="ring-bar">
+                            <div class="fill" style="width:${rate}%; background:${getRingColor(ring)};"></div>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+    });
+    if (!ringHtml) ringHtml = '<tr><td colspan="4" style="color:#6c8ba8;font-size:0.65rem;">Keine Ring-Daten</td></tr>';
+
+    let platteHtml = '';
+    const sortedPlatten = Object.entries(stats.platteStats).sort((a, b) => {
+        const aRate = a[1].count > 0 ? a[1].treffer / a[1].count : 0;
+        const bRate = b[1].count > 0 ? b[1].treffer / b[1].count : 0;
+        return bRate - aRate;
+    });
+    if (sortedPlatten.length > 0) {
+        sortedPlatten.forEach(([platte, s]) => {
+            const rate = s.count > 0 ? Math.round((s.treffer / s.count) * 100) : 0;
+            const avgPunkte = s.count > 0 ? Math.round((s.punkte / s.count) * 10) / 10 : 0;
+            platteHtml += `
+                <div class="detail-row">
+                    <span class="label">${getPlatteKurz(platte)}</span>
+                    <span class="value ${rate >= 80 ? 'green' : rate >= 60 ? 'gold' : 'red'}">${rate}% (${s.treffer}/${s.count})</span>
+                    <span style="font-size:0.6rem; color:#6c8ba8;">Ø ${avgPunkte} Pkt</span>
+                </div>
+            `;
+        });
+    } else {
+        platteHtml = '<div class="detail-row"><span class="label" style="color:#6c8ba8;">Keine Plattendaten pro Versuch</span></div>';
+    }
+
+    let statusHtml = '';
+    const statusData = [
+        { label: ' Spielstock im Feld', key: 'eigen', color: '#28a745' },
+        { label: ' Spielstock außerhalb', key: 'eigen_aussen', color: '#fd7e14' },
+        { label: 'Zielstock außerhalb', key: 'fremd', color: '#dc3545' },
+        { label: ' Beide Stöcke außerhalb', key: 'beide', color: '#d4a017' },
+        { label: ' Beide Stöcke im Feld', key: 'beide_im_feld', color: '#17a2b8' }
+    ];
+    statusData.forEach(s => {
+        const count = stats.statusStats[s.key] || 0;
+        if (count > 0) {
+            const pct = stats.gesamtVersuche > 0 ? Math.round((count / stats.gesamtVersuche) * 100) : 0;
+            statusHtml += `
+                <div class="status-item">
+                    <span>${s.label}</span>
+                    <span class="count">${count}</span>
+                    <span style="font-size:0.55rem; color:#6c8ba8;">(${pct}%)</span>
+                </div>
+            `;
+        }
+    });
+    if (!statusHtml) statusHtml = '<span style="color:#6c8ba8;font-size:0.65rem;">Keine Status-Daten</span>';
+
+    let abwHtml = '';
+    const abwData = [
+        { label: '⬅️ Links', value: stats.abwStats.links, color: '#dc3545' },
+        { label: '➡️ Rechts', value: stats.abwStats.rechts, color: '#007bff' },
+        { label: '⬆️ Kurz', value: stats.abwStats.kurz, color: '#d4a017' },
+        { label: '⬇️ Lang', value: stats.abwStats.lang, color: '#17a2b8' }
+    ];
+    const totalAbw = stats.abwStats.links + stats.abwStats.rechts + stats.abwStats.kurz + stats.abwStats.lang;
+    if (totalAbw > 0) {
+        abwData.forEach(a => {
+            const pct = totalAbw > 0 ? Math.round((a.value / totalAbw) * 100) : 0;
+            abwHtml += `
+                <div class="detail-row">
+                    <span class="label">${a.label}</span>
+                    <span class="value">${a.value} (${pct}%)</span>
+                </div>
+            `;
+        });
+    } else {
+        abwHtml = '<div class="detail-row"><span class="label" style="color:#6c8ba8;">Keine Abweichungen</span></div>';
+    }
+
+    const fehlerMaß = stats.mass.fehler || 0;
+    const fehlerStock = stats.stock.fehler || 0;
+    const gesamtFehler = fehlerMaß + fehlerStock;
+
+    return `
+        <div class="analysis-container">
+            <div class="analysis-grid">
+                <div class="stat-card gold">
+                    <div class="stat-value">${stats.gesamtQuote}%</div>
+                    <div class="stat-label">🎯 Gesamtquote (Punkte)</div>
+                    <div class="stat-sub">${stats.gesamtPunkte} / ${stats.maxPunkte} Punkte</div>
+                </div>
+                <div class="stat-card green">
+                    <div class="stat-value">${stats.mass.treffer + stats.stock.treffer}</div>
+                    <div class="stat-label">✅ Treffer</div>
+                    <div class="stat-sub">von ${stats.gesamtVersuche} Versuchen</div>
+                </div>
+                <div class="stat-card red">
+                    <div class="stat-value">${gesamtFehler}</div>
+                    <div class="stat-label">❌ Fehlversuche</div>
+                    <div class="stat-sub">${stats.gesamtVersuche > 0 ? Math.round((gesamtFehler / stats.gesamtVersuche) * 100) : 0}%</div>
+                </div>
+                <div class="stat-card blue">
+                    <div class="stat-value">${stats.gesamtVersuche}</div>
+                    <div class="stat-label">📊 Versuche</div>
+                    <div class="stat-sub">Maß: ${stats.mass.gesamt} | Stock: ${stats.stock.gesamt}</div>
+                </div>
+            </div>
+
+            <div class="detail-grid">
+                <div class="detail-card">
+                    <div class="detail-title">🎯 Ring-Statistik</div>
+                    <table class="ring-table">${ringHtml}</table>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-title">📊 Verteilung</div>
+                    <div class="detail-row">
+                        <span class="label">🎯 Maß</span>
+                        <span class="value green">${stats.mass.gesamt} (${stats.massPercent}%)</span>
+                    </div>
+                    <div class="progress-bar-small"><div class="fill green" style="width:${stats.massPercent}%;"></div></div>
+                    <div class="detail-row">
+                        <span class="label">🏒 Stock</span>
+                        <span class="value blue">${stats.stock.gesamt} (${stats.stockPercent}%)</span>
+                    </div>
+                    <div class="progress-bar-small"><div class="fill blue" style="width:${stats.stockPercent}%;"></div></div>
+                    <div style="margin-top:0.3rem;">
+                        <div class="detail-title" style="font-size:0.6rem; margin-bottom:0.1rem;">🏠 Stock-Status</div>
+                        <div class="status-icons">${statusHtml}</div>
+                    </div>
+                </div>
+
+                <div class="detail-card">
+                    <div class="detail-title">📈 Form-Trend</div>
+                    <div class="form-trend-grid">${formHtml}</div>
+                    <div style="margin-top:0.3rem; font-size:0.8rem; font-weight:600; color:#1f4a6e;">
+                        ${trend} ${trendText}
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">🏆 Beste Serie</span>
+                        <span class="value gold">${bestSerie} Treffer</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Maß Trefferquote</span>
+                        <span class="value green">${stats.massTrefferPercent}% (${stats.mass.treffer}/${stats.mass.gesamt})</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Stock Trefferquote</span>
+                        <span class="value blue">${stats.stockTrefferPercent}% (${stats.stock.treffer}/${stats.stock.gesamt})</span>
+                    </div>
+                </div>
+
+                <div class="detail-card">
+                    <div class="detail-title">🏒 Platten pro Versuch</div>
+                    ${platteHtml}
+                    <div style="margin-top:0.3rem;">
+                        <div class="detail-title" style="font-size:0.6rem; margin-bottom:0.1rem;">📏 Abweichungen</div>
+                        ${abwHtml}
+                    </div>
+                </div>
+            </div>
+
+            ${(trainingData.mass.anmerkung || trainingData.stock.anmerkung) ? `
+            <div class="detail-card">
+                <div class="detail-title">📝 Anmerkungen</div>
+                ${trainingData.mass.anmerkung ? `<div class="detail-row"><span class="label">Maß:</span><span class="value">${trainingData.mass.anmerkung}</span></div>` : ''}
+                ${trainingData.stock.anmerkung ? `<div class="detail-row"><span class="label">Stock:</span><span class="value">${trainingData.stock.anmerkung}</span></div>` : ''}
+            </div>
+            ` : ''}
+
+            <div style="margin-top:0.4rem; font-size:0.6rem; color:#6c8ba8; text-align:center;">
+                📅 ${dateFormatted} | ${trainingData.playerName} | ${trainingData.ort} | Beginn: ${trainingData.beginn}
+                ${trainingData.abgeschlossen ? ' | ✅ Abgeschlossen' : ''}
+            </div>
+        </div>
+    `;
+}
+
+function updateAnalysis() {
+    analysisContent.innerHTML = renderAnalysis();
+}
+
+// ============================================================
+// TRAINERANALYSE
+// ============================================================
+function renderTrainerAnalysis() {
+    const stats = getGesamtStats();
+    if (stats.gesamtVersuche === 0) {
+        return `<p style="color:#6c8ba8; font-size:0.9rem;">Bitte trainiere zuerst, um eine Traineranalyse zu generieren.</p>`;
+    }
+
+    let massStatus = '🟢', massText = 'sehr stabil';
+    if (stats.massTrefferPercent < 60) { massStatus = '🔴'; massText = 'dringend verbesserungswürdig'; }
+    else if (stats.massTrefferPercent < 75) { massStatus = '🟡'; massText = 'ausbaufähig'; }
+
+    let stockStatus = '🟢', stockText = 'sehr stabil';
+    if (stats.stockTrefferPercent < 60) { stockStatus = '🔴'; stockText = 'dringend verbesserungswürdig'; }
+    else if (stats.stockTrefferPercent < 75) { stockStatus = '🟡'; stockText = 'ausbaufähig'; }
+
+    let mainError = 'keine Auffälligkeiten';
+    let mainErrorColor = 'green';
+    const totalAbw = stats.abwStats.links + stats.abwStats.rechts + stats.abwStats.kurz + stats.abwStats.lang;
+    if (totalAbw > 0) {
+        const errors = [
+            { label: 'Links', value: stats.abwStats.links },
+            { label: 'Rechts', value: stats.abwStats.rechts },
+            { label: 'Kurz', value: stats.abwStats.kurz },
+            { label: 'Lang', value: stats.abwStats.lang }
+        ];
+        const maxError = errors.reduce((a, b) => a.value > b.value ? a : b);
+        if (maxError.value > 0) {
+            const pct = Math.round((maxError.value / totalAbw) * 100);
+            mainError = `${maxError.label} (${maxError.value}x, ${pct}% der Abweichungen)`;
+            mainErrorColor = 'red';
+        }
+    }
+
+    let platteSummary = '';
+    const sortedPlatten = Object.entries(stats.platteStats).sort((a, b) => {
+        const aRate = a[1].count > 0 ? a[1].treffer / a[1].count : 0;
+        const bRate = b[1].count > 0 ? b[1].treffer / b[1].count : 0;
+        return bRate - aRate;
+    });
+    if (sortedPlatten.length > 0) {
+        const best = sortedPlatten[0];
+        const rate = best[1].count > 0 ? Math.round((best[1].treffer / best[1].count) * 100) : 0;
+        platteSummary = `${getPlatteKurz(best[0])}: ${rate}% (${best[1].treffer}/${best[1].count})`;
+    }
+
+    let ringSummary = '';
+    const ringOrder = ['1', '2', '3', '4', '5', 'aussen'];
+    let ringData = [];
+    ringOrder.forEach(ring => {
+        const s = stats.ringStats[ring];
+        if (s && s.count > 0) {
+            const rate = Math.round((s.treffer / s.count) * 100);
+            ringData.push({ ring, rate, count: s.count });
+        }
+    });
+    if (ringData.length > 0) {
+        const bestRing = ringData.reduce((a, b) => a.rate > b.rate ? a : b);
+        ringSummary = `Ring ${bestRing.ring}: ${bestRing.rate}% Treffer (${bestRing.count}x)`;
+    }
+
+    let focus = 'Weiter so – alle Bereiche sind im grünen Bereich.';
+    let focusColor = 'green';
+
+    if (stats.massTrefferPercent < 70 && stats.stockTrefferPercent < 70) {
+        focus = 'Grundlagentraining – beide Disziplinen benötigen Aufmerksamkeit.';
+        focusColor = 'red';
+    } else if (stats.massTrefferPercent < 70) {
+        focus = 'Maßtraining intensivieren – Grundbewegungen und Videoanalyse.';
+        focusColor = 'yellow';
+    } else if (stats.stockTrefferPercent < 70) {
+        focus = 'Stocktraining fokussieren – Zielgenauigkeit und Abgabe.';
+        focusColor = 'yellow';
+    } else if (stats.abwStats.kurz > 0 || stats.abwStats.lang > 0) {
+        const total = stats.abwStats.kurz + stats.abwStats.lang;
+        if (total > stats.abwStats.links + stats.abwStats.rechts) {
+            focus = 'Längenkorrektur – Geschwindigkeit und Abgabepunkt anpassen.';
+            focusColor = 'yellow';
+        }
+    }
+
+    return `
+        <div class="analysis-container">
+            <div class="trainer-card">
+                <div class="trainer-title">🧠 Automatische Traineranalyse</div>
+
+                <div class="trainer-row">
+                    <span class="trainer-dot ${massStatus === '🟢' ? 'green' : massStatus === '🟡' ? 'yellow' : 'red'}"></span>
+                    <span><strong>Maßspiel:</strong> ${massText} (${stats.massTrefferPercent}% Treffer)</span>
+                </div>
+                <div class="trainer-row">
+                    <span class="trainer-dot ${stockStatus === '🟢' ? 'green' : stockStatus === '🟡' ? 'yellow' : 'red'}"></span>
+                    <span><strong>Stockspiel:</strong> ${stockText} (${stats.stockTrefferPercent}% Treffer)</span>
+                </div>
+
+                <div class="trainer-row">
+                    <span class="trainer-dot ${mainErrorColor}"></span>
+                    <span><strong>Hauptabweichung:</strong> ${mainError}</span>
+                </div>
+
+                ${platteSummary ? `
+                <div class="trainer-row">
+                    <span class="trainer-dot blue"></span>
+                    <span><strong>Beste Platte:</strong> ${platteSummary}</span>
+                </div>
+                ` : ''}
+
+                ${ringSummary ? `
+                <div class="trainer-row">
+                    <span class="trainer-dot blue"></span>
+                    <span><strong>Beste Ringe:</strong> ${ringSummary}</span>
+                </div>
+                ` : ''}
+
+                <div style="margin-top:0.5rem; padding-top:0.5rem; border-top:1px solid #dce5ef;">
+                    <div class="trainer-title" style="font-size:0.7rem; color:#1a5f8b;">🎯 Trainingsschwerpunkt nächste Einheit</div>
+                    <div class="trainer-row">
+                        <span class="trainer-dot ${focusColor}"></span>
+                        <span style="font-weight:600;">${focus}</span>
+                    </div>
+                    <div style="margin-top:0.2rem; font-size:0.65rem; color:#6c8ba8;">
+                        ${focusColor === 'green' ? '✅ Alles im grünen Bereich – beibehalten und feintunen.' : 
+                          focusColor === 'yellow' ? '🔄 Fokussierte Übungen einbauen – gezielt verbessern.' :
+                          '🔴 Grundlagenarbeit – Strukturiert üben und analysieren.'}
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top:0.4rem; font-size:0.55rem; color:#6c8ba8; text-align:center;">
+                📊 Analyse basiert auf ${stats.gesamtVersuche} Versuchen | ${formatDate(trainingData.datum)}
+            </div>
+        </div>
+    `;
+}
+
+function updateTrainerAnalysis() {
+    trainerContent.innerHTML = renderTrainerAnalysis();
+}
+
+// ============================================================
+// HISTORIE (IndexedDB)
+// ============================================================
+async function updateHistory() {
+    const playerId = playerIdInput.value.trim() || '';
+    if (!playerId) {
+        historyContent.innerHTML = '<p style="color:#6c8ba8; font-size:0.9rem;">Bitte wähle einen Spieler aus.</p>';
+        return;
+    }
+    try {
+        const trainings = await getTrainingsByPlayer(playerId);
+        trainings.sort((a, b) => {
+            if (a.datum > b.datum) return -1;
+            if (a.datum < b.datum) return 1;
+            return 0;
+        });
+
+        if (trainings.length === 0) {
+            historyContent.innerHTML = '<p style="color:#6c8ba8; font-size:0.9rem;">Noch keine gespeicherten Trainings für diesen Spieler.</p>';
+            return;
+        }
+
+        let html = '<div class="history-list">';
+        trainings.forEach((h, index) => {
+            let massQuote = 0, stockQuote = 0, totalQuote = 0;
+            let massTotal = 0, stockTotal = 0;
+            let massPunkte = 0, stockPunkte = 0;
+
+            if (h.mass && h.mass.versuche) {
+                const anzahl = h.config?.massAnzahl || 20;
+                const versuche = [];
+                for (let i = 1; i <= anzahl; i++) {
+                    if (h.mass.versuche[i] && h.mass.versuche[i].treffer !== null) {
+                        versuche.push(h.mass.versuche[i]);
+                    }
+                }
+                const treffer = versuche.filter(v => v.treffer === true);
+                massTotal = versuche.length;
+                massQuote = massTotal > 0 ? Math.round((treffer.length / massTotal) * 100) : 0;
+                massPunkte = versuche.reduce((sum, v) => sum + (v.punkte || 0), 0);
+            }
+
+            if (h.stock && h.stock.versuche) {
+                const anzahl = h.config?.stockAnzahl || 20;
+                const versuche = [];
+                for (let i = 1; i <= anzahl; i++) {
+                    if (h.stock.versuche[i] && h.stock.versuche[i].treffer !== null) {
+                        versuche.push(h.stock.versuche[i]);
+                    }
+                }
+                const treffer = versuche.filter(v => v.treffer === true);
+                stockTotal = versuche.length;
+                stockQuote = stockTotal > 0 ? Math.round((treffer.length / stockTotal) * 100) : 0;
+                stockPunkte = versuche.reduce((sum, v) => sum + (v.punkte || 0), 0);
+            }
+
+            const totalVersuche = massTotal + stockTotal;
+            const maxPunkte = totalVersuche * (PUNKTE_TREFFER + 5 + 4 + 3 + 3);
+            const gesamtPunkte = massPunkte + stockPunkte;
+            totalQuote = maxPunkte > 0 ? Math.round((gesamtPunkte / maxPunkte) * 100) : 0;
+
+            const dateFormatted = formatDate(h.datum);
+            const rateClass = totalQuote >= 80 ? 'green' : totalQuote >= 60 ? 'yellow' : 'red';
+
+            html += `
+                <div class="history-item" onclick="loadHistoryTraining(${index})">
+                    <span class="h-date">📅 ${dateFormatted}</span>
+                    <span class="h-detail">M: ${massQuote}% | S: ${stockQuote}%</span>
+                    <span class="h-rate ${rateClass}">${totalQuote}%</span>
+                    <span class="h-load">📂 Laden</span>
+                </div>
+            `;
+        });
+        html += '</div>';
+        historyContent.innerHTML = html;
+    } catch (e) {
+        historyContent.innerHTML = '<p style="color:#6c8ba8; font-size:0.9rem;">Fehler beim Laden der Historie.</p>';
+    }
+}
+
+window.loadHistoryTraining = async function(index) {
+    const playerId = playerIdInput.value.trim();
+    if (!playerId) {
+        showToast('⚠️ Bitte zuerst einen Spieler auswählen', 'error');
+        return;
+    }
+    try {
+        const trainings = await getTrainingsByPlayer(playerId);
+        trainings.sort((a, b) => {
+            if (a.datum > b.datum) return -1;
+            if (a.datum < b.datum) return 1;
+            return 0;
+        });
+        if (trainings[index]) {
+            const h = trainings[index];
+            if (confirm('Aktuelle Trainingsdaten werden durch die historischen Daten ersetzt. Fortfahren?')) {
+                trainingData = JSON.parse(JSON.stringify(h));
+                trainingData.trainingId = generateTrainingId();
+                trainingData.abgeschlossen = true;
+
+                playerNameInput.value = trainingData.playerName || '';
+                sessionDateInput.value = trainingData.datum || '';
+                locationInput.value = trainingData.ort || 'ESV Grein';
+                temperatureInput.value = trainingData.temperatur || '24°C';
+                trainingStartInput.value = trainingData.beginn || '';
+                if (trainingData.stiel) {
+                    gameTypeSelect.value = trainingData.stiel;
+                }
+
+                if (trainingData.config) {
+                    massAnzahlSelect.value = trainingData.config.massAnzahl || 20;
+                    stockAnzahlSelect.value = trainingData.config.stockAnzahl || 20;
+                }
+
+                renderVersuche('mass');
+                renderVersuche('stock');
+                updateAnalysis();
+                updateTrainerAnalysis();
+                updateHistory();
+                renderCentralPlayerList();
+                showToast('✅ Historisches Training geladen!', 'success');
+                scheduleLocalSave();
+            }
+        }
+    } catch (e) {
+        showToast('❌ Fehler beim Laden', 'error');
+    }
+};
+
+// ============================================================
+// EXCEL EXPORT
+// ============================================================
+function exportExcel() {
+    const name = trainingData.playerName || 'unbekannt';
+    const date = trainingData.datum || new Date().toISOString().slice(0,10);
+    const wb = XLSX.utils.book_new();
+
+    const rows = [
+        ['Typ', 'Versuch', 'Treffer', 'Ring', 'Stock-Status', 'Abw. L/R', 'Abw. K/L', 'Abw. cm', 'Platte', 'Punkte', 'Anmerkung']
+    ];
+
+    const massAnzahl = trainingData.config.massAnzahl || 20;
+    for (let i = 1; i <= massAnzahl; i++) {
+        const v = trainingData.mass.versuche[i];
+        if (v && v.treffer !== null) {
+            rows.push([
+                'Maß',
+                i,
+                v.treffer ? 'Ja' : 'Nein',
+                v.ring || '',
+                getStockStatusLabel(v.stockStatus || ''),
+                v.abwLR || '0',
+                v.abwKL || '0',
+                v.abwCm || 0,
+                v.platte || '',
+                v.punkte || 0,
+                trainingData.mass.anmerkung || ''
+            ]);
+        }
+    }
+
+    const stockAnzahl = trainingData.config.stockAnzahl || 20;
+    for (let i = 1; i <= stockAnzahl; i++) {
+        const v = trainingData.stock.versuche[i];
+        if (v && v.treffer !== null) {
+            rows.push([
+                'Stock',
+                i,
+                v.treffer ? 'Ja' : 'Nein',
+                v.ring || '',
+                getStockStatusLabel(v.stockStatus || ''),
+                v.abwLR || '0',
+                v.abwKL || '0',
+                v.abwCm || 0,
+                v.platte || '',
+                v.punkte || 0,
+                trainingData.stock.anmerkung || ''
+            ]);
+        }
+    }
+
+    const ws1 = XLSX.utils.aoa_to_sheet(rows);
+    XLSX.utils.book_append_sheet(wb, ws1, 'Versuche');
+
+    const stats = getGesamtStats();
+    const statRows = [
+        ['Statistik', 'Wert'],
+        ['Gesamtversuche', stats.gesamtVersuche],
+        ['Gesamtpunkte', stats.gesamtPunkte],
+        ['Maximalpunkte', stats.maxPunkte],
+        ['Gesamtquote (Punkte)', stats.gesamtQuote + '%'],
+        ['Maßversuche', stats.mass.gesamt],
+        ['Maß-Treffer', stats.mass.treffer],
+        ['Maß-Fehler', stats.mass.fehler],
+        ['Maß-Quote', stats.massTrefferPercent + '%'],
+        ['Stockversuche', stats.stock.gesamt],
+        ['Stock-Treffer', stats.stock.treffer],
+        ['Stock-Fehler', stats.stock.fehler],
+        ['Stock-Quote', stats.stockTrefferPercent + '%'],
+        ['', ''],
+        ['Ring-Statistik', '']
+    ];
+
+    const ringOrder = ['1', '2', '3', '4', '5', 'aussen'];
+    const ringLabels = { '1': 'Ring 1', '2': 'Ring 2', '3': 'Ring 3', '4': 'Ring 4', '5': 'Ring 5', 'aussen': 'Außerhalb' };
+    ringOrder.forEach(ring => {
+        const s = stats.ringStats[ring];
+        if (s && s.count > 0) {
+            const rate = Math.round((s.treffer / s.count) * 100);
+            statRows.push([ringLabels[ring] || ring, s.treffer + '/' + s.count + ' (' + rate + '%)']);
+        }
+    });
+
+    statRows.push(['', '']);
+    statRows.push(['Platten-Statistik', '']);
+    Object.entries(stats.platteStats).forEach(([platte, s]) => {
+        const rate = s.count > 0 ? Math.round((s.treffer / s.count) * 100) : 0;
+        const avgPkt = s.count > 0 ? Math.round((s.punkte / s.count) * 10) / 10 : 0;
+        statRows.push([getPlatteKurz(platte), s.treffer + '/' + s.count + ' (' + rate + '%) Ø ' + avgPkt + ' Pkt']);
+    });
+
+    statRows.push(['', '']);
+    statRows.push(['Stock-Status', '']);
+    statRows.push(['Spielstock im Feld', stats.statusStats.eigen || 0]);
+    statRows.push(['Spielstock außerhalb', stats.statusStats.eigen_aussen || 0]);
+    statRows.push(['Zielstock außerhalb', stats.statusStats.fremd || 0]);
+    statRows.push([' Beide Stöcke außerhalb', stats.statusStats.beide || 0]);
+    statRows.push([' Beide Stöcke im Feld', stats.statusStats.beide_im_feld || 0]);
+
+    statRows.push(['', '']);
+    statRows.push(['Abweichungen', '']);
+    statRows.push(['Links', stats.abwStats.links]);
+    statRows.push(['Rechts', stats.abwStats.rechts]);
+    statRows.push(['Kurz', stats.abwStats.kurz]);
+    statRows.push(['Lang', stats.abwStats.lang]);
+
+    const ws2 = XLSX.utils.aoa_to_sheet(statRows);
+    XLSX.utils.book_append_sheet(wb, ws2, 'Statistik');
+
+    const metaRows = [
+        ['Metadaten', ''],
+        ['Training-ID', trainingData.trainingId],
+        ['Spieler-ID', trainingData.playerId],
+        ['Spielername', trainingData.playerName],
+        ['Datum', trainingData.datum],
+        ['Ort', trainingData.ort],
+        ['Temperatur', trainingData.temperatur],
+        ['Trainingsbeginn', trainingData.beginn],
+        ['Stiel', trainingData.stiel],
+        ['Abgeschlossen', trainingData.abgeschlossen ? 'Ja' : 'Nein'],
+        ['Exportiert am', new Date().toLocaleString('de-DE')],
+        ['', ''],
+        ['Anmerkungen', ''],
+        ['Maß', trainingData.mass.anmerkung || ''],
+        ['Stock', trainingData.stock.anmerkung || '']
+    ];
+
+    const ws3 = XLSX.utils.aoa_to_sheet(metaRows);
+    XLSX.utils.book_append_sheet(wb, ws3, 'Metadaten');
+
+    const fileName = `Training_${name}_${date}.xlsx`;
+    XLSX.writeFile(wb, fileName);
+    showToast('✅ Excel-Datei exportiert: ' + fileName, 'success');
+}
+
+// ============================================================
+// SPEICHERN / LADEN
+// ============================================================
+function scheduleLocalSave(delay = 250) {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+        saveToLocalStorageAuto();
+        saveTimer = null;
+    }, delay);
+}
+
+function saveToLocalStorageAuto() {
+    try {
+        trainingData.trainingId = generateTrainingId();
+        trainingData.datum = sessionDateInput.value || new Date().toISOString().slice(0,10);
+        trainingData.beginn = trainingStartInput.value || new Date().toTimeString().slice(0,5);
+        trainingData.ort = locationInput.value || 'ESV Grein';
+        trainingData.temperatur = temperatureInput.value || '24°C';
+        trainingData.stiel = gameTypeSelect.value || '22/A';
+        trainingData.playerName = playerNameInput.value.trim() || 'Unbekannt';
+        trainingData.playerId = playerIdInput.value.trim() || '';
+        trainingData.timestamp = getCurrentTimestamp();
+
+        trainingData.config.massAnzahl = parseInt(massAnzahlSelect.value) || 20;
+        trainingData.config.stockAnzahl = parseInt(stockAnzahlSelect.value) || 20;
+
+        if (trainingData.playerId) {
+            const key = `training_${trainingData.playerId}_${trainingData.datum}`;
+            localStorage.setItem(key, JSON.stringify(trainingData));
+            saveTrainingToDB(trainingData).catch(err => console.error('IndexedDB Fehler:', err));
+        }
+
+        updateHistory();
+    } catch (e) { console.error('LocalStorage Fehler:', e); }
+}
+
+function saveToLocalStorage() {
+    scheduleLocalSave();
+    showToast('✅ Lokal gespeichert', 'success');
+}
+
+// ============================================================
+// RESET / CLEAR
+// ============================================================
+function resetAll() {
+    if (!confirm('Alle Daten dieses Trainings zurücksetzen?')) return;
+    const playerId = playerIdInput.value.trim() || '';
+    const name = playerNameInput.value.trim() || 'Unbekannt';
+    trainingData = {
+        trainingId: generateTrainingId(),
+        playerId: playerId,
+        playerName: name,
+        datum: sessionDateInput.value || new Date().toISOString().slice(0,10),
+        ort: locationInput.value || 'ESV Grein',
+        temperatur: temperatureInput.value || '24°C',
+        beginn: trainingStartInput.value || new Date().toTimeString().slice(0,5),
+        stiel: gameTypeSelect.value || '22/A',
+        mass: { platte: '', versuche: [], anmerkung: '' },
+        stock: { platte: '', versuche: [], anmerkung: '' },
+        config: { 
+            massAnzahl: parseInt(massAnzahlSelect.value) || 20,
+            stockAnzahl: parseInt(stockAnzahlSelect.value) || 20
+        },
+        timestamp: getCurrentTimestamp(),
+        abgeschlossen: false
+    };
+    renderVersuche('mass');
+    renderVersuche('stock');
+    scheduleLocalSave();
+    updateAnalysis();
+    updateTrainerAnalysis();
+    updateHistory();
+    renderCentralPlayerList();
+    showToast('↺ Training zurückgesetzt', 'info');
+}
+
+function clearAll() {
+    if (!confirm('Alle Eingaben leeren? (Gespeicherte Daten bleiben erhalten)')) return;
+    massAnmerkung.value = '';
+    stockAnmerkung.value = '';
+    massTrefferSelect.value = 'true';
+    stockTrefferSelect.value = 'true';
+    massRingSelect.value = '';
+    stockRingSelect.value = '';
+    massStockStatus.value = 'eigen';
+    stockStockStatus.value = 'eigen';
+    massAbwLRSelect.value = '0';
+    stockAbwLRSelect.value = '0';
+    massAbwKLSelect.value = '0';
+    stockAbwKLSelect.value = '0';
+    massAbwCm.value = '0';
+    stockAbwCm.value = '0';
+    massPlatteSelect.value = '';
+    stockPlatteSelect.value = '';
+
+    trainingData.mass.versuche = [];
+    trainingData.stock.versuche = [];
+    trainingData.mass.anmerkung = '';
+    trainingData.stock.anmerkung = '';
+
+    renderVersuche('mass');
+    renderVersuche('stock');
+    scheduleLocalSave();
+    updateAnalysis();
+    updateTrainerAnalysis();
+    updateHistory();
+    renderCentralPlayerList();
+    showToast('🧹 Felder geleert und gespeichert', 'info');
+}
+
+// ============================================================
+// CSV IMPORT
+// ============================================================
+function importCSV(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const text = e.target.result;
+            const lines = text.split('\n').filter(line => line.trim() && !line.includes('---'));
+
+            let newMass = { platte: '', versuche: [], anmerkung: '' };
+            let newStock = { platte: '', versuche: [], anmerkung: '' };
+            let newConfig = { massAnzahl: 20, stockAnzahl: 20 };
+            let metaMode = false;
+
+            const statusMapping = {
+                'Spielstock im Feld': 'eigen',
+                'Spielstock außerhalb': 'eigen_aussen',
+                'Zielstock außerhalb': 'fremd',
+                'Beide Stöcke außerhalb': 'beide',
+                'Beide Stöcke im Feld': 'beide_im_feld'
+            };
+
+            for (const line of lines) {
+                if (line.includes('GESAMTSTATISTIK') || line.includes('METADATEN')) {
+                    metaMode = true;
+                    continue;
+                }
+                const parts = line.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g);
+                if (parts && parts.length >= 3 && !metaMode) {
+                    const typ = (parts[0] || '').replace(/^"|"$/g, '').trim();
+                    const nr = parseInt(parts[1]);
+                    const treffer = (parts[2] || '').replace(/^"|"$/g, '').trim() === 'Ja';
+                    const ring = (parts[3] || '').replace(/^"|"$/g, '').trim();
+                    const stockStatusRaw = (parts[4] || '').replace(/^"|"$/g, '').trim();
+                    const stockStatus = statusMapping[stockStatusRaw] || stockStatusRaw || '';
+                    const abwLR = (parts[5] || '0').replace(/^"|"$/g, '').trim();
+                    const abwKL = (parts[6] || '0').replace(/^"|"$/g, '').trim();
+                    const abwCm = parseFloat((parts[7] || '0').replace(/^"|"$/g, '')) || 0;
+                    const platte = (parts[8] || '').replace(/^"|"$/g, '').trim();
+                    const punkte = parseInt(parts[9]) || 0;
+                    const anmerkung = (parts.slice(10).join(',') || '').replace(/^"|"$/g, '').trim();
+
+                    const versuch = {
+                        nummer: nr, treffer, ring: ring || '', stockStatus: stockStatus || '',
+                        abwLR: abwLR || '0', abwKL: abwKL || '0', abwCm: abwCm,
+                        platte: platte || '', punkte: punkte
+                    };
+                    if (typ === 'Maß') {
+                        newMass.versuche[nr] = versuch;
+                        if (anmerkung) newMass.anmerkung = anmerkung;
+                    } else if (typ === 'Stock') {
+                        newStock.versuche[nr] = versuch;
+                        if (anmerkung) newStock.anmerkung = anmerkung;
+                    }
+                } else if (metaMode && parts && parts.length >= 2) {
+                    const key = (parts[0] || '').trim().replace(/^"|"$/g, '');
+                    const value = (parts.slice(1).join(',').replace(/^"|"$/g, '')).trim();
+                    if (key === 'Name') playerNameInput.value = value;
+                    else if (key === 'Datum') sessionDateInput.value = value;
+                    else if (key === 'Ort') locationInput.value = value;
+                    else if (key === 'Temperatur') temperatureInput.value = value;
+                    else if (key === 'Trainingsbeginn') trainingStartInput.value = value;
+                    else if (key === 'Stiel') gameTypeSelect.value = value;
+                    else if (key === 'Maßversuche') {
+                        const parts2 = value.split(',');
+                        if (parts2.length >= 1) newConfig.massAnzahl = parseInt(parts2[0]) || 20;
+                    }
+                    else if (key === 'Stockversuche') {
+                        const parts2 = value.split(',');
+                        if (parts2.length >= 1) newConfig.stockAnzahl = parseInt(parts2[0]) || 20;
+                    }
+                }
+            }
+
+            trainingData.mass = newMass;
+            trainingData.stock = newStock;
+            trainingData.config = newConfig;
+            trainingData.trainingId = generateTrainingId();
+            trainingData.timestamp = getCurrentTimestamp();
+            trainingData.abgeschlossen = false;
+
+            massAnzahlSelect.value = newConfig.massAnzahl;
+            stockAnzahlSelect.value = newConfig.stockAnzahl;
+
+            renderVersuche('mass');
+            renderVersuche('stock');
+            updateAnalysis();
+            updateTrainerAnalysis();
+            updateHistory();
+            renderCentralPlayerList();
+            scheduleLocalSave();
+            showToast('✅ CSV importiert!', 'success');
+        } catch (error) {
+            showToast('❌ Fehler beim Import', 'error');
+            console.error(error);
+        }
+    };
+    reader.readAsText(file);
+}
+
+// ============================================================
+// PDF EXPORT
+// ============================================================
+function exportPDF() {
+    updateAnalysis();
+    updateTrainerAnalysis();
+    showToast('📄 PDF wird erstellt...', 'info');
+    setTimeout(() => {
+        window.print();
+        setTimeout(() => showToast('📄 PDF-Export gestartet', 'success'), 500);
+    }, 400);
+}
+
+// ============================================================
+// DATENBANK SPEICHERN (IndexedDB)
+// ============================================================
+async function saveToDatabase() {
+    const name = trainingData.playerName || playerNameInput.value.trim();
+    if (!name) { showToast('⚠️ Bitte Spieler auswählen!', 'error'); return; }
+
+    connectionStatus.className = 'status-badge waiting';
+    connectionStatus.textContent = '● Sende...';
+
+    try {
+        const id = await saveTrainingToDB(trainingData);
+        connectionStatus.className = 'status-badge online';
+        connectionStatus.textContent = '● Online';
+        showToast('✅ Daten in IndexedDB gespeichert (ID: ' + id + ')', 'success');
+        updateHistory();
+        scheduleLocalSave();
+    } catch (error) {
+        console.error('Fehler:', error);
+        showToast('⚠️ Fehler beim Speichern in IndexedDB', 'error');
+        connectionStatus.className = 'status-badge offline';
+        connectionStatus.textContent = '● Offline';
+    }
+}
+
+// ============================================================
+// EVENT-LISTENER für TABS
+// ============================================================
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+
+        const targetId = this.dataset.tab;
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+            targetElement.classList.add('active');
+
+            if (targetId === 'tab-analysis') updateAnalysis();
+            if (targetId === 'tab-trainer') updateTrainerAnalysis();
+            if (targetId === 'tab-history') updateHistory();
+        }
+    });
+});
+
+// ============================================================
+// WEITERE EVENT-LISTENER
+// ============================================================
+saveLocalBtn.addEventListener('click', saveToLocalStorage);
+excelExportBtn.addEventListener('click', exportExcel);
+pdfExportBtn.addEventListener('click', exportPDF);
+saveToDatabaseBtn.addEventListener('click', saveToDatabase);
+resetBtn.addEventListener('click', resetAll);
+clearBtn.addEventListener('click', clearAll);
+
+importBtn.addEventListener('change', function(e) {
+    if (this.files && this.files[0]) {
+        const file = this.files[0];
+        if (file.name.endsWith('.csv')) {
+            importCSV(file);
+        } else {
+            showToast('⚠️ Bitte CSV-Datei wählen', 'error');
+        }
+        this.value = '';
+    }
+});
+
+// ============================================================
+// AUTOSAVE
+// ============================================================
+document.querySelectorAll('input, select, textarea').forEach(el => {
+    el.addEventListener('change', function() {
+        if (this.id !== 'playerName' && this.id !== 'playerId') {
+            scheduleLocalSave();
+        }
+    });
+});
+
+// ============================================================
+// INITIALISIERUNG
+// ============================================================
+window.addEventListener('load', async function() {
+    try {
+        await openDB();
+        connectionStatus.className = 'status-badge online';
+        connectionStatus.textContent = '● Online';
+    } catch (e) {
+        connectionStatus.className = 'status-badge offline';
+        connectionStatus.textContent = '● Offline';
+        showToast('⚠️ IndexedDB nicht verfügbar, Daten nur lokal', 'error');
+    }
+
+    loadPlatesFromLocal();
+    loadSticksFromLocal();
+    setDateTime();
+
+    // Zentrale Spielerliste laden
+    centralPlayers = loadCentralPlayerList();
+    renderCentralPlayerList();
+
+    // Kein automatischer Select, Dropdown bleibt leer
+
+    // Gespeichertes Training laden
+    const playerId = playerIdInput.value.trim();
+    if (playerId) {
+        const saved = localStorage.getItem(`training_${playerId}_${trainingData.datum}`);
+        if (saved) {
+            try {
+                const data = JSON.parse(saved);
+                trainingData = data;
+                playerNameInput.value = data.playerName || '';
+                sessionDateInput.value = data.datum || '';
+                locationInput.value = data.ort || 'ESV Grein';
+                temperatureInput.value = data.temperatur || '24°C';
+                trainingStartInput.value = data.beginn || '';
+                if (data.stiel) gameTypeSelect.value = data.stiel;
+                if (data.config) {
+                    massAnzahlSelect.value = data.config.massAnzahl || 20;
+                    stockAnzahlSelect.value = data.config.stockAnzahl || 20;
+                }
+                renderVersuche('mass');
+                renderVersuche('stock');
+                showToast('✅ Training geladen!', 'success');
+            } catch (e) { console.error('Ladefehler:', e); }
+        }
+    }
+
+    switchTraining('mass');
+    updatePlatteSelects();
+    updateStickSelects();
+    updateAnalysis();
+    updateTrainerAnalysis();
+    await updateHistory();
+
+    showToast('🚀 Trainingsanalyse V2.4.0 geladen – Spieler aus Dropdown wählen!', 'info');
+});
+
+window.addEventListener('pagehide', () => {
+    clearTimeout(saveTimer);
+    saveToLocalStorageAuto();
+}, { passive: true });
+</script>
+
+</body>
+</html>

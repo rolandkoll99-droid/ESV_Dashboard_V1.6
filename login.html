@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Login – Trainingsportal ESV Grein</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Anmeldung</p>
+  <h1>Login</h1>
+  <p class="lead">Melde dich mit deinem Benutzernamen und Passwort an.</p>
+
+  <div class="card">
+    <label for="user">Benutzername</label>
+    <input type="text" id="user" placeholder="trainer">
+    <label for="pass">Passwort</label>
+    <input type="password" id="pass" placeholder="••••••••">
+    <p class="error" id="err"></p>
+    <button onclick="doLogin()">Anmelden</button>
+  </div>
+</div>
+
+<script src="auth.js"></script>
+<script>
+  if (typeof PROTECTION_ENABLED !== "undefined" && !PROTECTION_ENABLED) {
+    location.href = "dashboard.html";
+  }
+  requireGate();
+  document.getElementById("pass").addEventListener("keydown", e => {
+    if (e.key === "Enter") doLogin();
+  });
+  function doLogin() {
+    const u = document.getElementById("user").value.trim();
+    const p = document.getElementById("pass").value;
+    if (u === VALID_USER.user && p === VALID_USER.pass) {
+      sessionStorage.setItem("loggedIn", "yes");
+      location.href = "dashboard.html";
+    } else {
+      document.getElementById("err").textContent = "Benutzername oder Passwort falsch.";
+    }
+  }
+</script>
+</body>
+</html>

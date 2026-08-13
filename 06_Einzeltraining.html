@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+    <title>Einzeltraining – Trainingsportal ESV Grein</title>
+    <style>
+        :root {
+            --bg-panel: #131b24;
+            --line: rgba(255,255,255,0.08);
+            --text-dim: #8a97a6;
+            --accent: #ffdf8c;
+            --green: #1f5e3a;
+            --gold: #ffdf8c;
+        }
+        /* ============================================
+           BASIS-STYLING
+           ============================================ */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #17351f, #0d1f13);
+            color: #1a2b4a;
+            padding: 15px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .app-container {
+            max-width: 1200px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            padding: 25px;
+        }
+        .app-header{
+            position: sticky;
+            top: 0;
+            z-index: 501;
+            background: var(--green);
+            color: #fff;
+            padding: 8px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            flex-shrink: 0;
+            font-size: 14px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+        .app-header .app-header-title{
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: .02em;
+        }
+        .app-header .app-header-logo{ width: 26px; height: 26px; flex-shrink: 0; }
+        .app-header .app-header-controls{ display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .app-header a, .app-header button{
+            color: #fff;
+            text-decoration: none;
+            background: rgba(255,255,255,0.14);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background .15s ease;
+        }
+        .app-header a:hover, .app-header button:hover{ background: rgba(255,255,255,0.24); }
+        .app-header .app-header-back{ background: transparent; padding: 6px 4px; }
+        .app-header .app-header-back:hover{ background: rgba(255,255,255,0.14); }
+
+        .topbar{
+    position: sticky;
+    top: 0;
+    z-index: 501;
+    background:var(--bg-panel);
+    border-bottom:1px solid var(--line);
+    padding:8px 14px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-shrink:0;
+    font-size:13px;
+}
+        .topbar a {
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color .15s ease;
+        }
+        .topbar a:hover { color: #fff; }
+        .topbar a.logout {
+            border: 1px solid var(--line);
+            padding: 5px 12px;
+            border-radius: 8px;
+        }
+        .topbar a.logout:hover { border-color: var(--accent); }
+
+        /* ===== DASHBOARD ===== */
+        .dashboard { display: flex; flex-direction: column; gap: 25px; }
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #e9edf4;
+            padding-bottom: 18px;
+            gap: 12px;
+        }
+        .dashboard-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #0f2a4a;
+        }
+        .dashboard-header .sub {
+            color: #5e6f8d;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        .btn-primary {
+            background: #1a3d6d;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 8px rgba(26, 61, 109, 0.15);
+        }
+        .btn-primary:hover { background: #0f2a4f; transform: scale(1.02); }
+        .btn-secondary {
+            background: #e9edf4;
+            color: #1a2b4a;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.85rem;
+        }
+        .btn-secondary:hover { background: #d5dce8; }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #cbd5e1;
+            color: #1a2b4a;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-outline:hover { background: #f0f4fa; border-color: #1a3d6d; }
+
+        /* ===== KARTEN ===== */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+            margin-top: 8px;
+        }
+        .training-card {
+            background: #f9fbfe;
+            border-radius: 16px;
+            padding: 20px 16px;
+            border: 1px solid #e2e8f0;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+        .training-card:hover {
+            border-color: #1a3d6d;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+            transform: translateY(-2px);
+        }
+        .training-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
+        .training-card .badge {
+            display: inline-block;
+            background: #dce3ef;
+            border-radius: 30px;
+            padding: 3px 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #1a3d6d;
+            margin-top: 4px;
+        }
+        .training-card .meta {
+            color: #4a5b78;
+            font-size: 0.85rem;
+            margin-top: 6px;
+        }
+        .training-card .indicator { font-size: 1.1rem; margin-left: 4px; }
+
+        /* ===== BILD + REGELN (2-Spalten-Layout) ===== */
+        .bild-regeln-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            align-items: stretch;
+        }
+
+        /* Bild-Bereich */
+        .bild-container {
+            background: #fafcff;
+            border: 2px dashed #d5dce8;
+            border-radius: 16px;
+            padding: 15px;
+            transition: 0.2s;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 200px;
+        }
+        .bild-container.mit-bild {
+            border-style: solid;
+            border-color: #1a3d6d;
+            background: #f5f9ff;
+            padding: 10px;
+        }
+        .bild-container img {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 12px;
+            display: block;
+            margin: 0 auto;
+            object-fit: contain;
+        }
+        .bild-platzhalter {
+            color: #6a7b98;
+            font-size: 0.95rem;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .bild-platzhalter span {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .bild-dateiname {
+            font-size: 0.85rem;
+            color: #4a5b78;
+            padding: 6px 12px;
+            background: #e9edf4;
+            border-radius: 30px;
+            display: inline-block;
+            margin-top: 6px;
+        }
+
+        /* Regeln-Bereich (ersetzt Notizen) */
+        .regeln-container {
+            background: #fafcff;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 15px 18px;
+            display: flex;
+            flex-direction: column;
+            min-height: 200px;
+        }
+        .regeln-container h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #0f2a4a;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e9edf4;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .regeln-container .regel-block {
+            flex: 1;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #1a2b4a;
+        }
+        .regeln-container .regel-block strong {
+            color: #1a3d6d;
+        }
+        .regeln-container .regel-block .highlight {
+            background: #f0f4fa;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        .regeln-container .regel-block ul {
+            list-style: none;
+            padding: 0;
+            margin: 4px 0;
+        }
+        .regeln-container .regel-block ul li {
+            padding: 4px 0 4px 20px;
+            position: relative;
+        }
+        .regeln-container .regel-block ul li::before {
+            content: "•";
+            position: absolute;
+            left: 4px;
+            color: #1a3d6d;
+            font-weight: 700;
+        }
+        .regeln-container .regel-block .punktzahl {
+            font-weight: 700;
+            color: #1a3d6d;
+        }
+        .regeln-container .regel-footer {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid #e9edf4;
+            font-size: 0.75rem;
+            color: #8a9bb8;
+            text-align: right;
+        }
+
+        /* ===== TRAINING DETAIL ===== */
+        .training-detail {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .training-detail.active { display: flex; }
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 14px;
+            gap: 10px;
+        }
+        .detail-header h2 { font-size: 1.6rem; font-weight: 700; }
+        .detail-header .nummer {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: white;
+            background: #1a3d6d;
+            padding: 2px 12px;
+            border-radius: 30px;
+            margin-right: 8px;
+        }
+        .info-box {
+            background: #f0f4fa;
+            padding: 14px 20px;
+            border-radius: 14px;
+            font-size: 0.9rem;
+            border-left: 4px solid #1a3d6d;
+        }
+        .info-box strong { color: #0f2a4a; }
+
+        /* ===== TABELLE ===== */
+        .table-wrap {
+            overflow-x: auto;
+            margin: 8px 0;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            min-width: 580px;
+        }
+        th {
+            background: #f0f4fa;
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: 600;
+            border-bottom: 2px solid #d5dce8;
+        }
+        td {
+            padding: 10px 6px;
+            text-align: center;
+            border-bottom: 1px solid #edf1f7;
+        }
+        tr:last-child td { border-bottom: none; }
+        .versuch-nr { font-weight: 600; color: #1a3d6d; }
+
+        /* Dropdown für Stock/Mass */
+        select.typ-select {
+            padding: 6px 10px;
+            border-radius: 30px;
+            border: 1px solid #cbd5e1;
+            background: white;
+            font-weight: 500;
+            font-size: 0.8rem;
+            cursor: pointer;
+            width: 100%;
+            max-width: 100px;
+            transition: 0.15s;
+            min-height: 36px;
+        }
+        select.typ-select:focus {
+            outline: none;
+            border-color: #1a3d6d;
+            box-shadow: 0 0 0 3px rgba(26,61,109,0.1);
+        }
+        select.typ-select.stock {
+            border-color: #1a3d6d;
+            background: #eef5ff;
+        }
+        select.typ-select.mass {
+            border-color: #b93a32;
+            background: #fff0ee;
+        }
+
+        select.punkt-select {
+            padding: 6px 10px;
+            border-radius: 30px;
+            border: 1px solid #cbd5e1;
+            background: white;
+            font-weight: 500;
+            font-size: 0.85rem;
+            cursor: pointer;
+            width: 100%;
+            max-width: 120px;
+            transition: 0.15s;
+            min-height: 36px;
+        }
+        select.punkt-select:focus {
+            outline: none;
+            border-color: #1a3d6d;
+            box-shadow: 0 0 0 3px rgba(26,61,109,0.1);
+        }
+
+        .summe-row {
+            background: #f7faff;
+            font-weight: 700;
+            font-size: 1.05rem;
+        }
+        .summe-row td { padding: 14px 8px; }
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 6px 0 2px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #1a3d6d;
+            border-radius: 20px;
+            width: 0%;
+            transition: 0.3s;
+        }
+        .flex-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 16px;
+            justify-content: space-between;
+        }
+        .action-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* ===== LEGENDE ===== */
+        .legende {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            padding: 8px 0;
+            font-size: 0.8rem;
+            color: #4a5b78;
+        }
+        .legende-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .legende-farbe {
+            width: 20px;
+            height: 20px;
+            border-radius: 30px;
+            border: 1px solid #cbd5e1;
+        }
+        .legende-farbe.stock { background: #eef5ff; border-color: #1a3d6d; }
+        .legende-farbe.mass { background: #fff0ee; border-color: #b93a32; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .bild-regeln-container {
+                grid-template-columns: 1fr;
+            }
+            .bild-container img { max-height: 250px; }
+            .regeln-container { min-height: 120px; }
+            table { min-width: 500px; }
+        }
+
+        @media (max-width: 640px) {
+            .app-container { padding: 14px; }
+            .dashboard-header h1 { font-size: 1.4rem; }
+            .detail-header h2 { font-size: 1.2rem; }
+            .card-grid { grid-template-columns: 1fr; }
+            .bild-container img { max-height: 200px; }
+            table { min-width: 450px; font-size: 0.8rem; }
+            select.punkt-select { max-width: 80px; font-size: 0.75rem; }
+            select.typ-select { max-width: 80px; font-size: 0.7rem; }
+            .regeln-container { padding: 12px; }
+            .regeln-container .regel-block { font-size: 0.8rem; }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .bild-container img { max-height: 300px; }
+        }
+
+        /* ===== DRUCK ===== */
+        @media print {
+            .btn-primary, .btn-secondary, .btn-outline, .action-group { display: none !important; }
+            .app-container { box-shadow: none; padding: 10px; }
+            .bild-container { border: 1px solid #ccc; break-inside: avoid; }
+            .bild-container img { max-height: 250px; }
+            .regeln-container { border: 1px solid #ccc; break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-header">
+    <div class="app-header-title">
+        <svg class="app-header-logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="100" cy="100" r="95" fill="#1f5e3a" stroke="#ffdf8c" stroke-width="4"/>
+            <text x="100" y="90" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="42" fill="#ffdf8c" letter-spacing="1.5">ESV</text>
+            <text x="100" y="130" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="26" fill="#c8e6c9" letter-spacing="2.5">GREIN</text>
+        </svg>
+        Einzeltraining
+    </div>
+    <div class="app-header-controls">
+        <a class="app-header-back" href="dashboard.html">⬅ Dashboard</a>
+        <a class="logout" href="#" onclick="logout(); return false;">Abmelden</a>
+    </div>
+</div>
+
+<div class="app-container" id="appContainer">
+    <!-- DASHBOARD -->
+    <div id="dashboard" class="dashboard">
+        <div class="dashboard-header">
+            <div>
+                <h1>Stocksport - Einzeltraining</h1>
+                <span class="sub">Einzeltraining – mit Situationsbild & Regeln</span>
+            </div>
+            <button class="btn-primary" id="showTrainingSelection">📋 Einzeltraining</button>
+        </div>
+        <p style="color: #4a5b78; font-size: 0.9rem;">Wähle ein Trainingsprogramm. Die Situation wird als Bild angezeigt – die Regeln sind fest hinterlegt.</p>
+        <div id="trainingCardGrid" class="card-grid"></div>
+    </div>
+
+    <!-- TRAINING DETAIL -->
+    <div id="trainingDetail" class="training-detail">
+        <div class="detail-header">
+            <div>
+                <h2>
+                    <span class="nummer" id="detailNummer">01</span>
+                    <span id="detailTitle">Training</span>
+                </h2>
+                <span id="detailSub" style="color:#5e6f8d; font-weight:500; font-size:0.9rem;"></span>
+            </div>
+            <div class="action-group">
+                <button class="btn-secondary" id="resetTraining">🔄 Zurücksetzen</button>
+                <button class="btn-secondary" id="printTraining">🖨️ Drucken</button>
+                <button class="btn-outline" id="backToDashboard">← Zurück</button>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <strong>Wertung:</strong> <span id="wertungText">Lade ...</span>
+        </div>
+
+        <!-- BILD + REGELN (2-Spalten) -->
+        <div class="bild-regeln-container">
+            <!-- Bild-Bereich -->
+            <div class="bild-container" id="bildContainer">
+                <div id="bildPlatzhalter" class="bild-platzhalter">
+                    <span>🖼️</span>
+                    Kein Situationsbild hinterlegt.<br>
+                    <span style="font-size:0.85rem; color:#8a9bb8;">Das Bild wird automatisch geladen.</span>
+                </div>
+                <div id="bildRahmen" style="display:none;">
+                    <img id="situationsBild" src="" alt="Situationsgrafik" />
+                    <div>
+                        <span id="bildDateinameAnzeige" class="bild-dateiname">🖼️ datei.jpg</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Regeln-Bereich (fest) -->
+            <div class="regeln-container" id="regelnContainer">
+                <h3>📋 Regeln & Hinweise</h3>
+                <div class="regel-block" id="regelText">
+                    <!-- Wird dynamisch befüllt -->
+                </div>
+                <div class="regel-footer">⏺️ Pro Modul anpassbar</div>
+            </div>
+        </div>
+
+        <!-- LEGENDE -->
+        <div class="legende">
+            <span style="font-weight:600;">Legende:</span>
+            <div class="legende-item">
+                <div class="legende-farbe stock"></div>
+                <span>Stock-Versuch</span>
+            </div>
+            <div class="legende-item">
+                <div class="legende-farbe mass"></div>
+                <span>Mass-Versuch</span>
+            </div>
+        </div>
+
+        <div class="flex-row">
+            <div>
+                <strong>Fortschritt:</strong> <span id="progressText">0/18</span>
+                <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+            </div>
+            <div style="font-size:1.2rem; font-weight:700; background:#f0f4fa; padding:6px 22px; border-radius:40px;">
+                Σ <span id="sumDisplay">0</span> Pkt
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="min-width:60px;">Versuch</th>
+                        <th style="min-width:100px;">Typ</th>
+                        <th>DG 1</th>
+                        <th>DG 2</th>
+                        <th>DG 3</th>
+                        <th>DG 4</th>
+                    </tr>
+                </thead>
+                <tbody id="trainingTableBody"></tbody>
+                <tfoot>
+                    <tr class="summe-row">
+                        <td>Summe</td>
+                        <td></td>
+                        <td id="sumDG1">0</td>
+                        <td id="sumDG2">0</td>
+                        <td id="sumDG3">0</td>
+                        <td id="sumDG4">0</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <p style="font-size:0.8rem; color:#6a7b98; margin-top:4px;">* Typ und Punktauswahl je Versuch – Summen und Fortschritt aktualisieren sich automatisch.</p>
+    </div>
+</div>
+
+<script src="auth.js"></script>
+<script>
+    requireGate();
+    requireLogin();
+</script>
+<script>
+    (function() {
+        'use strict';
+
+        // ============================================
+        // 1. TRAININGSDATEN MIT BILD-ZUORDNUNG & REGELN
+        // ============================================
+        const trainings = [
+            {
+                id: 'defensiv-basis',
+                title: 'Defensiv-Basis',
+                sub: 'Situations-Training',
+                badge: 'Basis',
+                nummer: '01',
+                bild: 'Defensiv Basis.jpg',
+                // ⚠️ HIER DIE REGELN FÜR DAS MODUL ANPASSEN:
+                regeln: `
+                    <strong>Zielstock 50/52 Laufsohle</strong><br><br>
+                    <strong>Stockversuch:</strong>
+                    <ul>
+                        <li>Zielstock aus dem Feld / eigener Stock bleibt im Zielfeld = <span class="punktzahl">10 Pkt.</span></li>
+                        <li>Beide Stöcke aus dem Feld = <span class="punktzahl">5 Pkt.</span></li>
+                    </ul>
+                    <strong>Massversuch:</strong>
+                    <ul>
+                        <li>Eigener Stock spielt (Zielstock muß im Feld bleiben) = <span class="punktzahl">10 Pkt.</span></li>
+                        <li>Fehlversuch = <span class="punktzahl">0 Pkt.</span></li>
+                    </ul>
+                `,
+                wertung: 'Stockversuch: Zielstock aus dem Feld / eigener Stock im Zielfeld = 10 Pkt | Beide aus dem Feld = 5 Pkt | Massversuch: eigener Stock spielt (Zielstock im Feld) = 10 Pkt | Fehlversuch = 0 Pkt',
+                punktOptionen: [0, 5, 10]
+            },
+            {
+                id: 'defensiv-elite',
+                title: 'Defensiv-Elite',
+                sub: 'Situations-Training',
+                badge: 'Elite',
+                nummer: '02',
+                bild: 'Defensiv Elite.jpg',
+                regeln: `
+                    <strong>Zielstock 54/57 Laufsohle</strong><br><br>
+                    <strong>Stockversuch:</strong>
+                    <ul>
+                        <li>Zielstock aus dem Feld / eigener Stock bleibt im Zielfeld = <span class="punktzahl">10 Pkt.</span></li>
+                        <li>Beide Stöcke aus dem Feld = <span class="punktzahl">5 Pkt.</span></li>
+                    </ul>
+                    <strong>Massversuch "Ansteller":</strong>
+                    <ul>
+                        <li>"Ansteller" (strichl. Linie bis 30 cm genau) = <span class="punktzahl">10 Pkt.</span></li>
+                        <li>Eigener Stock spielt (Zielstock muß im Feld bleiben) = <span class="punktzahl">5 Pkt.</span></li>
+                        <li>Fehlversuch = <span class="punktzahl">0 Pkt.</span></li>
+                    </ul>
+                `,
+                wertung: 'Stockversuch: Zielstock aus dem Feld / eigener Stock im Zielfeld = 10 Pkt | Beide aus dem Feld = 5 Pkt | Massversuch: "ANSTELLER" (strichl. Linie bis 30 cm) = 10 Pkt | eigener Stock spielt (Zielstock im Feld) = 5 Pkt | Fehlversuch = 0 Pkt',
+                punktOptionen: [0, 5, 10]
+            },
+            {
+                id: 'offensiv-basis',
+                title: 'Offensiv-Basis',
+                sub: 'Situations-Training',
+                badge: 'Basis',
+                nummer: '03',
+                bild: 'Offensiv Basic.jpg',
+                regeln: `
+                    <strong>Zielstock 50/52 Laufsohle</strong><br><br>
+                    <strong>Stockversuch:</strong>
+                    <ul>
+                        <li>Zielstock aus dem Feld / eigener Stock bleibt im Zielfeld = <span class="punktzahl">10 Pkt.</span></li>
+                        <li>Beide Stöcke aus dem Feld = <span class="punktzahl">5 Pkt.</span></li>
+                    </ul>
+                    <strong>Massversuch:</strong>
+                    <ul>
+                        <li>Eigener Stock spielt (Zielstock muß im Feld bleiben) = <span class="punktzahl">10 Pkt.</span></li>
+                        <li>Fehlversuch = <span class="punktzahl">0 Pkt.</span></li>
+                    </ul>
+                `,
+                wertung: 'Stockversuch: Zielstock aus dem Feld / eigener Stock im Zielfeld = 10 Pkt | Beide aus dem Feld = 5 Pkt | Massversuch: eigener Stock spielt (Zielstock im Feld) = 10 Pkt | Fehlversuch = 0 Pkt',
+                punktOptionen: [0, 5, 10]
+            },
+            {
+                id: 'offensiv-elite',
+                title: 'Offensiv-Elite',
+                sub: 'Situations-Training',
+                badge: 'Elite',
+                nummer: '04',
+                bild: 'Offensiv Elite.jpg',
+                regeln: `
+                    <strong>Zielstock 58/64 Laufsohle</strong><br><br>
+                    <strong>Stockversuch "Doppelschlag":</strong>
+                    <ul>
+                        <li>"Doppelschlag" 3 Stöcke aus dem Zielfeld = <span class="punktzahl">10 Pkt.</span></li>
+                        <li>"Doppelschlag" 2 Stöcke aus dem Zielfeld - eigener spielt = <span class="punktzahl">15 Pkt.</span></li>
+                        <li>"Doppelschlag" 1 Stock aus dem Zielfeld - eigener spielt = <span class="punktzahl">5 Pkt.</span></li>
+                    </ul>
+                    <strong>Massversuch:</strong>
+                    <ul>
+                        <li>Eigener Stock spielt (Zielstock muß im Feld bleiben) = <span class="punktzahl">10 Pkt.</span></li>
+                        <li>Fehlversuch = <span class="punktzahl">0 Pkt.</span></li>
+                    </ul>
+                `,
+                wertung: 'Stockversuch: "Doppelschlag" 3 Stöcke aus Zielfeld = 10 Pkt | "Doppelschlag" 2 Stöcke aus Zielfeld - eigener spielt = 15 Pkt | "Doppelschlag" 1 Stock aus Zielfeld - eigener spielt = 5 Pkt | Zielstock aus Feld / eigener im Zielfeld = 10 Pkt | Beide aus Feld = 5 Pkt | Massversuch: eigener spielt (Zielstock im Feld) = 10 Pkt | Fehlversuch = 0 Pkt',
+                punktOptionen: [0, 5, 10, 15]
+            }
+        ];
+
+        // ============================================
+        // 2. ZUSTAND
+        // ============================================
+        let currentTrainingId = null;
+        const trainingData = {};
+        const trainingTypen = {}; // { trainingId: { index: 'stock'|'mass' } }
+
+        trainings.forEach(t => {
+            const arr = [];
+            const typArr = {};
+            for (let i = 0; i < 18; i++) {
+                arr.push([0, 0, 0, 0]);
+                typArr[i] = 'stock'; // Standard: Stock
+            }
+            trainingData[t.id] = arr;
+            trainingTypen[t.id] = typArr;
+            
+            // Lade gespeicherte Typen aus localStorage
+            const storedTypen = localStorage.getItem('boee_typen_' + t.id);
+            if (storedTypen) {
+                try {
+                    const parsed = JSON.parse(storedTypen);
+                    Object.keys(parsed).forEach(key => {
+                        typArr[parseInt(key)] = parsed[key];
+                    });
+                } catch(e) {}
+            }
+        });
+
+        // ============================================
+        // 3. DOM-REFERENZEN
+        // ============================================
+        const dashboard = document.getElementById('dashboard');
+        const trainingDetail = document.getElementById('trainingDetail');
+        const cardGrid = document.getElementById('trainingCardGrid');
+        const detailNummer = document.getElementById('detailNummer');
+        const detailTitle = document.getElementById('detailTitle');
+        const detailSub = document.getElementById('detailSub');
+        const wertungText = document.getElementById('wertungText');
+        const tableBody = document.getElementById('trainingTableBody');
+        const sumDG1 = document.getElementById('sumDG1');
+        const sumDG2 = document.getElementById('sumDG2');
+        const sumDG3 = document.getElementById('sumDG3');
+        const sumDG4 = document.getElementById('sumDG4');
+        const sumDisplay = document.getElementById('sumDisplay');
+        const progressText = document.getElementById('progressText');
+        const progressFill = document.getElementById('progressFill');
+        const backBtn = document.getElementById('backToDashboard');
+        const resetBtn = document.getElementById('resetTraining');
+        const printBtn = document.getElementById('printTraining');
+        const showSelectionBtn = document.getElementById('showTrainingSelection');
+
+        // BILD-Elemente
+        const bildContainer = document.getElementById('bildContainer');
+        const bildPlatzhalter = document.getElementById('bildPlatzhalter');
+        const bildRahmen = document.getElementById('bildRahmen');
+        const situationsBild = document.getElementById('situationsBild');
+        const bildDateinameAnzeige = document.getElementById('bildDateinameAnzeige');
+
+        // REGELN-Elemente
+        const regelText = document.getElementById('regelText');
+
+        // ============================================
+        // 4. KARTEN RENDERN
+        // ============================================
+        function renderCards() {
+            cardGrid.innerHTML = '';
+            trainings.forEach(t => {
+                const card = document.createElement('div');
+                card.className = 'training-card';
+                const hatBild = !!t.bild;
+                card.innerHTML = `
+                    <h3>${t.title}</h3>
+                    <div class="badge">${t.badge}</div>
+                    <div class="meta">${t.sub} ${hatBild ? '🖼️' : ''}</div>
+                `;
+                card.addEventListener('click', () => openTraining(t.id));
+                cardGrid.appendChild(card);
+            });
+        }
+
+        // ============================================
+        // 5. BILD ANZEIGEN
+        // ============================================
+        function displayBild(bildDateiname) {
+            if (bildDateiname) {
+                bildPlatzhalter.style.display = 'none';
+                bildRahmen.style.display = 'block';
+                situationsBild.src = bildDateiname;
+                situationsBild.alt = 'Situationsgrafik';
+                bildDateinameAnzeige.textContent = '🖼️ ' + bildDateiname;
+                bildContainer.classList.add('mit-bild');
+                
+                situationsBild.onerror = function() {
+                    bildPlatzhalter.style.display = 'block';
+                    bildRahmen.style.display = 'none';
+                    bildContainer.classList.remove('mit-bild');
+                    bildPlatzhalter.innerHTML = `
+                        <span>⚠️</span>
+                        Bild nicht gefunden: ${bildDateiname}<br>
+                        <span style="font-size:0.85rem; color:#8a9bb8;">Bitte lege die Datei im selben Ordner ab.</span>
+                    `;
+                };
+            } else {
+                bildPlatzhalter.style.display = 'block';
+                bildRahmen.style.display = 'none';
+                situationsBild.src = '';
+                bildContainer.classList.remove('mit-bild');
+                bildPlatzhalter.innerHTML = `
+                    <span>🖼️</span>
+                    Kein Situationsbild hinterlegt.<br>
+                    <span style="font-size:0.85rem; color:#8a9bb8;">Das Bild wird automatisch geladen.</span>
+                `;
+            }
+        }
+
+        function updateBildDisplay(id) {
+            const training = trainings.find(t => t.id === id);
+            if (training && training.bild) {
+                displayBild(training.bild);
+            } else {
+                displayBild(null);
+            }
+        }
+
+        // ============================================
+        // 6. REGELN ANZEIGEN
+        // ============================================
+        function updateRegelnDisplay(id) {
+            const training = trainings.find(t => t.id === id);
+            if (training && training.regeln) {
+                regelText.innerHTML = training.regeln;
+            } else {
+                regelText.innerHTML = `
+                    <strong>Keine Regeln hinterlegt.</strong><br>
+                    <span style="color:#8a9bb8;">Bitte füge Regeln für dieses Modul hinzu.</span>
+                `;
+            }
+        }
+
+        // ============================================
+        // 7. TYPEN SPEICHERN
+        // ============================================
+        function saveTypen(id) {
+            const typen = trainingTypen[id];
+            localStorage.setItem('boee_typen_' + id, JSON.stringify(typen));
+        }
+
+        // ============================================
+        // 8. TRAINING ÖFFNEN
+        // ============================================
+        function openTraining(id) {
+            const training = trainings.find(t => t.id === id);
+            if (!training) return;
+            currentTrainingId = id;
+            detailNummer.textContent = training.nummer || '01';
+            detailTitle.textContent = training.title;
+            detailSub.textContent = training.sub;
+            wertungText.textContent = training.wertung;
+
+            renderTable(id);
+            updateSums(id);
+            updateProgress(id);
+            updateBildDisplay(id);
+            updateRegelnDisplay(id);
+
+            dashboard.style.display = 'none';
+            trainingDetail.classList.add('active');
+            trainingDetail.style.display = 'flex';
+        }
+
+        // ============================================
+        // 9. TABELLE
+        // ============================================
+        function renderTable(id) {
+            const data = trainingData[id];
+            const typen = trainingTypen[id];
+            let html = '';
+            for (let i = 0; i < 18; i++) {
+                const row = data[i];
+                const versuch = i + 1;
+                const aktuellerTyp = typen[i] || 'stock';
+                const typClass = aktuellerTyp === 'stock' ? 'stock' : 'mass';
+                
+                html += `<tr>`;
+                html += `<td class="versuch-nr">${versuch}</td>`;
+                
+                // Typ-Dropdown
+                html += `<td>
+                    <select data-versuch="${i}" class="typ-select ${typClass}">
+                        <option value="stock" ${aktuellerTyp === 'stock' ? 'selected' : ''}>Stock</option>
+                        <option value="mass" ${aktuellerTyp === 'mass' ? 'selected' : ''}>Mass</option>
+                    </select>
+                </td>`;
+                
+                // Punkte-Dropdowns für DG 1-4
+                for (let dg = 0; dg < 4; dg++) {
+                    const val = row[dg];
+                    const options = getOptionsForTraining(id);
+                    html += `<td><select data-versuch="${i}" data-dg="${dg}" class="punkt-select">`;
+                    options.forEach(opt => {
+                        const sel = (opt === val) ? 'selected' : '';
+                        html += `<option value="${opt}" ${sel}>${opt}</option>`;
+                    });
+                    html += `</select></td>`;
+                }
+                html += `</tr>`;
+            }
+            tableBody.innerHTML = html;
+
+            // Event-Listener für Typ-Änderungen
+            document.querySelectorAll('.typ-select').forEach(sel => {
+                sel.addEventListener('change', function() {
+                    const v = parseInt(this.dataset.versuch);
+                    const typ = this.value;
+                    const typenArr = trainingTypen[currentTrainingId];
+                    typenArr[v] = typ;
+                    saveTypen(currentTrainingId);
+                    
+                    // CSS-Klasse aktualisieren
+                    this.className = 'typ-select ' + typ;
+                });
+            });
+
+            // Event-Listener für Punkt-Änderungen
+            document.querySelectorAll('.punkt-select').forEach(sel => {
+                sel.addEventListener('change', function() {
+                    const v = parseInt(this.dataset.versuch);
+                    const dg = parseInt(this.dataset.dg);
+                    const val = parseInt(this.value);
+                    const dataRow = trainingData[currentTrainingId][v];
+                    dataRow[dg] = val;
+                    updateSums(currentTrainingId);
+                    updateProgress(currentTrainingId);
+                });
+            });
+        }
+
+        function getOptionsForTraining(id) {
+            const t = trainings.find(t => t.id === id);
+            return t ? t.punktOptionen : [0, 5, 10];
+        }
+
+        function updateSums(id) {
+            const data = trainingData[id];
+            const sums = [0, 0, 0, 0];
+            let total = 0;
+            for (let i = 0; i < 18; i++) {
+                for (let dg = 0; dg < 4; dg++) {
+                    sums[dg] += data[i][dg];
+                    total += data[i][dg];
+                }
+            }
+            sumDG1.textContent = sums[0];
+            sumDG2.textContent = sums[1];
+            sumDG3.textContent = sums[2];
+            sumDG4.textContent = sums[3];
+            sumDisplay.textContent = total;
+        }
+
+        function updateProgress(id) {
+            const data = trainingData[id];
+            let bewertet = 0;
+            for (let i = 0; i < 18; i++) {
+                let hasValue = false;
+                for (let dg = 0; dg < 4; dg++) {
+                    if (data[i][dg] > 0) { hasValue = true; break; }
+                }
+                if (hasValue) bewertet++;
+            }
+            const pct = Math.round((bewertet / 18) * 100);
+            progressText.textContent = `${bewertet}/18`;
+            progressFill.style.width = pct + '%';
+        }
+
+        // ============================================
+        // 10. NAVIGATION
+        // ============================================
+        function goToDashboard() {
+            if (currentTrainingId) {
+                saveTypen(currentTrainingId);
+            }
+            dashboard.style.display = 'flex';
+            trainingDetail.classList.remove('active');
+            trainingDetail.style.display = 'none';
+            currentTrainingId = null;
+        }
+
+        function resetCurrentTraining() {
+            if (!currentTrainingId) return;
+            if (!confirm('Alle Punktwerte für dieses Training zurücksetzen?')) return;
+            const data = trainingData[currentTrainingId];
+            const typen = trainingTypen[currentTrainingId];
+            for (let i = 0; i < 18; i++) {
+                data[i] = [0, 0, 0, 0];
+                typen[i] = 'stock';
+            }
+            saveTypen(currentTrainingId);
+            renderTable(currentTrainingId);
+            updateSums(currentTrainingId);
+            updateProgress(currentTrainingId);
+        }
+
+        function printTrainingView() { window.print(); }
+
+        // ============================================
+        // 11. EVENT LISTENER
+        // ============================================
+        backBtn.addEventListener('click', goToDashboard);
+        resetBtn.addEventListener('click', resetCurrentTraining);
+        printBtn.addEventListener('click', printTrainingView);
+
+        showSelectionBtn.addEventListener('click', function() {
+            if (trainingDetail.classList.contains('active')) {
+                goToDashboard();
+            } else {
+                document.querySelector('.dashboard').scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+
+        // ============================================
+        // 12. INIT
+        // ============================================
+        renderCards();
+
+        console.log('🚀 BOEE Einzeltraining mit festen Regeln geladen.');
+        console.log('📸 Trainings mit Bildern:');
+        trainings.forEach(t => {
+            console.log(`  ${t.title}: ${t.bild || 'kein Bild'}`);
+        });
+    })();
+</script>
+
+</body>
+</html>

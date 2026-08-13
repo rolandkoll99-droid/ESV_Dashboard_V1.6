@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+    <title>Dashboard – Trainingsportal ESV Grein</title>
+    <script src="qrcode.min.js"></script>
+    <link rel="stylesheet" href="chrome.css">
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <div class="header">
+        <h1>
+            <svg class="header-logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="100" cy="100" r="95" fill="#1f5e3a" stroke="#ffdf8c" stroke-width="2"/>
+                <text x="100" y="78" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="30" fill="#ffdf8c" letter-spacing="1.5">STOCKSCHIESSEN</text>
+                <text x="100" y="112" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="20" fill="#c8e6c9" letter-spacing="2.5">TRAININGSAPP</text>
+                <line x1="30" y1="85" x2="70" y2="85" stroke="#ffdf8c" stroke-width="1.5" opacity="0.3"/>
+                <line x1="130" y1="85" x2="170" y2="85" stroke="#ffdf8c" stroke-width="1.5" opacity="0.3"/>
+            </svg>
+            Dashboard
+        </h1>
+
+        <div class="header-controls">
+            <button onclick="toggleTheme()" id="btnTheme">🌓</button>
+            <a class="logout" href="#" onclick="logout(); return false;">Abmelden</a>
+        </div>
+    </div>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="layout">
+        <div class="arena">
+            <div class="arena-content">
+                <div class="dashboard">
+                    <!-- ===== TOP-LEISTE ===== -->
+                    <div class="dashboard-top">
+                        <div class="dashboard-card">
+                            <div class="label">📍 Standort</div>
+                            <div class="value" id="dashboardLocation">🏠 Grein, Österreich</div>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="label">📅 Datum</div>
+                            <div class="value" id="dashboardDate">--</div>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="label">🕐 Uhrzeit</div>
+                            <div class="value" id="dashboardTime">--</div>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="label">🌤️ Wetter</div>
+                            <div class="value" id="dashboardWeather">🌤️ --°C · --</div>
+                        </div>
+                    </div>
+
+                    <!-- ===== MENÜ-KARTEN ===== -->
+                    <div class="dashboard-menu">
+                        <a class="menu-card" href="01_Trainingsmodus.html">
+                            <div class="icon">🥌</div>
+                            <div class="title">Trainingsmodus</div>
+                            <div class="desc">Freies Training<br>ohne Zeitdruck</div>
+                            <div class="badge">Standard</div>
+                        </a>
+
+                        <a class="menu-card" href="05_Trainingsmodus_Pro.html">
+                            <div class="icon">⚡</div>
+                            <div class="title">Trainingsmodus Pro</div>
+                            <div class="desc">Freies Training<br>mit Zusatztastatur</div>
+                            <div class="badge-pro">⭐ PRO</div>
+                        </a>
+
+                        <a class="menu-card" href="04_Trainingsanalyse.html">
+                            <div class="icon">📊</div>
+                            <div class="title">Trainingsanalyse</div>
+                            <div class="desc">Auswertung deiner<br>Fortschritte</div>
+                            <div class="badge">Analyse</div>
+                        </a>
+
+                        <a class="menu-card" href="06_Einzeltraining.html">
+                            <div class="icon">🎯</div>
+                            <div class="title">Einzeltraining</div>
+                            <div class="desc">Interaktives Training<br>mit Situationsbild</div>
+                            <div class="badge-einzeltraining">🌟 Anleitung</div>
+                        </a>
+
+                        <a class="menu-card" href="02_Spielerverwaltung.html">
+                            <div class="icon">👥</div>
+                            <div class="title">Spielerverwaltung</div>
+                            <div class="desc">Verwaltung der<br>Spielerprofile</div>
+                            <div class="badge">Verwaltung</div>
+                        </a>
+
+                        <!-- ===== QR-CODE KARTEN ===== -->
+                        <a class="qr-card" href="04_Trainingsanalyse.html">
+                            <div class="icon">📱</div>
+                            <div class="title">Trainingsanalyse</div>
+                            <div class="desc">Am Handy<br>weiterlesen</div>
+                            <div class="qr-container" id="qrTrainingsanalyse"></div>
+                            <div class="qr-actions">
+                                <span class="badge badge-copy" onclick="event.preventDefault(); event.stopPropagation(); copyQrUrl('analyse');">📋 Link kopieren</span>
+                            </div>
+                        </a>
+
+                        <a class="qr-card" href="06_Einzeltraining.html">
+                            <div class="icon">📱</div>
+                            <div class="title">Einzeltraining</div>
+                            <div class="desc">Am Handy<br>weiterlesen</div>
+                            <div class="qr-container" id="qrEinzeltraining"></div>
+                            <div class="qr-actions">
+                                <span class="badge badge-copy" onclick="event.preventDefault(); event.stopPropagation(); copyQrUrl('einzel');">📋 Link kopieren</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="dashboard-footer">
+                        ESV Grein Trainingsportal
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TOAST ===== -->
+    <div class="toast" id="toast"></div>
+
+    <script src="auth.js"></script>
+    <script src="chrome.js"></script>
+    <script>
+    // ============================================================
+    // QR-CODES (Trainingsanalyse & Einzeltraining am Smartphone)
+    // ============================================================
+    // Feste GitHub-Pages-Adresse deines Repos eintragen, z. B.:
+    // 'https://max-mustermann.github.io/trainingsportal/'
+    // Die QR-Codes zeigen dann IMMER auf diese öffentliche Adresse – auch
+    // wenn das Dashboard gerade lokal getestet oder über eine andere
+    // Adresse (z. B. IP des Pi im WLAN) aufgerufen wird, weil ein
+    // Smartphone beim Scannen nur öffentlich erreichbare Adressen aufrufen
+    // kann.
+    const GITHUB_PAGES_BASE_URL = 'https://DEIN-NUTZERNAME.github.io/trainingsportal/';
+
+    function resolveQrBaseUrl() {
+        if (GITHUB_PAGES_BASE_URL && !GITHUB_PAGES_BASE_URL.includes('DEIN-NUTZERNAME')) {
+            return GITHUB_PAGES_BASE_URL;
+        }
+        return location.href;
+    }
+
+    let qrUrls = { analyse: '', einzel: '' };
+
+    function renderDashboardQrCodes() {
+        const base = resolveQrBaseUrl();
+        qrUrls.analyse = new URL('04_Trainingsanalyse.html', base).href;
+        qrUrls.einzel = new URL('06_Einzeltraining.html', base).href;
+
+        document.getElementById('qrTrainingsanalyse').innerHTML = '';
+        document.getElementById('qrEinzeltraining').innerHTML = '';
+
+        new QRCode(document.getElementById('qrTrainingsanalyse'), {
+            text: qrUrls.analyse,
+            width: 100, height: 100,
+            colorDark: '#1a1a2e', colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.M
+        });
+        new QRCode(document.getElementById('qrEinzeltraining'), {
+            text: qrUrls.einzel,
+            width: 100, height: 100,
+            colorDark: '#1a1a2e', colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.M
+        });
+    }
+
+    function copyQrUrl(which) {
+        const url = qrUrls[which];
+        if (!url) return;
+        navigator.clipboard.writeText(url).then(() => {
+            toast('✅ Link kopiert!');
+        }).catch(() => {
+            const input = document.createElement('input');
+            input.value = url;
+            document.body.appendChild(input);
+            input.select();
+            document.execCommand('copy');
+            document.body.removeChild(input);
+            toast('✅ Link kopiert!');
+        });
+    }
+
+    // ============================================================
+    // WETTER API
+    // ============================================================
+    const WEATHER_API_KEY = 'edf5872a3f0fb45f5dba2e3ee558d817';
+    const WEATHER_LOCATION = 'Grein,AT';
+    let weatherData = { temperature: '--', condition: '☀️', wind: '--' };
+
+    function getWeatherIcon(iconCode) {
+        const icons = {
+            '01d': '☀️', '01n': '🌙', '02d': '⛅', '02n': '☁️',
+            '03d': '☁️', '03n': '☁️', '04d': '☁️', '04n': '☁️',
+            '09d': '🌧️', '09n': '🌧️', '10d': '🌦️', '10n': '🌧️',
+            '11d': '⛈️', '11n': '⛈️', '13d': '❄️', '13n': '❄️',
+            '50d': '🌫️', '50n': '🌫️'
+        };
+        return icons[iconCode] || '🌤️';
+    }
+
+    function fetchWeather() {
+        if (!WEATHER_API_KEY || WEATHER_API_KEY === 'YOUR_API_KEY') {
+            const now = new Date();
+            const hour = now.getHours();
+            weatherData = hour >= 6 && hour < 18
+                ? { temperature: '18°C', condition: '☀️', wind: '5 km/h' }
+                : { temperature: '10°C', condition: '🌙', wind: '3 km/h' };
+            updateDashboardInfo();
+            return;
+        }
+        fetch(`https://api.openweathermap.org/data/2.5/weather?q=${WEATHER_LOCATION}&units=metric&lang=de&appid=${WEATHER_API_KEY}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.main) {
+                    weatherData = {
+                        temperature: `${Math.round(data.main.temp)}°C`,
+                        condition: getWeatherIcon(data.weather[0].icon),
+                        wind: `${Math.round(data.wind.speed)} km/h`
+                    };
+                    updateDashboardInfo();
+                }
+            })
+            .catch(() => {
+                weatherData = { temperature: '--°C', condition: '🌤️', wind: '--' };
+                updateDashboardInfo();
+            });
+    }
+
+    // ============================================================
+    // DATUM & UHRZEIT
+    // ============================================================
+    function updateDateTime() {
+        const now = new Date();
+        const options = { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' };
+        const dateEl = document.getElementById('dashboardDate');
+        const timeEl = document.getElementById('dashboardTime');
+        if (dateEl) dateEl.textContent = now.toLocaleDateString('de-DE', options);
+        if (timeEl) timeEl.textContent = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
+
+    function updateDashboardInfo() {
+        const weatherEl = document.getElementById('dashboardWeather');
+        if (weatherEl) weatherEl.innerHTML = `${weatherData.condition} ${weatherData.temperature} · ${weatherData.wind}`;
+        updateDateTime();
+    }
+
+    // ============================================================
+    // INIT
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+        renderDashboardQrCodes();
+        updateDashboardInfo();
+        fetchWeather();
+        setInterval(updateDateTime, 1000);
+        setInterval(fetchWeather, 300000);
+        setTimeout(() => toast('🏠 Willkommen beim Trainingsportal!'), 500);
+    });
+
+    window.copyQrUrl = copyQrUrl;
+    </script>
+</body>
+</html>

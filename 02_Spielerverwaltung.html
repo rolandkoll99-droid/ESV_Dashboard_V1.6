@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+    <title>Spielerverwaltung – Trainingsportal ESV Grein</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --green: #1f5e3a;
+            --red: #b93a32;
+            --gold: #ffdf8c;
+            --dark: #102417;
+            --light: #eef5e9;
+            --border: #d7e4cf;
+            --bg-main: #0a0e14;
+            --bg-panel: #131b24;
+            --line:rgba(255,255,255,0.08);
+            --text-main: #eef2f6;
+            --text-dim: #8a97a6;
+            --accent: #ffdf8c;
+            --accent-hover: #f7cf5c;
+            --font-display: "Space Grotesk","Inter",sans-serif;
+            --font-body: "Inter",Segoe UI,Arial,sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: linear-gradient(135deg, #17351f, #0d1f13);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-panel);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .app-header{
+            position: sticky;
+            top: 0;
+            z-index: 501;
+            background: var(--green);
+            color: #fff;
+            padding: 8px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            flex-shrink: 0;
+            font-size: 14px;
+            margin-bottom: 16px;
+            border-radius: 12px;
+        }
+        .app-header .app-header-title{
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: .02em;
+        }
+        .app-header .app-header-logo{ width: 26px; height: 26px; flex-shrink: 0; }
+        .app-header .app-header-controls{ display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .app-header a, .app-header button{
+            color: #fff;
+            text-decoration: none;
+            background: rgba(255,255,255,0.14);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background .15s ease;
+        }
+        .app-header a:hover, .app-header button:hover{ background: rgba(255,255,255,0.24); }
+        .app-header .app-header-back{ background: transparent; padding: 6px 4px; }
+        .app-header .app-header-back:hover{ background: rgba(255,255,255,0.14); }
+
+        .topbar{
+             position: sticky;
+            top: 0;
+            z-index: 501;
+             background:var(--bg-panel);
+            border-bottom:1px solid var(--line);
+            padding:8px 14px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            flex-shrink:0;
+            font-size:15px;
+}
+        .topbar a {
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color .15s ease;
+        }
+        .topbar a:hover { color: var(--text-main); }
+        .topbar a.logout {
+            border: 1px solid var(--line);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+        .topbar a.logout:hover { border-color: var(--accent); }
+
+        .header h1 {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+        .header h1::before {
+            content: "Modul 05";
+            display: block;
+            font-family: var(--font-body);
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            font-size: 11px;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .header-actions button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            touch-action: manipulation;
+        }
+        .header-actions button:active { transform: scale(0.95); }
+
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:hover { background: var(--accent-hover); }
+
+        .btn-success { background: #2e7d32; color: white; }
+        .btn-success:hover { background: #388e3c; }
+
+        .btn-danger { background: var(--red); color: white; }
+        .btn-danger:hover { background: #c62828; }
+
+        .btn-gold { background: var(--gold); color: black; }
+        .btn-gold:hover { background: #f0c860; }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--line);
+            color: var(--text-main);
+        }
+        .btn-outline:hover { background: rgba(255,255,255,0.05); }
+
+        /* Statistik */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: var(--bg-panel);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 14px 18px;
+            text-align: center;
+        }
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--accent);
+        }
+        .stat-card .label {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Tabelle */
+        .table-wrapper {
+            background: var(--bg-panel);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            overflow: hidden;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        thead {
+            background: rgba(255,255,255,0.04);
+        }
+
+        th {
+            padding: 14px 16px;
+            text-align: left;
+            font-weight: 700;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--line);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background: rgba(255,255,255,0.03);
+        }
+
+        .player-id {
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            background: rgba(255,255,255,0.06);
+            padding: 2px 10px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .verein-badge {
+            background: rgba(51, 197, 255, 0.15);
+            color: var(--accent);
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .action-buttons button {
+            padding: 4px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            touch-action: manipulation;
+        }
+        .action-buttons button:active { transform: scale(0.92); }
+
+        .btn-edit { background: var(--gold); color: black; }
+        .btn-edit:hover { background: #f0c860; }
+
+        .btn-delete { background: var(--red); color: white; }
+        .btn-delete:hover { background: #c62828; }
+
+        /* Formular - Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 20px;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-panel);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 480px;
+            width: 100%;
+            animation: modalIn 0.25s ease-out;
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.92); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal h2 {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            margin-bottom: 6px;
+        }
+
+        .modal .sub {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            margin-bottom: 18px;
+        }
+
+        .modal label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+            color: var(--text-dim);
+        }
+
+        .modal input, .modal select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.05);
+            color: var(--text-main);
+            font-size: 0.95rem;
+            margin-bottom: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .modal input:focus, .modal select:focus {
+            border-color: var(--accent);
+        }
+
+        .modal input::placeholder {
+            color: var(--text-dim);
+        }
+
+        .modal .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .modal .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .modal .modal-actions button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
+            touch-action: manipulation;
+        }
+        .modal .modal-actions button:active { transform: scale(0.95); }
+
+        .modal .modal-actions .btn-cancel {
+            background: rgba(255,255,255,0.08);
+            color: var(--text-main);
+        }
+        .modal .modal-actions .btn-cancel:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-panel);
+            border: 1px solid var(--line);
+            color: var(--text-main);
+            padding: 14px 24px;
+            border-radius: 14px;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 99999;
+            pointer-events: none;
+            text-align: center;
+            max-width: 90%;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        .toast.success { border-color: #4caf50; }
+        .toast.error { border-color: var(--red); }
+        .toast.info { border-color: var(--accent); }
+
+        /* Leerzustand */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--text-dim);
+        }
+        .empty-state .icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        .empty-state h3 {
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+            .header-actions {
+                justify-content: center;
+            }
+            .modal .form-row {
+                grid-template-columns: 1fr;
+            }
+            .action-buttons {
+                flex-direction: column;
+                gap: 4px;
+            }
+            .action-buttons button {
+                width: 100%;
+                padding: 6px 12px;
+            }
+            td, th {
+                padding: 10px 12px;
+                font-size: 0.8rem;
+            }
+            .stats {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 10px; }
+            .header { padding: 14px 16px; }
+            .header h1 { font-size: 1.3rem; }
+            .modal { padding: 20px; }
+            .stats { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-header">
+    <div class="app-header-title">
+        <svg class="app-header-logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="100" cy="100" r="95" fill="#1f5e3a" stroke="#ffdf8c" stroke-width="4"/>
+            <text x="100" y="90" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="42" fill="#ffdf8c" letter-spacing="1.5">ESV</text>
+            <text x="100" y="130" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="26" fill="#c8e6c9" letter-spacing="2.5">GREIN</text>
+        </svg>
+        Spielerverwaltung
+    </div>
+    <div class="app-header-controls">
+        <a class="app-header-back" href="dashboard.html">⬅ Dashboard</a>
+        <a class="logout" href="#" onclick="logout(); return false;">Abmelden</a>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <h1>Spielerverwaltung</h1>
+        <div class="header-actions">
+            <button class="btn-primary" onclick="openAddModal()">➕ Spieler hinzufügen</button>
+            <button class="btn-gold" onclick="exportExcel()">📥 Excel exportieren</button>
+            <button class="btn-outline" onclick="document.getElementById('importFile').click()">📤 Excel importieren</button>
+            <input type="file" id="importFile" accept=".xlsx,.xls,.csv" style="display:none" onchange="importExcel(event)">
+        </div>
+    </div>
+
+    <!-- Statistik -->
+    <div class="stats" id="statsContainer">
+        <div class="stat-card">
+            <div class="number" id="totalPlayers">0</div>
+            <div class="label">Spieler gesamt</div>
+        </div>
+        <div class="stat-card">
+            <div class="number" id="totalVereine">0</div>
+            <div class="label">Vereine</div>
+        </div>
+        <div class="stat-card">
+            <div class="number" id="lastAdded">-</div>
+            <div class="label">Zuletzt hinzugefügt</div>
+        </div>
+    </div>
+
+    <!-- Tabelle -->
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Spieler-ID</th>
+                    <th>Name</th>
+                    <th>Verein</th>
+                    <th style="text-align:right;">Aktionen</th>
+                </tr>
+            </thead>
+            <tbody id="playerTableBody">
+                <!-- Wird via JS befüllt -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal: Spieler hinzufügen/bearbeiten -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this) closeModal()">
+    <div class="modal">
+        <h2 id="modalTitle">Spieler hinzufügen</h2>
+        <div class="sub" id="modalSub">Neuen Spieler in die Datenbank aufnehmen</div>
+
+        <form id="playerForm" onsubmit="savePlayer(event)">
+            <input type="hidden" id="editIndex" value="-1">
+
+            <label for="playerName">Spielername *</label>
+            <input type="text" id="playerName" placeholder="z.B. Andreas Hinterkörner" required>
+
+            <label for="playerVerein">Verein</label>
+            <input type="text" id="playerVerein" placeholder="z.B. ESV Grein">
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal()">Abbrechen</button>
+                <button type="submit" class="btn-primary" id="modalSaveBtn">Speichern</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// SPIELERDATEN (lokal gespeichert)
+// ============================================================
+const STORAGE_KEY = 'esv_grein_spielerliste';
+
+// Standard-Datensatz, falls noch keine Daten existieren
+const DEFAULT_PLAYERS = [
+    { id: 'SP-001', name: 'Andreas Hinterkörner', verein: 'ESV Grein' },
+    { id: 'SP-002', name: 'Peter Tischler', verein: 'ESV Grein' },
+    { id: 'SP-003', name: 'Ernst Aigen', verein: 'ESV Grein' },
+    { id: 'SP-004', name: 'Mario Leimhofer', verein: 'ESV Grein' },
+    { id: 'SP-005', name: 'Johann Kronsteiner', verein: 'ESV Grein' },
+    { id: 'SP-006', name: 'Roland Koll', verein: 'ESV Grein' },
+    { id: 'SP-007', name: 'Sabine Pils', verein: 'ESV Grein' },
+    { id: 'SP-008', name: 'Irmgard Kronsteiner', verein: 'ESV Grein' },
+    { id: 'SP-009', name: 'Willibald Scheiber', verein: 'ESV Grein' }
+];
+
+// ============================================================
+// HELPER
+// ============================================================
+function generateId() {
+    const count = getPlayers().length + 1;
+    return 'SP-' + String(count).padStart(3, '0');
+}
+
+function getPlayers() {
+    try {
+        const data = localStorage.getItem(STORAGE_KEY);
+        if (data) {
+            const parsed = JSON.parse(data);
+            if (Array.isArray(parsed) && parsed.length) return parsed;
+        }
+    } catch (e) {}
+    // Falls keine Daten: Standard speichern und zurückgeben
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_PLAYERS));
+    return [...DEFAULT_PLAYERS];
+}
+
+function savePlayers(players) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(players));
+    render();
+}
+
+function getNextId(players) {
+    const ids = players.map(p => parseInt(p.id.replace('SP-', '')) || 0);
+    const max = Math.max(...ids, 0);
+    return 'SP-' + String(max + 1).padStart(3, '0');
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function render() {
+    const players = getPlayers();
+    const tbody = document.getElementById('playerTableBody');
+
+    // Stats
+    document.getElementById('totalPlayers').textContent = players.length;
+    const vereine = new Set(players.map(p => p.verein || 'Ohne Verein'));
+    document.getElementById('totalVereine').textContent = vereine.size;
+    if (players.length > 0) {
+        const last = players[players.length - 1];
+        document.getElementById('lastAdded').textContent = last.name;
+    } else {
+        document.getElementById('lastAdded').textContent = '-';
+    }
+
+    if (players.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="4">
+                    <div class="empty-state">
+                        <div class="icon">📋</div>
+                        <h3>Keine Spieler vorhanden</h3>
+                        <p style="color:var(--text-dim);">Füge deinen ersten Spieler hinzu oder importiere eine Excel-Datei.</p>
+                    </div>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    tbody.innerHTML = players.map((p, index) => `
+        <tr>
+            <td><span class="player-id">${p.id}</span></td>
+            <td><strong>${escapeHtml(p.name)}</strong></td>
+            <td><span class="verein-badge">${escapeHtml(p.verein || 'Ohne Verein')}</span></td>
+            <td style="text-align:right;">
+                <div class="action-buttons" style="justify-content:flex-end;">
+                    <button class="btn-edit" onclick="editPlayer(${index})">✏️ Bearbeiten</button>
+                    <button class="btn-delete" onclick="deletePlayer(${index})">🗑️ Löschen</button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+// ============================================================
+// CRUD
+// ============================================================
+function openAddModal() {
+    document.getElementById('modalTitle').textContent = 'Spieler hinzufügen';
+    document.getElementById('modalSub').textContent = 'Neuen Spieler in die Datenbank aufnehmen';
+    document.getElementById('modalSaveBtn').textContent = 'Hinzufügen';
+    document.getElementById('editIndex').value = '-1';
+    document.getElementById('playerName').value = '';
+    document.getElementById('playerVerein').value = '';
+    document.getElementById('modalOverlay').classList.add('show');
+    document.getElementById('playerName').focus();
+}
+
+function editPlayer(index) {
+    const players = getPlayers();
+    const p = players[index];
+    if (!p) return;
+
+    document.getElementById('modalTitle').textContent = 'Spieler bearbeiten';
+    document.getElementById('modalSub').textContent = `Bearbeite "${p.name}"`;
+    document.getElementById('modalSaveBtn').textContent = 'Aktualisieren';
+    document.getElementById('editIndex').value = index;
+    document.getElementById('playerName').value = p.name;
+    document.getElementById('playerVerein').value = p.verein || '';
+    document.getElementById('modalOverlay').classList.add('show');
+    document.getElementById('playerName').focus();
+}
+
+function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('show');
+}
+
+function savePlayer(event) {
+    event.preventDefault();
+    const name = document.getElementById('playerName').value.trim();
+    const verein = document.getElementById('playerVerein').value.trim();
+    const editIndex = parseInt(document.getElementById('editIndex').value);
+
+    if (!name) {
+        showToast('Bitte gib einen Spielernamen ein.', 'error');
+        return;
+    }
+
+    let players = getPlayers();
+
+    if (editIndex >= 0 && editIndex < players.length) {
+        // Bearbeiten
+        players[editIndex].name = name;
+        players[editIndex].verein = verein || '';
+        showToast(`✅ "${name}" wurde aktualisiert.`, 'success');
+    } else {
+        // Neu hinzufügen
+        const newPlayer = {
+            id: getNextId(players),
+            name: name,
+            verein: verein || ''
+        };
+        players.push(newPlayer);
+        showToast(`✅ "${name}" wurde hinzugefügt (ID: ${newPlayer.id}).`, 'success');
+    }
+
+    savePlayers(players);
+    closeModal();
+    render();
+}
+
+function deletePlayer(index) {
+    const players = getPlayers();
+    const p = players[index];
+    if (!p) return;
+
+    if (confirm(`Möchtest du "${p.name}" (${p.id}) wirklich löschen?`)) {
+        players.splice(index, 1);
+        savePlayers(players);
+        showToast(`🗑️ "${p.name}" wurde gelöscht.`, 'info');
+        render();
+    }
+}
+
+// ============================================================
+// EXCEL EXPORT / IMPORT (mit SheetJS / XLSX)
+// ============================================================
+function exportExcel() {
+    const players = getPlayers();
+    if (players.length === 0) {
+        showToast('Keine Spieler zum Exportieren vorhanden.', 'error');
+        return;
+    }
+
+    // Daten für Excel aufbereiten
+    const data = players.map(p => ({
+        'Spieler-ID': p.id,
+        'Name': p.name,
+        'Verein': p.verein || ''
+    }));
+
+    // SheetJS laden (CDN)
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
+    script.onload = function() {
+        try {
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(data);
+            XLSX.utils.book_append_sheet(wb, ws, 'Spieler');
+            // Spaltenbreiten anpassen
+            ws['!cols'] = [
+                { wch: 14 },
+                { wch: 28 },
+                { wch: 20 }
+            ];
+            const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+            const blob = new Blob([wbout], { type: 'application/octet-stream' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Spielerliste_${new Date().toISOString().slice(0,10)}.xlsx`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+            showToast(`📥 ${players.length} Spieler exportiert.`, 'success');
+        } catch (err) {
+            showToast('Fehler beim Export: ' + err.message, 'error');
+        }
+    };
+    script.onerror = function() {
+        showToast('Fehler beim Laden der Excel-Bibliothek. Bitte Internetverbindung prüfen.', 'error');
+    };
+    document.head.appendChild(script);
+}
+
+function importExcel(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            // SheetJS laden
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
+            script.onload = function() {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+
+                    if (!jsonData || jsonData.length === 0) {
+                        showToast('Die Datei enthält keine Daten.', 'error');
+                        return;
+                    }
+
+                    let players = getPlayers();
+                    let added = 0;
+                    let skipped = 0;
+
+                    jsonData.forEach(row => {
+                        // Spalten erkennen (flexibel)
+                        const name = row['Name'] || row['name'] || row['Spieler'] || row['spieler'] || '';
+                        const id = row['Spieler-ID'] || row['id'] || row['ID'] || '';
+                        const verein = row['Verein'] || row['verein'] || '';
+
+                        if (!name.trim()) {
+                            skipped++;
+                            return;
+                        }
+
+                        // Prüfen ob bereits vorhanden (anhand Name + Verein)
+                        const exists = players.some(p => 
+                            p.name.toLowerCase() === name.trim().toLowerCase() &&
+                            (p.verein || '').toLowerCase() === (verein || '').toLowerCase()
+                        );
+
+                        if (!exists) {
+                            const newId = id.trim() || getNextId(players);
+                            players.push({
+                                id: newId,
+                                name: name.trim(),
+                                verein: verein.trim() || ''
+                            });
+                            added++;
+                        } else {
+                            skipped++;
+                        }
+                    });
+
+                    if (added > 0) {
+                        savePlayers(players);
+                        showToast(`📥 ${added} Spieler importiert. ${skipped} übersprungen (bereits vorhanden).`, 'success');
+                    } else {
+                        showToast(`ℹ️ Keine neuen Spieler gefunden. ${skipped} Einträge waren bereits vorhanden.`, 'info');
+                    }
+                } catch (err) {
+                    showToast('Fehler beim Verarbeiten der Datei: ' + err.message, 'error');
+                }
+            };
+            script.onerror = function() {
+                showToast('Fehler beim Laden der Excel-Bibliothek. Bitte Internetverbindung prüfen.', 'error');
+            };
+            document.head.appendChild(script);
+        } catch (err) {
+            showToast('Fehler beim Lesen der Datei: ' + err.message, 'error');
+        }
+    };
+    reader.readAsArrayBuffer(file);
+    event.target.value = ''; // Reset
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(message, type) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.className = 'toast show ' + (type || 'info');
+    clearTimeout(toast._timeout);
+    toast._timeout = setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+render();
+
+// ============================================================
+// GLOBALER ZUGRIFF FÜR ANDERE MODULE
+// ============================================================
+// Diese Funktionen können von anderen Modulen (05_Trainingsmodus_Pro, 04_Trainingsanalyse) aufgerufen werden
+window.getPlayerList = function() {
+    return getPlayers();
+};
+
+window.getPlayerNames = function() {
+    return getPlayers().map(p => p.name);
+};
+
+window.getPlayerById = function(id) {
+    return getPlayers().find(p => p.id === id) || null;
+};
+
+window.getPlayerByName = function(name) {
+    return getPlayers().find(p => p.name === name) || null;
+};
+
+// ============================================================
+// TASTATUR
+// ============================================================
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        if (document.getElementById('modalOverlay').classList.contains('show')) {
+            closeModal();
+        }
+    }
+});
+
+console.log('✅ Spielerverwaltung geladen.');
+console.log('📌 Verfügbare Funktionen: getPlayerList(), getPlayerNames(), getPlayerById(id), getPlayerByName(name)');
+</script>
+<script src="auth.js"></script>
+<script>
+requireGate();
+requireLogin();
+</script>
+
+</body>
+</html>

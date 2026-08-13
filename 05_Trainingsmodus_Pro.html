@@ -1,0 +1,2424 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<title>Trainingsmodus Pro – Trainingsportal ESV Grein</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --green:#1f5e3a;
+    --red:#b93a32;
+    --gold:#ffdf8c;
+    --dark:#102417;
+    --light:#eef5e9;
+    --border:#d7e4cf;
+
+    --bg-main:#0a0e14;
+    --bg-panel:#131b24;
+    --line:rgba(255,255,255,0.08);
+    --text-main:#eef2f6;
+    --text-dim:#8a97a6;
+    --accent:#ffdf8c;
+    --accent-hover:#f7cf5c;
+    --font-display:"Space Grotesk","Inter",sans-serif;
+    --font-body:"Inter",Segoe UI,Arial,sans-serif;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    height: 100%;
+    height: 100dvh;
+    overflow: hidden;
+}
+
+body{
+    font-family:var(--font-body);
+    background:linear-gradient(135deg, #17351f, #0d1f13);
+    color:#222;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.app-header{
+    position: sticky;
+    top: 0;
+    z-index: 501;
+    background: var(--green);
+    color: #fff;
+    padding: 8px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    flex-shrink: 0;
+    font-size: 14px;
+}
+.app-header .app-header-title{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: .02em;
+}
+.app-header .app-header-logo{ width: 26px; height: 26px; flex-shrink: 0; }
+.app-header .app-header-controls{ display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.app-header a, .app-header button{
+    color: #fff;
+    text-decoration: none;
+    background: rgba(255,255,255,0.14);
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background .15s ease;
+}
+.app-header a:hover, .app-header button:hover{ background: rgba(255,255,255,0.24); }
+.app-header .app-header-back{ background: transparent; padding: 6px 4px; }
+.app-header .app-header-back:hover{ background: rgba(255,255,255,0.14); }
+
+.topbar{
+    position: sticky;
+    top: 0;
+    z-index: 501;
+    background:var(--bg-panel);
+    border-bottom:1px solid var(--line);
+    padding:8px 14px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-shrink:0;
+    font-size:13px;
+}
+
+.topbar a{
+    color:var(--text-dim);
+    text-decoration:none;
+}
+.topbar a:hover{ color:var(--text-main); }
+
+.topbar .logout{
+    border:1px solid var(--line);
+    padding:5px 12px;
+    border-radius:6px;
+}
+.topbar .logout:hover{ border-color:var(--text-dim); }
+
+.header{
+    position: sticky;
+    top: 0;
+    z-index: 500;
+    background:var(--bg-panel);
+    border-bottom:1px solid var(--line);
+    color:var(--text-main);
+    padding:10px 14px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:12px;
+    flex-shrink:0;
+}
+
+.header h1{
+    font-family:var(--font-display);
+    letter-spacing:0.03em;
+    text-transform:uppercase;
+    font-size:1.7rem;
+    color:var(--text-main);
+}
+.header h1::before{
+    content:"Modul 05";
+    display:block;
+    font-family:var(--font-body);
+    text-transform:uppercase;
+    letter-spacing:0.14em;
+    font-size:11px;
+    color:var(--accent);
+    font-weight:700;
+}
+
+.header-controls{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+}
+
+button,
+select,
+input{
+    border:none;
+    border-radius:20px;
+    padding:10px 14px;
+    font-size:1rem;
+    touch-action: manipulation;
+}
+
+button{
+    cursor:pointer;
+    background:var(--accent);
+    color:white;
+    font-weight:700;
+    touch-action: manipulation;
+    transition: transform 0.1s, background 0.15s;
+}
+button:hover{
+    background:var(--accent-hover);
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+.layout{
+    flex: 1;
+    padding:16px;
+    overflow: hidden;
+    min-height: 0;
+}
+
+.arena{
+    width:100%;
+    max-width:1200px;
+    height:100%;
+    background:white;
+    border-radius:22px;
+    overflow:hidden;
+    box-shadow:0 10px 30px rgba(0,0,0,.3);
+    display:flex;
+    flex-direction:column;
+    margin: 0 auto;
+}
+
+.arena-header{
+    background:var(--light);
+    padding:12px 16px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-shrink:0;
+    flex-wrap:wrap;
+    gap:8px;
+}
+
+.arena-title{
+    font-size:1.6rem;
+    font-weight:900;
+    color:var(--green);
+    text-align:center;
+}
+
+.keyboard-hint {
+    background: var(--dark);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.scoreboard-row{
+    display:flex;
+    align-items:stretch;
+    gap:10px;
+    padding:0 14px 14px;
+    flex-shrink:0;
+}
+
+.scoreboard{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    flex:1;
+    min-width:0;
+}
+
+/* ===== SPIELERAUSWAHL (Aufstellung) ===== */
+.roster-panel{
+    width:190px;
+    flex-shrink:0;
+    background:#f7faf5;
+    border:2px solid var(--border);
+    border-radius:16px;
+    padding:10px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+}
+
+.roster-panel.team-e{
+    background:#fdf5f4;
+    border-color:#f3d3d0;
+}
+
+.roster-panel-title{
+    font-size:0.72rem;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+    color:#666;
+    text-align:center;
+    margin-bottom:2px;
+}
+
+.roster-slot-grid{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+}
+
+.roster-slot{
+    display:flex;
+    flex-direction:column;
+    gap:3px;
+}
+
+.roster-slot select{
+    width:100%;
+    padding:7px 8px;
+    font-size:0.8rem;
+    border-radius:9px;
+    border:1px solid var(--border);
+    background:white;
+    color:#222;
+    text-overflow:ellipsis;
+}
+
+.roster-slot input.roster-custom{
+    width:100%;
+    padding:7px 8px;
+    font-size:0.8rem;
+    border-radius:9px;
+    border:1px solid var(--accent);
+    background:#eef9ff;
+    color:#222;
+}
+
+.roster-slot input.roster-custom::placeholder{
+    color:#9ab;
+}
+
+.roster-manage-btn{
+    margin-top:4px;
+    padding:7px 8px;
+    font-size:0.72rem;
+    border-radius:9px;
+    background:var(--dark);
+    color:white;
+    text-align:center;
+    cursor:pointer;
+    font-weight:700;
+    touch-action:manipulation;
+}
+.roster-manage-btn:active{ transform:scale(0.96); }
+
+/* ===== SPIELERLISTE VERWALTEN – MODAL ===== */
+.player-manager-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.6);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:20001;
+    padding:16px;
+}
+.player-manager-overlay.show{ display:flex; }
+
+.player-manager-box{
+    background:white;
+    border-radius:20px;
+    padding:22px;
+    max-width:460px;
+    width:100%;
+    max-height:88vh;
+    overflow-y:auto;
+    color:#222;
+}
+.player-manager-box h3{
+    color:var(--green);
+    margin-bottom:4px;
+    font-size:1.3rem;
+}
+.player-manager-box .hint{
+    font-size:0.82rem;
+    color:#777;
+    margin-bottom:14px;
+}
+.player-manager-list{
+    list-style:none;
+    margin-bottom:16px;
+    border-top:1px solid var(--border);
+}
+.player-manager-list li{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:7px 2px;
+    border-bottom:1px solid var(--border);
+    font-size:0.9rem;
+}
+.player-manager-list li button{
+    background:var(--red);
+    padding:4px 10px;
+    border-radius:8px;
+    font-size:0.72rem;
+    font-weight:700;
+}
+.player-manager-add{
+    display:flex;
+    gap:6px;
+    margin-bottom:16px;
+}
+.player-manager-add input{
+    flex:1;
+    padding:9px 10px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    font-size:0.9rem;
+}
+.player-manager-add button{
+    padding:9px 16px;
+    border-radius:10px;
+    white-space:nowrap;
+}
+.player-manager-import{
+    border-top:1px solid var(--border);
+    padding-top:14px;
+    margin-bottom:16px;
+}
+.player-manager-import label{
+    display:block;
+    font-size:0.82rem;
+    font-weight:700;
+    margin-bottom:8px;
+    color:#555;
+}
+.player-manager-import input[type="file"]{
+    font-size:0.82rem;
+    padding:0;
+    background:none;
+}
+.player-manager-close{
+    width:100%;
+    padding:11px;
+    border-radius:10px;
+    background:var(--dark);
+    color:white;
+    font-weight:700;
+}
+
+.score-card{
+    background:#f7faf5;
+    border-radius:18px;
+    padding:16px 20px;
+    text-align:center;
+    border-bottom:8px solid var(--green);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    transition: all 0.3s ease;
+}
+
+.score-card.red{
+    border-bottom-color:var(--red);
+}
+
+.score-card.team-active-w {
+    background: #e8f5e9 !important;
+    border-bottom-color: #2e7d32 !important;
+    box-shadow: 0 0 30px rgba(76, 175, 80, 0.5) !important;
+    transform: scale(1.02);
+}
+
+.score-card.team-active-e {
+    background: #ffebee !important;
+    border-bottom-color: #c62828 !important;
+    box-shadow: 0 0 30px rgba(244, 67, 54, 0.5) !important;
+    transform: scale(1.02);
+}
+
+.team-info{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:2px;
+}
+
+.team-name{
+    font-size:1.2rem;
+    font-weight:900;
+}
+
+.team-name .key-hint {
+    font-size: 0.8rem;
+    color: #888;
+    font-weight: 400;
+}
+
+.team-score{
+    font-size:3.4rem;
+    font-weight:900;
+    color:var(--green);
+    line-height:1;
+}
+
+.score-card.red .team-score{
+    color:var(--red);
+}
+
+.team-wins{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:var(--dark);
+    color:white;
+    padding:6px 16px;
+    border-radius:10px;
+    font-weight:700;
+    font-size:1.2rem;
+    white-space:nowrap;
+}
+
+.team-wins span{
+    font-size:1.4rem;
+}
+
+.kehren-wrapper{
+    flex:1;
+    overflow-y:auto;
+    padding:0 14px 14px;
+    min-height:0;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+}
+
+.kehren-wrapper::-webkit-scrollbar{
+    width:8px;
+}
+
+.kehren-wrapper::-webkit-scrollbar-track{
+    background:#f0f0f0;
+    border-radius:10px;
+}
+
+.kehren-wrapper::-webkit-scrollbar-thumb{
+   background:var(--green);
+    border-radius:10px;
+}
+
+.kehren-wrapper::-webkit-scrollbar-thumb:hover{
+    background:#0d3d22;
+}
+
+.kehren{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+}
+
+.kehren-title{
+    text-align:center;
+    font-weight:900;
+    margin-bottom:8px;
+}
+
+.kehre-row{
+    display:grid;
+    grid-template-columns:90px 1fr 45px;
+    gap:8px;
+    align-items:center;
+    background:white;
+    border:2px solid var(--border);
+    border-radius:14px;
+    padding:8px;
+    margin-bottom:8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.kehre-row:active {
+    transform: scale(0.98);
+}
+
+.kehre-row.active{
+    border:3px solid #4caf50;
+    background:#f3fff2;
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.2);
+}
+
+.kehre-row.completed{
+    border:3px solid #ff9800;
+    background:#fff8e1;
+}
+
+.kehre-row.delete-mode{
+    border:3px solid #ff0000;
+    background:#fff0f0;
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
+}
+
+.kehre-number{
+    font-size:.9rem;
+    font-weight:900;
+    text-align:center;
+}
+
+.points{
+    display:flex;
+    gap:6px;
+    justify-content:center;
+    flex-wrap:wrap;
+}
+
+.point-btn{
+    width:44px;
+    height:44px;
+    border-radius:10px;
+    border:2px solid var(--border);
+    background:white;
+    color:black;
+    font-weight:900;
+    font-size:16px;
+    touch-action: manipulation;
+    transition: all 0.15s;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.point-btn:active {
+    transform: scale(0.92);
+    background:var(--green);
+    color:white;
+}
+
+.point-btn.active-point{
+    background:var(--green);
+    color:white;
+    border-color:var(--green);
+}
+
+.kehre-value{
+    text-align:center;
+    font-weight:900;
+    font-size:1.1rem;
+}
+
+.footer{
+    position: sticky;
+    bottom: 0;
+    z-index: 100;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+    padding:14px;
+    border-top:1px solid var(--border);
+    flex-shrink:0;
+    background: white;
+}
+
+.footer .footer-left {
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    justify-content:center;
+}
+
+.footer .footer-right {
+    font-size:0.85rem;
+    color:#555;
+    background:var(--light);
+    padding:4px 14px;
+    border-radius:30px;
+    font-weight:500;
+    letter-spacing:0.3px;
+    margin-left:20px;
+}
+
+.gold{
+    background:var(--gold);
+    color:black;
+}
+
+.gold:active{
+    background:#f0c860;
+}
+
+.toast{
+    position:fixed;
+    bottom:20px;
+    left:50%;
+    transform:translateX(-50%);
+    background:#111;
+    color:white;
+    padding:14px 20px;
+    border-radius:14px;
+    opacity:0;
+    transition:.3s;
+    z-index:9999;
+    pointer-events: none;
+    font-size:1rem;
+    max-width:90%;
+    text-align:center;
+}
+
+.toast.show{
+    opacity:1;
+}
+
+.toast.winner{
+    background: #4caf50;
+    font-weight:700;
+    font-size:1.2rem;
+}
+
+.toast.delete-mode{
+    background: #ff6b6b;
+    font-weight:700;
+}
+
+.player-selector{
+    display:flex;
+    gap:8px;
+    align-items:center;
+    background:rgba(255,255,255,0.15);
+    padding:4px 12px 4px 8px;
+    border-radius:40px;
+}
+
+.player-selector label{
+    font-weight:600;
+    font-size:0.9rem;
+}
+
+.player-selector select{
+    background:white;
+    color:black;
+    padding:6px 10px;
+    border-radius:30px;
+    font-weight:700;
+}
+
+.keyboard-status {
+    font-size: 0.85rem;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: #f0f0f0;
+    color: #333;
+    font-weight: 600;
+}
+
+.keyboard-status.waiting {
+    background: #ffd93d;
+}
+
+.keyboard-status.team-e {
+    background: #ff6b6b;
+    color: white;
+}
+
+.keyboard-status.team-w {
+    background: #4caf50;
+    color: white;
+}
+
+.keyboard-status.training-ended {
+    background: #9c27b0;
+    color: white;
+}
+
+.keyboard-status.delete-mode {
+    background: #ff0000;
+    color: white;
+    animation: blink 0.8s ease-in-out infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.training-ended-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 20000;
+    backdrop-filter: blur(5px);
+}
+
+.training-ended-overlay.show {
+    display: flex;
+}
+
+.training-ended-box {
+    background: white;
+    border-radius: 30px;
+    padding: 50px;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    animation: pulse 1.5s ease-in-out;
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.9); opacity: 0; }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.training-ended-box .trophy {
+    font-size: 4rem;
+    margin-bottom: 10px;
+}
+
+.training-ended-box h2 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: var(--green);
+}
+
+.training-ended-box .winner-name {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--red);
+    margin: 15px 0;
+}
+
+.training-ended-box .score-summary {
+    font-size: 1.2rem;
+    color: #555;
+    margin: 10px 0 20px;
+}
+
+.training-ended-box .enter-hint {
+    font-size: 0.9rem;
+    color: #888;
+    margin-top: 10px;
+    padding: 8px;
+    background: #f5f5f5;
+    border-radius: 8px;
+}
+
+.training-ended-box button {
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    background: var(--green);
+    color: white;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.spectator-container {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+    font-family: Segoe UI, Arial, sans-serif;
+    background: #1a2a22;
+    min-height: 100vh;
+    color: #fff;
+}
+
+.spectator-container h1 {
+    color: #ffdf8c;
+    font-size: 2.8rem;
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 3px solid rgba(255,223,140,0.3);
+    padding-bottom: 15px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.spectator-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.spectator-team {
+    background: #0f1f17;
+    border-radius: 24px;
+    padding: 30px 20px;
+    text-align: center;
+    border-bottom: 10px solid #4caf50;
+    box-shadow: 0 8px 0 rgba(0,0,0,0.3);
+}
+
+.spectator-team.red {
+    border-bottom-color: #ff6b6b;
+}
+
+.spectator-team .team-label {
+    font-weight: 900;
+    font-size: 2.2rem;
+    color: #fff;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+}
+
+.spectator-team .team-score-big {
+    font-size: 7rem;
+    font-weight: 900;
+    color: #4caf50;
+    line-height: 1.1;
+    text-shadow: 0 4px 20px rgba(76,175,80,0.3);
+}
+
+.spectator-team.red .team-score-big {
+    color: #ff6b6b;
+    text-shadow: 0 4px 20px rgba(255,107,107,0.3);
+}
+
+.spectator-team .team-wins-big {
+    font-size: 1.6rem;
+    background: rgba(255,255,255,0.08);
+    color: #ffdf8c;
+    padding: 8px 28px;
+    border-radius: 40px;
+    display: inline-block;
+    margin-top: 10px;
+    font-weight: 700;
+    border: 1px solid rgba(255,223,140,0.2);
+}
+
+.spectator-details {
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    text-align: center;
+    background: #0a1810;
+    border-radius: 20px;
+    padding: 22px 16px;
+    border: 1px solid rgba(255,255,255,0.06);
+}
+
+.spectator-details .detail-item {
+    background: #14261c;
+    border-radius: 16px;
+    padding: 14px 8px;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.spectator-details .detail-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #8aa89a;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.spectator-details .detail-value {
+    font-size: 2.6rem;
+    font-weight: 900;
+    color: #ffdf8c;
+    line-height: 1.3;
+}
+
+.spectator-kehren-verlauf {
+    margin-top: 30px;
+    background: #0a1810;
+    border-radius: 20px;
+    padding: 20px 24px;
+    border: 1px solid rgba(255,255,255,0.06);
+}
+
+.spectator-kehren-verlauf h4 {
+    color: #8aa89a;
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.spectator-verlauf-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 10px;
+}
+
+.spectator-verlauf-item {
+    background: #14261c;
+    border-radius: 12px;
+    padding: 8px 4px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.06);
+    transition: 0.2s;
+}
+
+.spectator-verlauf-item.active-verlauf {
+    border: 2px solid #4caf50;
+    box-shadow: 0 0 20px rgba(76,175,80,0.2);
+}
+
+.spectator-verlauf-item .v-number {
+    font-weight: 700;
+    color: #8aa89a;
+    font-size: 0.85rem;
+}
+
+.spectator-verlauf-item .v-points {
+    font-weight: 900;
+    display: flex;
+    justify-content: space-around;
+    font-size: 1.2rem;
+    margin-top: 4px;
+}
+
+.spectator-verlauf-item .v-points .w { 
+    color: #4caf50; 
+}
+.spectator-verlauf-item .v-points .e { 
+    color: #ff6b6b; 
+}
+
+.spectator-status {
+    margin-top: 20px;
+    text-align: center;
+    padding: 12px;
+    background: #0a1810;
+    border-radius: 12px;
+    color: #8aa89a;
+    font-size: 0.9rem;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+@media (min-width: 1400px) {
+    .spectator-container {
+        padding: 40px 60px;
+    }
+    .spectator-container h1 {
+        font-size: 3.4rem;
+    }
+    .spectator-team .team-score-big {
+        font-size: 9rem;
+    }
+    .spectator-team .team-label {
+        font-size: 2.8rem;
+    }
+    .spectator-details .detail-value {
+        font-size: 3.2rem;
+    }
+    .spectator-verlauf-grid {
+        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+        gap: 14px;
+    }
+    .spectator-verlauf-item .v-points {
+        font-size: 1.6rem;
+    }
+    .spectator-verlauf-item .v-number {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 900px) {
+    .spectator-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    .spectator-team .team-score-big {
+        font-size: 5rem;
+    }
+    .spectator-details {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+    .spectator-details .detail-value {
+        font-size: 2rem;
+    }
+    .spectator-verlauf-grid {
+        grid-template-columns: repeat(auto-fill, minmax(55px, 1fr));
+        gap: 8px;
+    }
+    .spectator-container h1 {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .spectator-container {
+        padding: 12px;
+    }
+    .spectator-team .team-score-big {
+        font-size: 3.6rem;
+    }
+    .spectator-team .team-label {
+        font-size: 1.4rem;
+    }
+    .spectator-details {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        padding: 14px 10px;
+    }
+    .spectator-details .detail-value {
+        font-size: 1.6rem;
+    }
+    .spectator-verlauf-grid {
+        grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+        gap: 6px;
+    }
+    .spectator-verlauf-item .v-points {
+        font-size: 0.9rem;
+    }
+    .spectator-container h1 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 900px) {
+    .scoreboard {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .scoreboard-row {
+        flex-direction: column;
+    }
+
+    .roster-panel {
+        width: 100%;
+    }
+
+    .roster-slot-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+    }
+    
+    .kehren {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .point-btn {
+        width: 58px;
+        height: 58px;
+        font-size: 22px;
+        border-radius: 12px;
+    }
+    
+    .team-score {
+        font-size: 4rem;
+    }
+    
+    .kehre-row {
+        grid-template-columns: 80px 1fr 50px;
+        padding: 10px;
+        border-radius: 16px;
+    }
+    
+    .kehre-number {
+        font-size: 1rem;
+    }
+    
+    .kehre-value {
+        font-size: 1.3rem;
+    }
+    
+    .header h1 {
+        font-size: 1.3rem;
+    }
+    
+    .footer .footer-right {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .point-btn {
+        width: 48px;
+        height: 48px;
+        font-size: 18px;
+    }
+    
+    .kehre-row {
+        grid-template-columns: 60px 1fr 40px;
+        padding: 6px;
+        gap: 4px;
+    }
+    
+    .team-score {
+        font-size: 3rem;
+    }
+    
+    .header h1 {
+        font-size: 1.1rem;
+    }
+    
+    .header-controls select,
+    .header-controls button {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+    }
+    
+    .training-ended-box {
+        padding: 30px 20px;
+    }
+    
+    .training-ended-box .winner-name {
+        font-size: 1.8rem;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+    <div class="app-header-title">
+        <svg class="app-header-logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="100" cy="100" r="95" fill="#1f5e3a" stroke="#ffdf8c" stroke-width="4"/>
+            <text x="100" y="90" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="42" fill="#ffdf8c" letter-spacing="1.5">ESV</text>
+            <text x="100" y="130" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="26" fill="#c8e6c9" letter-spacing="2.5">GREIN</text>
+        </svg>
+        Trainingsmodus Pro
+    </div>
+    <div class="app-header-controls">
+        <a class="app-header-back" href="dashboard.html">⬅ Dashboard</a>
+        <a class="logout" href="#" onclick="logout(); return false;">Abmelden</a>
+    </div>
+</div>
+
+<div class="header">
+    <h1>Trainingsmodus Pro</h1>
+
+    <div class="header-controls">
+        <span class="keyboard-status" id="keyboardStatus">🔑 Bereit</span>
+
+        <div class="player-selector">
+            <label for="playerCount">👥</label>
+            <select id="playerCount">
+                <option value="3">3 Spieler</option>
+                <option value="4" selected>4 Spieler</option>
+                <option value="5">5 Spieler</option>
+                <option value="6">6 Spieler</option>
+            </select>
+        </div>
+
+        <select id="gamesSelect">
+            <option value="2" selected>2 Siege</option>
+            <option value="3">3 Siege</option>
+            <option value="4">4 Siege</option>
+            <option value="5">5 Siege</option>
+            <option value="6">6 Siege</option>
+        </select>
+
+        <select id="kehrenSelect">
+            <option value="4">4 Kehren</option>
+            <option value="6" selected>6 Kehren</option>
+            <option value="8">8 Kehren</option>
+        </select>
+
+        <button onclick="fullReset()" style="background:#b93a32;">↺</button>
+    </div>
+</div>
+
+<div class="layout" id="layout"></div>
+
+<!-- Training beendet Overlay -->
+<div class="training-ended-overlay" id="trainingEndedOverlay">
+    <div class="training-ended-box">
+        <div class="trophy">🏆</div>
+        <h2>Training beendet!</h2>
+        <div class="winner-name" id="winnerName">Mannschaft W</div>
+        <div class="score-summary" id="scoreSummary">Siege: 2 : 0</div>
+        <div class="enter-hint">⌨️ Drücken Sie die Eingabetaste (Enter) für neues Training</div>
+        <button onclick="startNewTraining()">Neues Training starten</button>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Spielerliste verwalten – Modal -->
+<div class="player-manager-overlay" id="playerManagerOverlay" onclick="if(event.target===this){closePlayerManager();}">
+    <div class="player-manager-box">
+        <h3>⚙️ Spielerliste verwalten</h3>
+        <div class="hint">Namen hinzufügen, entfernen oder aus einer Excel-/CSV-Datei importieren. Die Liste steht danach in allen Dropdowns zur Verfügung.</div>
+        <ul class="player-manager-list" id="playerManagerList"></ul>
+        <div class="player-manager-add">
+            <input type="text" id="newPlayerNameInput" placeholder="Neuer Spielername" onkeydown="if(event.key==='Enter'){addPlayerName();}">
+            <button onclick="addPlayerName()">+ Hinzufügen</button>
+        </div>
+        <div class="player-manager-import">
+            <label>📥 Aus CSV-/Textdatei importieren (ein Name pro Zeile, oder Excel als CSV exportiert)</label>
+            <input type="file" id="playerImportFile" accept=".csv,.txt" onchange="importPlayersFromFile(event)">
+        </div>
+        <button class="player-manager-close" onclick="closePlayerManager()">Schließen</button>
+    </div>
+</div>
+
+<script src="auth.js"></script>
+<script>
+requireGate();
+requireLogin();
+</script>
+<script>
+// ============================================================
+// SPIELERLISTE AUS EXCEL (über localStorage von 02_Spielerliste)
+// ============================================================
+const PLAYER_STORAGE_KEY = 'esv_grein_spielerliste';
+const ROSTER_STORAGE_KEY = 'trainingsmodus_pro_aufstellung';
+const GAST_OPTION = '__GAST__';
+
+function loadPlayerList() {
+    try {
+        const data = localStorage.getItem(PLAYER_STORAGE_KEY);
+        if (data) {
+            const parsed = JSON.parse(data);
+            if (Array.isArray(parsed) && parsed.length) {
+                return parsed.map(p => p.name).filter(n => n);
+            }
+        }
+    } catch (e) {}
+    // Fallback: Standard-Liste
+    return [
+        'Andreas Hinterkörner',
+        'Peter Tischler',
+        'Ernst Aigen',
+        'Mario Leimhofer',
+        'Johann Kronsteiner',
+        'Roland Koll',
+        'Sabine Pils',
+        'Irmgard Kronsteiner',
+        'Willibald Scheiber',
+        'Martin Nothnagl',
+        'Rupert Lehbrunner',
+        'Sebastian Wimhofer',
+        'Sandra Wimhofer',
+        'Heidi Tischler',
+        'Pierre Sperl',
+        'Theresia Rathgeb',
+        'Maria Radinger',
+        'Franz Pichlmayr',
+        'Friedrich Nösterer',
+        'Herbert Hinterkörner',
+        'Stefan Aichinger',
+        'Walter Gstöttmaier'
+    ];
+}
+
+function loadRoster() {
+    try {
+        const saved = JSON.parse(localStorage.getItem(ROSTER_STORAGE_KEY));
+        if (saved && Array.isArray(saved.W) && Array.isArray(saved.E)) return saved;
+    } catch (e) {}
+    return { W: [null, null, null, null], E: [null, null, null, null] };
+}
+
+function saveRoster() {
+    try { localStorage.setItem(ROSTER_STORAGE_KEY, JSON.stringify(state.roster)); } catch (e) {}
+}
+
+function resetRoster() {
+    state.roster = { W: [null, null, null, null], E: [null, null, null, null] };
+    saveRoster();
+}
+
+function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+// ===== STATE =====
+const state = {
+    kehren: 6,
+    winsToChampion: 2,
+    playerCount: 4,
+    arena: createArena(1),
+    selectedTeam: null,
+    selectedPlayer: null,
+    isTrainingEnded: false,
+    deleteMode: false,
+    spectatorWindow: null,
+    playerNames: loadPlayerList(),
+    roster: loadRoster()
+};
+
+// ===== KEYBOARD =====
+function setupKeyboard() {
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === 'NumpadEnter') {
+            e.preventDefault();
+            if (state.isTrainingEnded) {
+                startNewTraining();
+                toast('🔄 Neues Training gestartet!');
+            } else if (state.deleteMode) {
+                exitDeleteMode();
+                toast('Löschmodus beendet');
+            } else {
+                evaluateGame();
+            }
+            return;
+        }
+
+        if (e.key === 'Escape') {
+            if (state.deleteMode) {
+                e.preventDefault();
+                exitDeleteMode();
+                toast('Löschmodus beendet');
+                return;
+            }
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            }
+            return;
+        }
+
+        if (state.isTrainingEnded) return;
+
+        if (e.key === '*' || e.key === 'Asterisk' || e.key === 'Multiply') {
+            e.preventDefault();
+            toggleDeleteMode();
+            return;
+        }
+
+        if (state.deleteMode) {
+            const keyNum = parseInt(e.key);
+            if (keyNum >= 1 && keyNum <= 9) {
+                e.preventDefault();
+                deleteKehre(keyNum - 1);
+                return;
+            }
+            if (e.key.startsWith('Numpad')) {
+                const numMap = {
+                    'Numpad1': 1, 'Numpad2': 2, 'Numpad3': 3,
+                    'Numpad4': 4, 'Numpad5': 5, 'Numpad6': 6,
+                    'Numpad7': 7, 'Numpad8': 8, 'Numpad9': 9
+                };
+                const num = numMap[e.key];
+                if (num && num <= state.kehren) {
+                    e.preventDefault();
+                    deleteKehre(num - 1);
+                    return;
+                }
+            }
+            return;
+        }
+
+        if (e.key === '-' || e.key === 'Minus' || e.key === 'Subtract') {
+            e.preventDefault();
+            selectTeam('e');
+            toast('🔴 Mannschaft E ausgewählt');
+            return;
+        }
+
+        if (e.key === '+' || e.key === 'Plus' || e.key === 'Add' || e.key === '=') {
+            e.preventDefault();
+            selectTeam('w');
+            toast('⚪ Mannschaft W ausgewählt');
+            return;
+        }
+
+        const keyNum = parseInt(e.key);
+        if (keyNum >= 1 && keyNum <= 6) {
+            if (keyNum <= state.playerCount) {
+                e.preventDefault();
+                selectPlayer(keyNum);
+                addPointsToSelectedTeam();
+            } else {
+                toast(`⚠️ Nur ${state.playerCount} Spieler vorhanden`);
+            }
+            return;
+        }
+
+        if (e.key.startsWith('Numpad')) {
+            const numMap = {
+                'Numpad1': 1, 'Numpad2': 2, 'Numpad3': 3,
+                'Numpad4': 4, 'Numpad5': 5, 'Numpad6': 6
+            };
+            const playerNum = numMap[e.key];
+            if (playerNum && playerNum <= state.playerCount) {
+                e.preventDefault();
+                selectPlayer(playerNum);
+                addPointsToSelectedTeam();
+                return;
+            }
+        }
+    });
+}
+
+// ===== ZUSCHAUERMONITOR =====
+function openSpectatorTab() {
+    const url = window.location.href.split('?')[0] + '?spectator=true';
+    state.spectatorWindow = window.open(url, '_blank', 'width=1400,height=900,menubar=no,status=no,toolbar=no');
+    if (state.spectatorWindow) {
+        toast('📺 Zuschauermonitor im neuen Tab geöffnet');
+        setTimeout(() => {
+            if (state.spectatorWindow && !state.spectatorWindow.closed) {
+                updateSpectatorInWindow();
+            }
+        }, 500);
+    } else {
+        toast('⚠️ Bitte Popups für diese Seite erlauben');
+    }
+}
+
+function updateSpectatorInWindow() {
+    if (state.spectatorWindow && !state.spectatorWindow.closed) {
+        try {
+            state.spectatorWindow.updateSpectatorContent(state.arena, state.kehren, state.winsToChampion);
+        } catch(e) {}
+    }
+}
+
+// ===== TEAM AUSWAHL =====
+function selectTeam(team) {
+    if (state.isTrainingEnded || state.deleteMode) {
+        if (state.deleteMode) toast('Löschmodus aktiv - [Enter] beenden');
+        else toast('Training ist beendet! [Enter] für Neustart');
+        return;
+    }
+    state.selectedTeam = team;
+    state.selectedPlayer = null;
+    updateKeyboardStatus(team === 'w' ? 'w' : 'e');
+    render();
+}
+
+function selectPlayer(playerNum) {
+    if (state.isTrainingEnded || state.deleteMode) {
+        if (state.deleteMode) toast('Löschmodus aktiv - [Enter] beenden');
+        else toast('Training ist beendet! [Enter] für Neustart');
+        return;
+    }
+    if (!state.selectedTeam) {
+        toast('⚠️ Bitte zuerst Team wählen (- für E, + für W)');
+        return;
+    }
+    state.selectedPlayer = playerNum;
+}
+
+// ===== PUNKTE VERGEBEN =====
+function addPointsToSelectedTeam() {
+    if (state.isTrainingEnded || state.deleteMode) {
+        if (state.deleteMode) toast('Löschmodus aktiv - [Enter] beenden');
+        else toast('Training ist beendet! [Enter] für Neustart');
+        return;
+    }
+    
+    if (!state.selectedTeam || !state.selectedPlayer) {
+        toast('⚠️ Bitte zuerst Team und Spieler wählen');
+        return;
+    }
+
+    const arena = state.arena;
+    const activeIndex = activeKehre(arena) - 1;
+
+    if (activeIndex >= state.kehren) {
+        toast('📊 Alle Kehren gespielt - Wertung läuft...');
+        setTimeout(() => evaluateGame(), 500);
+        return;
+    }
+
+    if (hasWinner(arena)) {
+        endTraining(arena);
+        return;
+    }
+
+    const team = state.selectedTeam;
+    const playerValue = state.selectedPlayer;
+    
+    if (team === 'w') {
+        arena.pointsA[activeIndex] = playerValue;
+        if (arena.pointsB[activeIndex] === null) {
+            arena.pointsB[activeIndex] = 0;
+        }
+    } else {
+        arena.pointsB[activeIndex] = playerValue;
+        if (arena.pointsA[activeIndex] === null) {
+            arena.pointsA[activeIndex] = 0;
+        }
+    }
+
+    state.selectedTeam = null;
+    state.selectedPlayer = null;
+    updateKeyboardStatus();
+
+    render();
+    updateSpectatorInWindow();
+    
+    const teamName = team === 'w' ? 'Mannschaft W' : 'Mannschaft E';
+    const otherTeam = team === 'w' ? 'Mannschaft E' : 'Mannschaft W';
+    const otherValue = team === 'w' ? arena.pointsB[activeIndex] : arena.pointsA[activeIndex];
+    
+    toast(`✅ ${teamName}: ${playerValue} | ${otherTeam}: ${otherValue} (auto)`);
+
+    if (checkAllKehrenFull(arena)) {
+        setTimeout(() => {
+            toast('📊 Alle Kehren gespielt - Wertung läuft...');
+            setTimeout(() => evaluateGame(), 500);
+        }, 300);
+    }
+
+    setTimeout(() => scrollToActiveKehre(), 300);
+}
+
+// ===== SPIEL WERTEN =====
+function evaluateGame() {
+    const arena = state.arena;
+
+    if (state.isTrainingEnded) {
+        toast('Training ist beendet! [Enter] für Neustart');
+        return;
+    }
+
+    if (state.deleteMode) {
+        toast('Löschmodus aktiv - [Enter] beenden');
+        return;
+    }
+
+    if (hasWinner(arena)) {
+        endTraining(arena);
+        return;
+    }
+
+    for (let i = 0; i < state.kehren; i++) {
+        if (arena.pointsA[i] === null || arena.pointsB[i] === null) {
+            toast('Bitte alle Kehren ausfüllen');
+            return;
+        }
+    }
+
+    const a = sum(arena.pointsA);
+    const b = sum(arena.pointsB);
+
+    let gameResult = '';
+    if (a > b) {
+        arena.winsA++;
+        gameResult = `⚪ Mannschaft W gewinnt (${a}:${b})`;
+        toast(gameResult);
+    } else if (b > a) {
+        arena.winsB++;
+        gameResult = `🔴 Mannschaft E gewinnt (${a}:${b})`;
+        toast(gameResult);
+    } else {
+        gameResult = `Unentschieden (${a}:${b})`;
+        toast(gameResult);
+    }
+
+    arena.pointsA = Array(state.kehren).fill(null);
+    arena.pointsB = Array(state.kehren).fill(null);
+
+    render();
+    updateSpectatorInWindow();
+
+    if (hasWinner(arena)) {
+        setTimeout(() => endTraining(arena), 1000);
+    } else {
+        setTimeout(() => {
+            toast(`🔄 Neues Spiel beginnt! Stand: W ${arena.winsA} : ${arena.winsB} E`);
+            render();
+            updateSpectatorInWindow();
+        }, 500);
+    }
+}
+
+// ===== TRAINING BEENDEN =====
+function endTraining(arena) {
+    state.isTrainingEnded = true;
+    updateKeyboardStatus();
+    
+    const winner = winnerName(arena);
+    const overlay = document.getElementById('trainingEndedOverlay');
+    const winnerEl = document.getElementById('winnerName');
+    const summaryEl = document.getElementById('scoreSummary');
+    
+    winnerEl.textContent = winner;
+    winnerEl.style.color = winner === 'Mannschaft W' ? '#4caf50' : '#ff6b6b';
+    summaryEl.textContent = `Siege: ${arena.winsA} : ${arena.winsB}`;
+    
+    overlay.classList.add('show');
+    updateSpectatorInWindow();
+    
+    const toastEl = document.getElementById('toast');
+    toastEl.textContent = `🏆 ${winner} gewinnt das Training! [Enter] für Neustart`;
+    toastEl.className = 'toast show winner';
+    clearTimeout(toastEl._timeout);
+    toastEl._timeout = setTimeout(() => {
+        toastEl.classList.remove('show');
+        toastEl.className = 'toast';
+    }, 5000);
+}
+
+function startNewTraining() {
+    const overlay = document.getElementById('trainingEndedOverlay');
+    overlay.classList.remove('show');
+    
+    state.isTrainingEnded = false;
+    state.deleteMode = false;
+    state.arena = createArena(1);
+    state.selectedTeam = null;
+    state.selectedPlayer = null;
+    resetRoster();
+    // Spielerliste neu laden (falls sich was geändert hat)
+    state.playerNames = loadPlayerList();
+    updateKeyboardStatus();
+    render();
+    updateSpectatorInWindow();
+    toast('🔄 Neues Training gestartet! - Aufstellung zurückgesetzt');
+}
+
+// ===== LÖSCHMODUS =====
+function toggleDeleteMode() {
+    if (state.isTrainingEnded) {
+        toast('Training ist beendet! [Enter] für Neustart');
+        return;
+    }
+    
+    state.deleteMode = !state.deleteMode;
+    
+    if (state.deleteMode) {
+        updateKeyboardStatus('delete');
+        toast('🗑️ Löschmodus aktiv - Kehre 1-8 wählen', 'delete');
+        highlightDeleteRows();
+    } else {
+        exitDeleteMode();
+    }
+}
+
+function exitDeleteMode() {
+    state.deleteMode = false;
+    updateKeyboardStatus();
+    const rows = document.querySelectorAll('.kehre-row');
+    rows.forEach(row => row.classList.remove('delete-mode'));
+}
+
+function highlightDeleteRows() {
+    setTimeout(() => {
+        const rows = document.querySelectorAll('.kehre-row');
+        rows.forEach((row, index) => {
+            const arena = state.arena;
+            if (index < state.kehren) {
+                const hasValue = arena.pointsA[index] !== null || arena.pointsB[index] !== null;
+                if (hasValue) {
+                    row.classList.add('delete-mode');
+                }
+            }
+        });
+    }, 100);
+}
+
+function deleteKehre(index) {
+    const arena = state.arena;
+    if (index >= state.kehren) {
+        toast(`⚠️ Kehre ${index + 1} existiert nicht (1-${state.kehren})`);
+        return;
+    }
+    if (arena.pointsA[index] === null && arena.pointsB[index] === null) {
+        toast(`Kehre ${index + 1} ist bereits leer`);
+        return;
+    }
+    arena.pointsA[index] = null;
+    arena.pointsB[index] = null;
+    toast(`✅ Kehre ${index + 1} gelöscht`);
+    exitDeleteMode();
+    render();
+    updateSpectatorInWindow();
+    setTimeout(() => render(), 100);
+}
+
+// ===== STATUS UPDATE =====
+function updateKeyboardStatus(type, player) {
+    const statusEl = document.getElementById('keyboardStatus');
+    
+    if (state.isTrainingEnded) {
+        statusEl.textContent = '🏁 Training beendet - [Enter] für Neustart';
+        statusEl.className = 'keyboard-status training-ended';
+        return;
+    }
+    
+    if (state.deleteMode) {
+        statusEl.textContent = '🗑️ Löschmodus: Kehre 1-8 wählen | [Enter] abbrechen';
+        statusEl.className = 'keyboard-status delete-mode';
+        return;
+    }
+    
+    if (type === 'e') {
+        statusEl.textContent = '🔴 E ausgewählt - Spieler wählen (1-6)';
+        statusEl.className = 'keyboard-status team-e';
+    } else if (type === 'w') {
+        statusEl.textContent = '⚪ W ausgewählt - Spieler wählen (1-6)';
+        statusEl.className = 'keyboard-status team-w';
+    } else if (type === 'player') {
+        statusEl.textContent = `👤 Spieler ${player} - Punkt vergeben`;
+        statusEl.className = 'keyboard-status waiting';
+    } else {
+        statusEl.textContent = '🔑 Bereit - [-]/[+] Team wählen | [*] Löschen | [/] Zuschauer';
+        statusEl.className = 'keyboard-status';
+    }
+}
+
+// ===== RENDER =====
+function render() {
+    // Spielerliste bei jedem Render neu laden (für Updates aus Spielerverwaltung)
+    state.playerNames = loadPlayerList();
+    document.getElementById('layout').innerHTML = renderArena(state.arena);
+    scrollToActiveKehre();
+    if (!state.isTrainingEnded) {
+        updateKeyboardStatus();
+    }
+    if (state.deleteMode) {
+        highlightDeleteRows();
+    }
+}
+
+function renderArena(arena) {
+    const scoreA = sum(arena.pointsA);
+    const scoreB = sum(arena.pointsB);
+    const activeIndex = activeKehre(arena) - 1;
+    
+    const teamWClass = state.selectedTeam === 'w' ? 'team-active-w' : '';
+    const teamEClass = state.selectedTeam === 'e' ? 'team-active-e' : '';
+
+    return `
+    <div class="arena">
+        <div class="arena-header">
+            <div class="arena-title">🥌 Trainingsmodus PRO</div>
+            <div class="keyboard-hint">
+                - 🔴 E &nbsp;|&nbsp; + ⚪ W &nbsp;|&nbsp; 1-6 👤 &nbsp;|&nbsp; * 🗑️ Löschen &nbsp;|&nbsp; Enter ⏎ Wertung &nbsp;|&nbsp; / 📺 Zuschauer (neuer Tab)
+            </div>
+        </div>
+
+        <div class="scoreboard-row">
+            ${renderRosterPanel('W')}
+
+            <div class="scoreboard">
+                <div class="score-card ${teamWClass}">
+                    <div class="team-info">
+                        <div class="team-name">⚪ Mannschaft W <span class="key-hint">[+]</span></div>
+                        <div class="team-score">${scoreA}</div>
+                    </div>
+                    <div class="team-wins">
+                        <span>🏆</span> ${arena.winsA}
+                    </div>
+                </div>
+
+                <div class="score-card red ${teamEClass}">
+                    <div class="team-info">
+                        <div class="team-name">🔴 Mannschaft E <span class="key-hint">[-]</span></div>
+                        <div class="team-score">${scoreB}</div>
+                    </div>
+                    <div class="team-wins">
+                        <span>🏆</span> ${arena.winsB}
+                    </div>
+                </div>
+            </div>
+
+            ${renderRosterPanel('E')}
+        </div>
+
+        <div class="kehren-wrapper" id="kehrenWrapper">
+            <div class="kehren">
+                <div>
+                    <div class="kehren-title">⚪ Mannschaft W</div>
+                    ${renderKehren(arena, 'A', activeIndex)}
+                </div>
+                <div>
+                    <div class="kehren-title">🔴 Mannschaft E</div>
+                    ${renderKehren(arena, 'B', activeIndex)}
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-left">
+                <button class="gold" onclick="evaluateGame()">Spiel Werten ⏎</button>
+                <button onclick="resetGame()">Neues Spiel Starten</button>
+                <button onclick="toggleDeleteMode()">🗑️ Kehre Löschen *</button>
+                <button onclick="openSpectatorTab()" style="background:#6c5ce7;">📺 Zuschauer (neuer Tab) /</button>
+            </div>
+            <div class="footer-right">@Roland Koll Version 2.0 · Spieler aus Excel</div>
+        </div>
+    </div>
+    `;
+}
+
+// ===== SPIELERAUSWAHL: RENDER =====
+function renderRosterPanel(team) {
+    const slots = state.roster[team];
+    const panelClass = team === 'E' ? 'roster-panel team-e' : 'roster-panel';
+    const label = team === 'W' ? '⚪ Aufstellung W' : '🔴 Aufstellung E';
+
+    let slotsHtml = '';
+    for (let i = 0; i < 4; i++) {
+        const current = slots[i];
+        const isGast = !!(current && current.isGast);
+        const selectedName = current && !current.isGast ? current.name : '';
+
+        let optionsHtml = `<option value="">– Spieler ${i + 1} wählen –</option>`;
+        state.playerNames.forEach(n => {
+            const selected = selectedName === n ? 'selected' : '';
+            optionsHtml += `<option value="${escapeHtml(n)}" ${selected}>${escapeHtml(n)}</option>`;
+        });
+        const gastSelected = isGast ? 'selected' : '';
+        optionsHtml += `<option value="${GAST_OPTION}" ${gastSelected}>✏️ Anderer Name / Gastspieler</option>`;
+
+        slotsHtml += `
+        <div class="roster-slot">
+            <select onchange="onRosterSelect('${team}', ${i}, this.value)">
+                ${optionsHtml}
+            </select>
+            ${isGast ? `<input type="text" class="roster-custom" placeholder="Name eingeben..." value="${escapeHtml(current.name || '')}" oninput="onRosterCustomInput('${team}', ${i}, this.value)">` : ''}
+        </div>`;
+    }
+
+    return `
+    <div class="${panelClass}">
+        <div class="roster-panel-title">${label}</div>
+        <div class="roster-slot-grid">
+            ${slotsHtml}
+        </div>
+        <div class="roster-manage-btn" onclick="openPlayerManager()">⚙️ Spielerliste verwalten</div>
+    </div>`;
+}
+
+// ===== SPIELERAUSWAHL: EVENTS =====
+function onRosterSelect(team, index, value) {
+    if (value === GAST_OPTION) {
+        state.roster[team][index] = { name: '', isGast: true };
+    } else if (value === '') {
+        state.roster[team][index] = null;
+    } else {
+        state.roster[team][index] = { name: value, isGast: false };
+    }
+    saveRoster();
+    render();
+}
+
+function onRosterCustomInput(team, index, value) {
+    state.roster[team][index] = { name: value, isGast: true };
+    saveRoster();
+}
+
+// ===== SPIELERLISTE VERWALTEN =====
+function openPlayerManager() {
+    // Spielerliste neu laden
+    state.playerNames = loadPlayerList();
+    renderPlayerManagerList();
+    document.getElementById('playerManagerOverlay').classList.add('show');
+}
+
+function closePlayerManager() {
+    document.getElementById('playerManagerOverlay').classList.remove('show');
+    // Liste neu laden und neu rendern
+    state.playerNames = loadPlayerList();
+    render();
+}
+
+function renderPlayerManagerList() {
+    const list = document.getElementById('playerManagerList');
+    if (state.playerNames.length === 0) {
+        list.innerHTML = '<li style="color:#999;text-align:center;padding:20px;">Keine Spieler in der Liste.</li>';
+        return;
+    }
+    list.innerHTML = state.playerNames.map((n, i) => `
+        <li>
+            <span>${escapeHtml(n)}</span>
+            <button onclick="removePlayerName(${i})">Entfernen</button>
+        </li>
+    `).join('');
+}
+
+function addPlayerName() {
+    const input = document.getElementById('newPlayerNameInput');
+    const name = input.value.trim();
+    if (!name) return;
+    
+    // Spielerliste aus localStorage laden
+    let players = [];
+    try {
+        const data = localStorage.getItem(PLAYER_STORAGE_KEY);
+        if (data) players = JSON.parse(data);
+    } catch (e) {}
+    
+    if (!Array.isArray(players)) players = [];
+    
+    // Prüfen ob vorhanden
+    if (players.some(p => p.name === name)) {
+        toast('⚠️ Name bereits in der Liste');
+        return;
+    }
+    
+    // Neue ID generieren
+    const maxId = players.reduce((max, p) => {
+        const num = parseInt(p.id.replace('SP-', ''));
+        return num > max ? num : max;
+    }, 0);
+    const newId = 'SP-' + String(maxId + 1).padStart(3, '0');
+    
+    players.push({ id: newId, name: name, verein: '' });
+    localStorage.setItem(PLAYER_STORAGE_KEY, JSON.stringify(players));
+    
+    input.value = '';
+    state.playerNames = loadPlayerList();
+    renderPlayerManagerList();
+    toast(`✅ "${name}" hinzugefügt (ID: ${newId})`);
+}
+
+function removePlayerName(index) {
+    const name = state.playerNames[index];
+    if (!name) return;
+    
+    if (!confirm(`Möchtest du "${name}" wirklich entfernen?`)) return;
+    
+    let players = [];
+    try {
+        const data = localStorage.getItem(PLAYER_STORAGE_KEY);
+        if (data) players = JSON.parse(data);
+    } catch (e) {}
+    
+    if (!Array.isArray(players)) players = [];
+    
+    players = players.filter(p => p.name !== name);
+    localStorage.setItem(PLAYER_STORAGE_KEY, JSON.stringify(players));
+    
+    state.playerNames = loadPlayerList();
+    renderPlayerManagerList();
+    toast(`🗑️ "${name}" entfernt`);
+}
+
+function importPlayersFromFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        try {
+            const text = String(e.target.result);
+            const rawEntries = text.split(/\r?\n|,|;/);
+
+            let players = [];
+            try {
+                const data = localStorage.getItem(PLAYER_STORAGE_KEY);
+                if (data) players = JSON.parse(data);
+            } catch (e) {}
+            if (!Array.isArray(players)) players = [];
+
+            let added = 0;
+            let maxId = players.reduce((max, p) => {
+                const num = parseInt(p.id.replace('SP-', ''));
+                return num > max ? num : max;
+            }, 0);
+
+            rawEntries.forEach(entry => {
+                const name = entry.trim().replace(/^"|"$/g, '');
+                if (!name) return;
+                if (/^(name|spieler|vorname|nachname|id)$/i.test(name)) return;
+                if (players.some(p => p.name === name)) return;
+                
+                maxId++;
+                const newId = 'SP-' + String(maxId).padStart(3, '0');
+                players.push({ id: newId, name: name, verein: '' });
+                added++;
+            });
+
+            if (added > 0) {
+                localStorage.setItem(PLAYER_STORAGE_KEY, JSON.stringify(players));
+                state.playerNames = loadPlayerList();
+                renderPlayerManagerList();
+                toast(`📥 ${added} Spieler importiert`);
+            } else {
+                toast('ℹ️ Keine neuen Namen gefunden');
+            }
+        } catch (err) {
+            toast('⚠️ Datei konnte nicht gelesen werden');
+        } finally {
+            event.target.value = '';
+        }
+    };
+    reader.readAsText(file, 'UTF-8');
+}
+
+function renderKehren(arena, team, activeIndex) {
+    let html = '';
+    const arr = team === 'A' ? arena.pointsA : arena.pointsB;
+
+    for (let i = 0; i < state.kehren; i++) {
+        const active = activeIndex === i;
+        const bothCompleted = arena.pointsA[i] !== null && arena.pointsB[i] !== null;
+        const maxPoints = state.playerCount;
+
+        html += `
+        <div class="kehre-row ${active ? 'active' : ''} ${bothCompleted ? 'completed' : ''}" 
+             data-kehre="${i}" 
+             data-team="${team}">
+            <div class="kehre-number">${i + 1}</div>
+            <div class="points">
+                ${Array.from({length: maxPoints + 1}, (_, v) => `
+                    <button class="point-btn ${arr[i] === v ? 'active-point' : ''}"
+                            onclick="event.stopPropagation(); setPoints('${team}', ${i}, ${v})"
+                            data-value="${v}">
+                        ${v}
+                    </button>
+                `).join('')}
+            </div>
+            <div class="kehre-value">${arr[i] !== null ? arr[i] : '-'}</div>
+        </div>
+        `;
+    }
+    return html;
+}
+
+function setPoints(team, index, value) {
+    const arena = state.arena;
+
+    if (state.isTrainingEnded) {
+        toast('Training ist beendet! [Enter] für Neustart');
+        return;
+    }
+
+    if (state.deleteMode) {
+        toast('Löschmodus aktiv - [Enter] beenden');
+        return;
+    }
+
+    if (hasWinner(arena)) {
+        endTraining(arena);
+        return;
+    }
+
+    if (team === 'A') {
+        arena.pointsA[index] = value;
+        if (arena.pointsB[index] === null) {
+            arena.pointsB[index] = 0;
+        }
+    } else {
+        arena.pointsB[index] = value;
+        if (arena.pointsA[index] === null) {
+            arena.pointsA[index] = 0;
+        }
+    }
+
+    render();
+    updateSpectatorInWindow();
+    
+    const teamName = team === 'A' ? 'Mannschaft W' : 'Mannschaft E';
+    const otherTeam = team === 'A' ? 'Mannschaft E' : 'Mannschaft W';
+    const otherValue = team === 'A' ? arena.pointsB[index] : arena.pointsA[index];
+    toast(`📊 ${teamName}: ${value} | ${otherTeam}: ${otherValue} (auto)`);
+
+    if (checkAllKehrenFull(arena)) {
+        setTimeout(() => {
+            toast('📊 Alle Kehren gespielt - Wertung läuft...');
+            setTimeout(() => evaluateGame(), 500);
+        }, 300);
+    }
+}
+
+// ===== HELFER =====
+function createArena(id) {
+    return {
+        id,
+        teamA: 'Mannschaft W',
+        teamB: 'Mannschaft E',
+        pointsA: Array(6).fill(null),
+        pointsB: Array(6).fill(null),
+        winsA: 0,
+        winsB: 0
+    };
+}
+
+function activeKehre(arena) {
+    for (let i = 0; i < state.kehren; i++) {
+        if (arena.pointsA[i] === null || arena.pointsB[i] === null) {
+            return i + 1;
+        }
+    }
+    return state.kehren;
+}
+
+function hasWinner(arena) {
+    return arena.winsA >= state.winsToChampion || arena.winsB >= state.winsToChampion;
+}
+
+function winnerName(arena) {
+    if (arena.winsA >= state.winsToChampion) return 'Mannschaft W';
+    if (arena.winsB >= state.winsToChampion) return 'Mannschaft E';
+    return '';
+}
+
+function sum(arr) {
+    return arr.reduce((a, b) => a + (b || 0), 0);
+}
+
+function checkAllKehrenFull(arena) {
+    for (let i = 0; i < state.kehren; i++) {
+        if (arena.pointsA[i] === null || arena.pointsB[i] === null) {
+            return false;
+        }
+    }
+    return true;
+}
+
+function scrollToActiveKehre() {
+    setTimeout(() => {
+        const wrapper = document.getElementById('kehrenWrapper');
+        if (!wrapper) return;
+        const activeRow = wrapper.querySelector('.kehre-row.active');
+        if (activeRow) {
+            const wrapperRect = wrapper.getBoundingClientRect();
+            const rowRect = activeRow.getBoundingClientRect();
+            const isVisible = rowRect.top >= wrapperRect.top + 10 && rowRect.bottom <= wrapperRect.bottom - 10;
+            if (!isVisible) {
+                activeRow.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            }
+        }
+    }, 50);
+}
+
+function resetGame() {
+    if (state.isTrainingEnded) {
+        startNewTraining();
+        return;
+    }
+    if (state.deleteMode) {
+        exitDeleteMode();
+    }
+    const arena = state.arena;
+    arena.pointsA = Array(state.kehren).fill(null);
+    arena.pointsB = Array(state.kehren).fill(null);
+    arena.winsA = 0;
+    arena.winsB = 0;
+    state.selectedTeam = null;
+    state.selectedPlayer = null;
+    resetRoster();
+    state.playerNames = loadPlayerList();
+    updateKeyboardStatus();
+    render();
+    updateSpectatorInWindow();
+    toast('Spiel neu gestartet - Aufstellung zurückgesetzt');
+}
+
+function fullReset() {
+    state.arena = createArena(1);
+    state.selectedTeam = null;
+    state.selectedPlayer = null;
+    state.isTrainingEnded = false;
+    state.deleteMode = false;
+    resetRoster();
+    state.playerNames = loadPlayerList();
+    updateKeyboardStatus();
+    document.getElementById('trainingEndedOverlay').classList.remove('show');
+    render();
+    updateSpectatorInWindow();
+    toast('Kompletter Reset - Aufstellung zurückgesetzt');
+}
+
+function toast(msg, type) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show';
+    if (type === 'delete') {
+        t.classList.add('delete-mode');
+    }
+    clearTimeout(t._timeout);
+    t._timeout = setTimeout(() => {
+        t.classList.remove('show');
+        t.className = 'toast';
+    }, 3000);
+}
+
+// ===== EVENT-LISTENER =====
+document.getElementById('playerCount').addEventListener('change', function(e) {
+    if (state.isTrainingEnded) {
+        toast('Training ist beendet! [Enter] für Neustart');
+        return;
+    }
+    state.playerCount = Number(e.target.value);
+    state.selectedTeam = null;
+    state.selectedPlayer = null;
+    resetRoster();
+    state.playerNames = loadPlayerList();
+    updateKeyboardStatus();
+    render();
+    updateSpectatorInWindow();
+    toast(`👥 ${state.playerCount} Spieler - Aufstellung zurückgesetzt`);
+});
+
+document.getElementById('kehrenSelect').addEventListener('change', function(e) {
+    if (state.isTrainingEnded) {
+        toast('Training ist beendet! [Enter] für Neustart');
+        return;
+    }
+    state.kehren = Number(e.target.value);
+    state.arena.pointsA = Array(state.kehren).fill(null);
+    state.arena.pointsB = Array(state.kehren).fill(null);
+    state.selectedTeam = null;
+    state.selectedPlayer = null;
+    updateKeyboardStatus();
+    render();
+    updateSpectatorInWindow();
+});
+
+document.getElementById('gamesSelect').addEventListener('change', function(e) {
+    if (state.isTrainingEnded) {
+        toast('Training ist beendet! [Enter] für Neustart');
+        return;
+    }
+    state.winsToChampion = Number(e.target.value);
+    render();
+    updateSpectatorInWindow();
+});
+
+// ===== TASTATUR: / für Zuschauer =====
+document.addEventListener('keydown', function(e) {
+    if (e.key === '/' || e.key === 'Slash' || e.key === 'Divide') {
+        e.preventDefault();
+        openSpectatorTab();
+    }
+});
+
+// ===== SPECTATOR WINDOW =====
+window.updateSpectatorContent = function(arena, kehren, winsToChampion) {
+    const scoreA = sum(arena.pointsA);
+    const scoreB = sum(arena.pointsB);
+    const activeK = activeKehre(arena);
+    const container = document.getElementById('spectatorContent');
+    if (!container) return;
+    
+    let verlaufHtml = '';
+    for (let i = 0; i < kehren; i++) {
+        const aVal = arena.pointsA[i] !== null ? arena.pointsA[i] : '-';
+        const bVal = arena.pointsB[i] !== null ? arena.pointsB[i] : '-';
+        const isActive = (i === activeK - 1);
+        const isCompleted = arena.pointsA[i] !== null && arena.pointsB[i] !== null;
+        verlaufHtml += `
+            <div class="spectator-verlauf-item ${isActive ? 'active-verlauf' : ''}" style="${isCompleted ? 'border-color:#ff9800;' : ''}">
+                <div class="v-number">${i+1}</div>
+                <div class="v-points">
+                    <span class="w">${aVal}</span>
+                    <span class="e">${bVal}</span>
+                </div>
+            </div>
+        `;
+    }
+
+    container.innerHTML = `
+        <div class="spectator-grid">
+            <div class="spectator-team">
+                <div class="team-label">⚪ Mannschaft W</div>
+                <div class="team-score-big">${scoreA}</div>
+                <div class="team-wins-big">🏆 Siege: ${arena.winsA}</div>
+            </div>
+            <div class="spectator-team red">
+                <div class="team-label">🔴 Mannschaft E</div>
+                <div class="team-score-big">${scoreB}</div>
+                <div class="team-wins-big">🏆 Siege: ${arena.winsB}</div>
+            </div>
+        </div>
+        <div class="spectator-details">
+            <div class="detail-item">
+                <div class="detail-label">Aktuelle Kehre</div>
+                <div class="detail-value">${activeK}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Aktueller Durchgang</div>
+                <div class="detail-value">${arena.winsA + arena.winsB + 1}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Ergebnis (aktuell)</div>
+                <div class="detail-value" style="font-size:2rem;">${scoreA} : ${scoreB}</div>
+            </div>
+        </div>
+        <div class="spectator-kehren-verlauf">
+            <h4>📊 Kehren-Verlauf</h4>
+            <div class="spectator-verlauf-grid">
+                ${verlaufHtml}
+            </div>
+        </div>
+        <div class="spectator-status">
+            🔄 Aktualisiert automatisch • ${new Date().toLocaleTimeString()}
+        </div>
+    `;
+};
+
+// ===== SPECTATOR MODUS =====
+if (window.location.search.includes('spectator=true')) {
+    document.body.innerHTML = `
+        <div class="spectator-container">
+            <h1>📺 Trainingsmodus PRO – Zuschauermonitor</h1>
+            <div id="spectatorContent">
+                <div style="text-align:center;padding:50px;color:#8aa89a;">
+                    <div style="font-size:3rem;margin-bottom:20px;">⏳</div>
+                    <div>Warte auf Daten vom Hauptbildschirm...</div>
+                    <div style="margin-top:10px;font-size:0.9rem;">Stellen Sie sicher, dass das Hauptfenster geöffnet ist.</div>
+                </div>
+            </div>
+        </div>
+    `;
+    setTimeout(() => {
+        if (window.opener && !window.opener.closed) {
+            try {
+                const parentState = window.opener.state;
+                if (parentState) {
+                    window.updateSpectatorContent(parentState.arena, parentState.kehren, parentState.winsToChampion);
+                }
+            } catch(e) {}
+        }
+    }, 300);
+    
+    setInterval(() => {
+        if (window.opener && !window.opener.closed) {
+            try {
+                const parentState = window.opener.state;
+                if (parentState) {
+                    window.updateSpectatorContent(parentState.arena, parentState.kehren, parentState.winsToChampion);
+                }
+            } catch(e) {}
+        }
+    }, 1500);
+}
+
+// ===== HÖHENKORREKTUR =====
+function setCorrectHeight() {
+    const vh = window.innerHeight;
+    document.documentElement.style.setProperty('height', vh + 'px');
+    document.body.style.setProperty('height', vh + 'px');
+}
+
+window.addEventListener('resize', setCorrectHeight);
+window.addEventListener('orientationchange', function() {
+    setTimeout(setCorrectHeight, 300);
+});
+setCorrectHeight();
+
+// ===== INIT =====
+setupKeyboard();
+render();
+
+setInterval(() => {
+    if (state.spectatorWindow && !state.spectatorWindow.closed) {
+        try {
+            state.spectatorWindow.updateSpectatorContent(state.arena, state.kehren, state.winsToChampion);
+        } catch(e) {}
+    }
+}, 2000);
+</script>
+
+</body>
+</html>
