@@ -2,41 +2,286 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>Zugang – Trainingsportal ESV Grein</title>
-<link rel="stylesheet" href="style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<title>ESV Grein – Trainingsportal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Farben, Schriftart, Buttongrößen: siehe theme.css (zentral für alle 3 Module).
+     Vereinslogo/-name: siehe club.js. -->
+<link rel="stylesheet" href="theme.css">
+<script defer src="club.js"></script>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<meta name="theme-color" content="#131b24">
+
+<style>
+*{ margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+html, body{ min-height:100%; }
+body{
+    font-family:var(--font-body);
+    background:linear-gradient(160deg,var(--bg-main),#0a0d12);
+    color:var(--text-main);
+    min-height:100vh;
+}
+
+.hero{
+    max-width:1100px;
+    margin:0 auto;
+    padding:40px 24px 60px;
+    text-align:center;
+}
+.hero .club-brand-hero{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+    margin-bottom:28px;
+}
+.hero .club-logo{
+    width:64px;
+    height:64px;
+    object-fit:contain;
+    border-radius:16px;
+}
+.hero .club-name{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:1.1rem;
+    color:var(--text-dim);
+    letter-spacing:0.02em;
+}
+
+.eyebrow{
+    text-transform:uppercase;
+    letter-spacing:0.14em;
+    font-size:12px;
+    font-weight:700;
+    color:var(--accent);
+    margin-bottom:8px;
+}
+h1{
+    font-family:var(--font-display);
+    font-size:clamp(1.8rem, 5vw, 2.6rem);
+    letter-spacing:0.01em;
+    margin-bottom:10px;
+}
+.lead{
+    color:var(--text-dim);
+    font-size:1rem;
+    max-width:520px;
+    margin:0 auto 36px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap:16px;
+    text-align:left;
+}
+
+.tile{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:20px;
+    text-decoration:none;
+    color:var(--text-main);
+    transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+.tile:hover{
+    transform:translateY(-2px);
+    border-color:var(--accent);
+    background:#16202c;
+}
+.tile .num{
+    font-family:var(--font-display);
+    font-size:1.6rem;
+    font-weight:700;
+    color:var(--accent);
+    min-width:2.4ch;
+}
+.tile .title{
+    font-weight:800;
+    font-size:1.05rem;
+    margin-bottom:4px;
+}
+.tile .sub{
+    font-size:0.85rem;
+    color:var(--text-dim);
+    line-height:1.4;
+}
+.tile .arrow{
+    margin-left:auto;
+    font-size:1.3rem;
+    color:var(--text-dim);
+}
+.tile:hover .arrow{ color:var(--accent); }
+
+.install-hint{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:#1c2734;
+    border:1px solid var(--line);
+    color:var(--text-dim);
+    font-size:0.85rem;
+    padding:8px 14px;
+    border-radius:14px;
+    margin-top:32px;
+}
+.install-hint b{ color:var(--gold); }
+
+/* ===== QR-CODES (eigenes Gerät verbinden) =====
+   Zeigt für Tablet & Handy je einen QR-Code, der direkt auf das jeweilige
+   Modul zeigt - erzeugt automatisch aus der aktuellen Seitenadresse (siehe
+   Skript am Ende der Seite), keine manuelle Konfiguration nötig. */
+.qr-section{
+    margin-top:44px;
+    padding-top:32px;
+    border-top:1px solid var(--line);
+}
+.qr-section h2{
+    font-family:var(--font-display);
+    font-size:1.2rem;
+    margin-bottom:8px;
+}
+.qr-lead{
+    color:var(--text-dim);
+    font-size:0.88rem;
+    max-width:480px;
+    margin:0 auto 24px;
+}
+.qr-grid{
+    display:flex;
+    gap:18px;
+    justify-content:center;
+    flex-wrap:wrap;
+}
+.qr-card{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:18px;
+    width:190px;
+}
+.qr-code{
+    background:#fff;
+    border-radius:12px;
+    padding:10px;
+    margin-bottom:10px;
+}
+.qr-code svg{
+    display:block;
+    width:100%;
+    height:auto;
+}
+.qr-title{
+    font-weight:700;
+    font-size:0.88rem;
+    margin-bottom:4px;
+}
+.qr-url{
+    font-size:0.68rem;
+    color:var(--text-dim);
+    word-break:break-all;
+    line-height:1.4;
+}
+
+.footer-note{
+    margin-top:36px;
+    font-size:0.78rem;
+    color:#57626e;
+}
+
+@media (max-width:600px){
+    .hero{ padding:28px 16px 40px; }
+}
+</style>
 </head>
 <body>
-<div class="wrap">
-  <p class="eyebrow">Geschützter Bereich</p>
-  <h1>Zugangscode</h1>
-  <p class="lead">Bitte gib den Zugangscode ein, um zum Trainingsportal zu gelangen.</p>
 
-  <div class="card">
-    <label for="pw">Passwort</label>
-    <input type="password" id="pw" placeholder="••••••••">
-    <p class="error" id="err"></p>
-    <button onclick="checkPassword()">Weiter</button>
-  </div>
+<div class="hero">
+    <div class="club-brand-hero">
+        <img class="club-logo" src="" alt="">
+        <span class="club-name"></span>
+    </div>
+
+    <p class="eyebrow">Trainingsportal</p>
+    <h1>Stocksport Trainings App</h1>
+    <p class="lead">Wähle ein Modul aus, um zu starten.</p>
+
+    <div class="grid">
+        <a class="tile" href="05_Trainingsmodus_Pro.html">
+            <span class="num">01</span>
+            <span>
+                <div class="title">Trainingsmodus PRO</div>
+                <div class="sub">Zuschauermonitor · Eingabe über externen Ziffernblock</div>
+            </span>
+            <span class="arrow">&rarr;</span>
+        </a>
+        <a class="tile" href="05_Trainingsmodus_Pro_Tablet.html">
+            <span class="num">02</span>
+            <span>
+                <div class="title">Trainingsmodus Tablet</div>
+                <div class="sub">Touch-Bedienung für Tablets · Mannschaftsfarben wählbar</div>
+            </span>
+            <span class="arrow">&rarr;</span>
+        </a>
+        <a class="tile" href="05_Trainingsmodus_Pro_Handy.html">
+            <span class="num">03</span>
+            <span>
+                <div class="title">Trainingsmodus Handy</div>
+                <div class="sub">Kompakte Version fürs Smartphone</div>
+            </span>
+            <span class="arrow">&rarr;</span>
+        </a>
+    </div>
+
+    <div class="install-hint">📲 <span>Tipp: Über das Browsermenü <b>„Zum Startbildschirm hinzufügen“</b> lässt sich diese Seite als eigene App installieren.</span></div>
+
+    <div class="qr-section">
+        <h2>📱 Eigenes Gerät verbinden</h2>
+        <p class="qr-lead">Hat ein Mitspieler sein eigenes Tablet oder Handy dabei? Einfach den passenden Code mit der Kamera scannen – schon ist das Modul startklar.</p>
+        <div class="qr-grid">
+            <div class="qr-card">
+                <div class="qr-code" id="qrTablet"></div>
+                <div class="qr-title">Trainingsmodus Tablet</div>
+                <div class="qr-url" id="qrTabletUrl"></div>
+            </div>
+            <div class="qr-card">
+                <div class="qr-code" id="qrHandy"></div>
+                <div class="qr-title">Trainingsmodus Handy</div>
+                <div class="qr-url" id="qrHandyUrl"></div>
+            </div>
+        </div>
+    </div>
+
+    <p class="footer-note">Trainingsportal ESV Grein</p>
 </div>
 
-<script src="auth.js"></script>
+<!-- QR-Codes: zeigen jeweils direkt auf 05_Trainingsmodus_Pro_Tablet.html bzw.
+     05_Trainingsmodus_Pro_Handy.html - die Adresse wird automatisch aus der
+     aktuellen Seitenadresse gebildet (funktioniert also unverändert, egal
+     unter welcher Adresse die Seite später liegt, z.B. auf GitHub Pages).
+     Läuft komplett offline über die lokale Bibliothek in vendor/qrcode.min.js. -->
+<script src="vendor/qrcode.min.js"></script>
 <script>
-  if (typeof PROTECTION_ENABLED !== "undefined" && !PROTECTION_ENABLED) {
-    location.href = "dashboard.html";
-  }
-  document.getElementById("pw").addEventListener("keydown", e => {
-    if (e.key === "Enter") checkPassword();
-  });
-  function checkPassword() {
-    const val = document.getElementById("pw").value;
-    if (val === SITE_PASSWORD) {
-      sessionStorage.setItem("gateOpen", "yes");
-      location.href = "login.html";
-    } else {
-      document.getElementById("err").textContent = "Falsches Passwort.";
+(function () {
+    function renderQr(codeElId, urlElId, targetFile) {
+        var url = new URL(targetFile, window.location.href).href;
+        var qr = qrcode(0, 'M');
+        qr.addData(url);
+        qr.make();
+        document.getElementById(codeElId).innerHTML = qr.createSvgTag({ scalable: true });
+        document.getElementById(urlElId).textContent = url;
     }
-  }
+    renderQr('qrTablet', 'qrTabletUrl', '05_Trainingsmodus_Pro_Tablet.html');
+    renderQr('qrHandy', 'qrHandyUrl', '05_Trainingsmodus_Pro_Handy.html');
+})();
 </script>
+
 </body>
 </html>

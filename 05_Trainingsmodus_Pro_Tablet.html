@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<title>Trainingsmodus Pro – Tablet – ESV Grein</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Farben, Schriftart, Buttongrößen: siehe theme.css (zentral für alle 3 Module).
+     Vereinslogo/-name: siehe club.js. -->
+<link rel="stylesheet" href="theme.css">
+<script defer src="club.js"></script>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<meta name="theme-color" content="#131b24">
+
+<style>
+
+:root{
+    /* ===== FLUIDE SKALIERUNG =====
+       Alle Abstände/Schriftgrößen unten basieren auf vmin (= 1% der jeweils
+       KLEINEREN Seite des Bildschirms - Breite oder Höhe, je nachdem was enger
+       ist). Dadurch skaliert das Layout automatisch sinnvoll, egal ob ein
+       Tablet quer (Breite ist meist ok, Höhe ist knapp - z.B. das fest
+       verbaute 1024x600-Kioskdisplay) oder hochkant (Breite ist knapp)
+       gehalten wird, und egal wie groß/klein/hochauflösend das jeweilige
+       Gerät ist - ohne feste Gerätestufen wie vorher. clamp(min, bevorzugt,
+       max) verhindert dabei, dass Text auf sehr großen oder sehr kleinen
+       Screens unleserlich klein bzw. unnötig riesig wird. */
+    --sp-1: clamp(3px, 0.55vmin, 8px);
+    --sp-2: clamp(6px, 1.1vmin, 14px);
+    --sp-3: clamp(8px, 1.7vmin, 20px);
+    --sp-4: clamp(10px, 2.3vmin, 28px);
+
+    --fs-2xs: clamp(9px, 1.15vmin, 12px);
+    --fs-xs: clamp(10px, 1.4vmin, 13px);
+    --fs-sm: clamp(11px, 1.6vmin, 15px);
+    --fs-body: clamp(12px, 1.9vmin, 17px);
+    --fs-md: clamp(14px, 2.3vmin, 20px);
+    --fs-lg: clamp(17px, 3vmin, 26px);
+    --fs-xl: clamp(21px, 3.8vmin, 34px);
+
+    --radius-sm: clamp(8px, 1.6vmin, 14px);
+    --radius-md: clamp(10px, 2.2vmin, 20px);
+    --radius-lg: clamp(14px, 3vmin, 24px);
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    height: 100%;
+    height: 100dvh;
+    overflow: hidden;
+}
+
+body{
+    font-family:var(--font-body);
+    background:linear-gradient(160deg,var(--bg-main),#0a0d12);
+    color:var(--text-main);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* .topbar / .club-brand: siehe theme.css (zentral für alle 3 Module) */
+
+/* ===== MANNSCHAFTSNAMEN (frei editierbar) ===== */
+.team-name-row{
+    display:flex;
+    gap:var(--sp-3);
+    flex-wrap:wrap;
+    align-items:center;
+    padding:var(--sp-1) var(--sp-3);
+    background:var(--bg-panel);
+    border-bottom:1px solid var(--line);
+    flex-shrink:0;
+}
+.team-name-row label{
+    display:flex;
+    align-items:center;
+    gap:var(--sp-1);
+    font-size:var(--fs-xs);
+    font-weight:700;
+    color:var(--text-dim);
+}
+.team-name-row input{
+    background:#1c2734;
+    color:var(--text-main);
+    border:1px solid var(--line);
+    font-weight:700;
+    font-size:var(--fs-sm);
+    padding:var(--sp-1) var(--sp-2);
+    width:clamp(100px, 16vw, 180px);
+    max-width:40vw;
+}
+.team-name-row input:focus{
+    outline:2px solid var(--accent);
+}
+
+/* Mannschaftsfarbe (RAL 6038 Leuchtgrün / RAL 3024 Leuchtrot) je Mannschaft
+   wählbar - siehe .team-name-group unten. Die beiden Teams tauschen sich die
+   Farbe automatisch: sobald eine Mannschaft "leuchtrot" wählt, bekommt die
+   andere automatisch "leuchtgrün" (nur 2 offizielle Stockfarben für 2 Teams). */
+.team-name-group{
+    display:flex;
+    align-items:center;
+    gap:var(--sp-2);
+    flex-wrap:wrap;
+}
+.color-toggle{
+    display:flex;
+    gap:4px;
+    background:#0d141c;
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:3px;
+}
+.color-btn{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    border:none;
+    background:transparent;
+    color:var(--text-dim);
+    font-family:inherit;
+    font-size:var(--fs-2xs);
+    font-weight:700;
+    padding:5px 10px;
+    border-radius:16px;
+    cursor:pointer;
+    white-space:nowrap;
+    transition: background 0.15s, color 0.15s;
+}
+.color-btn .dot{
+    width:10px; height:10px; border-radius:50%;
+    display:inline-block;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.25) inset;
+}
+.color-btn.green .dot{ background:#00b51a; }
+.color-btn.red .dot{ background:#ff2d21; }
+.color-btn.active{ color:#fff; }
+.color-btn.green.active{ background:#00b51a; color:#062b09; }
+.color-btn.red.active{ background:#ff2d21; color:#330505; }
+.color-btn:not(.active):hover{ background:rgba(255,255,255,0.06); }
+
+.header{
+    position: sticky;
+    top: 0;
+    z-index: 500;
+    background:var(--bg-panel);
+    border-bottom:1px solid var(--line);
+    color:var(--text-main);
+    padding:var(--sp-2) var(--sp-3);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:var(--sp-2);
+    flex-shrink:0;
+}
+
+.header h1{
+    font-family:var(--font-display);
+    letter-spacing:0.03em;
+    text-transform:uppercase;
+    font-size:var(--fs-lg);
+    color:var(--text-main);
+}
+.header h1::before{
+    content:"Modul 05";
+    display:block;
+    font-family:var(--font-body);
+    text-transform:uppercase;
+    letter-spacing:0.14em;
+    font-size:clamp(7px, 1vmin, 10px);
+    color:var(--accent);
+    font-weight:700;
+}
+
+.header-controls{
+    display:flex;
+    gap:var(--sp-1);
+    flex-wrap:wrap;
+    align-items:center;
+}
+
+button,
+select,
+input{
+    border:none;
+    border-radius:20px;
+    padding:var(--sp-1) var(--sp-2);
+    font-size:var(--fs-body);
+    touch-action: manipulation;
+    font-family:inherit;
+}
+
+button{
+    cursor:pointer;
+    background:var(--accent);
+    color:white;
+    font-weight:700;
+    touch-action: manipulation;
+    transition: transform 0.1s, background 0.15s;
+}
+button:hover{
+    background:var(--accent-hover);
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+.header-controls select{
+    background:#1c2734;
+    color:var(--text-main);
+    border:1px solid var(--line);
+    font-weight:600;
+    font-size:var(--fs-xs);
+    padding:var(--sp-1) var(--sp-2);
+}
+
+.header-controls button{
+    padding:var(--sp-1) var(--sp-2);
+    font-size:var(--fs-sm);
+}
+
+/* Vollbild-Button: deutlich größer/quadratischer als die übrigen Header-Buttons,
+   da das ⛶-Symbol bei reiner Touch-Bedienung auf dem Tablet sonst zu klein und
+   schwer zu treffen/erkennen ist. */
+.fullscreen-btn{
+    font-size:clamp(20px, 3.4vmin, 30px) !important;
+    line-height:1;
+    padding:clamp(4px, 0.9vmin, 8px) clamp(10px, 1.8vmin, 16px) !important;
+}
+
+.keyboard-status {
+    font-size: var(--fs-xs);
+    padding: var(--sp-1) var(--sp-2);
+    border-radius: 20px;
+    background: #1c2734;
+    color: var(--text-main);
+    font-weight: 700;
+    border:1px solid var(--line);
+    white-space:nowrap;
+}
+
+.keyboard-status.waiting { background: #7a6a00; }
+.keyboard-status.team-e { background: var(--e-color); color:#2a0505; }
+.keyboard-status.team-w { background: var(--w-color); color:#062b09; }
+.keyboard-status.training-ended { background: #9c27b0; color:#fff; }
+.keyboard-status.pending { background: var(--gold); color:#332400; animation: blink 0.8s ease-in-out infinite; }
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.55; }
+}
+
+.layout{
+    flex: 1;
+    padding:var(--sp-3);
+    overflow: hidden;
+    min-height: 0;
+}
+
+/* ===== ARENA (Hauptbildschirm = Zuschauermonitor-Layout) ===== */
+.arena{
+    width:100%;
+    max-width:1900px;
+    height:100%;
+    background:linear-gradient(165deg,#132a1d,#0a1810);
+    border:1px solid rgba(255,255,255,0.06);
+    border-radius:var(--radius-lg);
+    overflow:hidden;
+    box-shadow:0 10px 40px rgba(0,0,0,.4);
+    display:flex;
+    flex-direction:column;
+    margin: 0 auto;
+    padding:var(--sp-3) var(--sp-4);
+    gap:var(--sp-2);
+    color:#fff;
+}
+
+.arena-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:var(--sp-2);
+    flex-shrink:0;
+}
+
+.arena-title{
+    font-family:var(--font-display);
+    font-size:var(10pix, 3.4vmin, 30px);
+    font-weight:450;
+    color:var(--gold);
+    letter-spacing:1px;
+}
+
+.pending-preview{
+    font-size:var(--fs-xs);
+    font-weight:800;
+    padding:var(--sp-1) var(--sp-3);
+    border-radius:20px;
+    background:var(--gold);
+    color:#332400;
+    display:none;
+}
+.pending-preview.show{ display:inline-block; animation: blink 0.8s ease-in-out infinite; }
+
+/* ===== TEAMS ROW =====
+   Bleibt bewusst bis zu sehr schmalen Breiten 2-spaltig (Tablets im Quer- wie
+   Hochformat) - erst wenn das Gerät hochkant gehalten wird oder wirklich eng
+   ist (Media Query weiter unten), wird auf eine Spalte umgeschaltet. */
+.teams-row{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:var(--sp-3);
+    flex-shrink:0;
+    align-items:start;
+}
+
+.team-column{
+    display:flex;
+    flex-direction:column;
+    gap:var(--sp-2);
+}
+
+/* ===== ZIFFERNBLOCK (Tablet-Touch-Eingabe je Mannschaft) ===== */
+.keypad-panel{
+    background:#0a1810;
+    border-radius:var(--radius-md);
+    padding:var(--sp-2);
+    border:1px solid rgba(255,255,255,0.06);
+}
+.keypad-grid{
+    display:grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap:clamp(4px, 0.9vmin, 8px);
+}
+.keypad-btn{
+    background:#14261c;
+    color:var(--text-main);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:clamp(8px, 1.6vmin, 14px);
+    /* Buttongröße: siehe --btn-scale-tablet in theme.css */
+    font-size:calc(var(--btn-scale-tablet) * clamp(0.9rem, 2.6vmin, 1.5rem));
+    font-weight:800;
+    padding:calc(var(--btn-scale-tablet) * clamp(8px, 1.8vmin, 16px)) 0;
+    cursor:pointer;
+    touch-action:manipulation;
+    transition: transform 0.1s, background 0.15s;
+}
+.keypad-btn:active{ transform:scale(0.93); background:#1c362a; }
+.keypad-btn:disabled{ opacity:0.3; cursor:default; }
+.keypad-btn:disabled:active{ transform:none; background:#14261c; }
+.team-column.w .keypad-btn:active{ background:#1c3d24; border-color:var(--w-color); }
+.team-column.e .keypad-btn:active{ background:#3d1c1c; border-color:var(--e-color); }
+
+.team-block{
+    background:#0f1f17;
+    border-radius:var(--radius-md);
+    padding:var(--sp-3);
+    border-bottom:clamp(4px, 0.9vmin, 8px) solid var(--w-color);
+    box-shadow:0 clamp(3px, 0.7vmin, 6px) 0 rgba(0,0,0,.25);
+    display:flex;
+    flex-direction:column;
+    gap:var(--sp-2);
+    transition: all 0.25s ease;
+    cursor:pointer;
+}
+.team-block.e{ border-bottom-color:var(--e-color); }
+
+.team-block.selected{
+    transform: scale(1.015);
+}
+.team-block.w.selected{
+    background:var(--w-bg-selected, #123320);
+    box-shadow:0 0 0 3px var(--w-color), 0 6px 0 rgba(0,0,0,.25);
+}
+.team-block.e.selected{
+    background:var(--e-bg-selected, #331414);
+    box-shadow:0 0 0 3px var(--e-color), 0 6px 0 rgba(0,0,0,.25);
+}
+
+.team-block.flash{
+    animation: teamFlash 0.6s ease;
+}
+@keyframes teamFlash {
+    0%{ box-shadow:0 0 0 rgba(255,255,255,0); }
+    35%{ box-shadow:0 0 45px 12px rgba(255,255,255,0.55); }
+    100%{ box-shadow:0 0 0 rgba(255,255,255,0); }
+}
+
+.team-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+}
+
+.team-label{
+    font-weight:900;
+    font-size:var(--fs-lg);
+    letter-spacing:0.5px;
+}
+.team-label .key-hint{ font-size:var(--fs-2xs); color:#8aa89a; font-weight:600; display:block; }
+
+.team-wins-big {
+    font-size: clamp(19px, 3.4vmin, 30px);
+    background: rgba(255,255,255,0.08);
+    color: var(--gold);
+    padding: clamp(4px, 0.9vmin, 7px) clamp(10px, 2vmin, 18px);
+    border-radius: 40px;
+    font-weight: 800;
+    border: 1px solid rgba(255,223,140,0.2);
+    white-space:nowrap;
+}
+
+/* Ergebnis-Anzeige: skaliert über vmin am stärksten mit, weil sie das visuell
+   wichtigste Element ist - bleibt auf sehr kleinen Screens trotzdem noch
+   lesbar (Untergrenze) und wird auf großen Monitoren nicht unnötig riesig
+   (Obergrenze). */
+.team-score-big {
+    font-size: clamp(2.4rem, 10vmin, 7rem);
+    font-weight: 900;
+    color: var(--w-color);
+    line-height: 1;
+    text-shadow: 0 4px 30px rgba(76,175,80,0.35);
+    text-align:center;
+    padding: clamp(2px, 0.5vmin, 4px) 0;
+}
+.team-block.e .team-score-big { color: var(--e-color); text-shadow: 0 4px 20px rgba(255,107,107,0.3); }
+
+/* ===== EINGABE-HINWEIS (externes Tastenfeld, kein Bildschirm-Ziffernblock) ===== */
+.input-hint-panel{
+    background:#0a1810;
+    border-radius:var(--radius-lg);
+    padding:var(--sp-3);
+    border:1px solid rgba(255,255,255,0.06);
+    display:flex;
+    flex-direction:column;
+    gap:var(--sp-2);
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+}
+.input-hint-status{
+    font-size:var(--fs-body);
+    font-weight:800;
+    color:#eef2f6;
+}
+.input-hint-keys{
+    font-size:var(--fs-xs);
+    color:#8aa89a;
+    line-height:1.6;
+}
+.input-hint-keys kbd{
+    background:#1c2734;
+    border:1px solid rgba(255,255,255,0.15);
+    border-radius:6px;
+    padding:2px 7px;
+    font-family:inherit;
+    font-weight:700;
+    color:#eef2f6;
+}
+
+/* ===== KEHREN-VERLAUF (unterer Bereich, etwas wichtiger als die Historie) ===== */
+.kehren-verlauf-panel{
+    background:#0a1810;
+    border-radius:var(--radius-md);
+    padding:var(--sp-2) var(--sp-3);
+    border:1px solid rgba(255,255,255,0.06);
+    flex:1.3 1 0;
+    min-height:0;
+    display:flex;
+    flex-direction:column;
+    gap:var(--sp-1);
+}
+
+.kehren-verlauf-panel h4{
+    color:#8aa89a;
+    font-size:var(--fs-xs);
+    text-transform:uppercase;
+    letter-spacing:1px;
+    font-weight:700;
+    flex-shrink:0;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.kehren-verlauf-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(clamp(56px, 9vmin, 90px), 1fr));
+    gap:clamp(5px, 1vmin, 10px);
+    overflow-y:auto;
+    padding:2px;
+    min-height:0;
+}
+
+.verlauf-item{
+    background:#14261c;
+    border-radius:clamp(8px, 1.4vmin, 12px);
+    padding:clamp(4px, 0.9vmin, 8px) clamp(3px, 0.6vmin, 4px);
+    text-align:center;
+    border:2px solid rgba(255,255,255,0.06);
+    cursor:pointer;
+    transition:0.15s;
+}
+.verlauf-item:hover{ border-color:rgba(255,255,255,0.2); }
+.verlauf-item.is-active{
+    border-color:var(--accent);
+    box-shadow:0 0 16px rgba(51,197,255,0.25);
+}
+.verlauf-item.is-completed{
+    border-color:#ff9800;
+}
+.verlauf-item.is-target{
+    border-color:var(--gold);
+    box-shadow:0 0 18px rgba(255,223,140,0.35);
+    background:#241f0d;
+}
+
+.verlauf-item .v-number{ font-weight:700; color:#8aa89a; font-size:clamp(0.6rem, 1.3vmin, 0.8rem); }
+.verlauf-item .v-points{
+    font-weight:900;
+    display:flex;
+    justify-content:space-around;
+    font-size:clamp(0.8rem, 2vmin, 1.15rem);
+    margin-top:2px;
+}
+.verlauf-item .v-points .w{ color:var(--w-color); }
+.verlauf-item .v-points .e{ color:var(--e-color); }
+.verlauf-item .v-scorer{
+    font-size:clamp(0.55rem, 1vmin, 0.6rem);
+    color:#65796d;
+    margin-top:2px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+/* ===== FOOTER-ROW (im arena) ===== */
+.arena-footer{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:var(--sp-1);
+    flex-wrap:wrap;
+    flex-shrink:0;
+}
+.arena-footer button{
+    padding:calc(var(--btn-scale-tablet) * clamp(6px, 1.4vmin, 10px)) calc(var(--btn-scale-tablet) * clamp(12px, 2.4vmin, 18px));
+    font-size:calc(var(--btn-scale-tablet) * var(--fs-xs));
+}
+.arena-footer .footer-right {
+    font-size:clamp(0.55rem, 1vmin, 0.72rem);
+    color:#65796d;
+    margin-left:auto;
+}
+
+/* ===== TRAINING BEENDET / MODALS (unverändert-ähnlich) ===== */
+.training-ended-overlay {
+    position: fixed; inset:0;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 20000;
+    backdrop-filter: blur(5px);
+}
+.training-ended-overlay.show { display: flex; }
+.training-ended-box {
+    background: white; color:#222;
+    border-radius: 30px;
+    padding: clamp(20px, 5vmin, 50px);
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    animation: pulse 1.5s ease-in-out;
+}
+@keyframes pulse {
+    0% { transform: scale(0.9); opacity: 0; }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); opacity: 1; }
+}
+.training-ended-box .trophy { font-size: 4rem; margin-bottom: 10px; }
+.training-ended-box h2 { font-size: 2rem; margin-bottom: 10px; color: var(--green); }
+.training-ended-box .winner-name { font-size: 2.5rem; font-weight: 900; color: var(--red); margin: 15px 0; }
+.training-ended-box .score-summary { font-size: 1.2rem; color: #555; margin: 10px 0 20px; }
+.training-ended-box .enter-hint { font-size: 0.9rem; color: #888; margin-top: 10px; padding: 8px; background: #f5f5f5; border-radius: 8px; }
+.training-ended-box button { padding: 12px 30px; font-size: 1.1rem; background: var(--green); color: white; border-radius: 12px; border: none; cursor: pointer; font-weight: 700; }
+
+.toast{
+    position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+    background:#111; color:white; padding:14px 20px; border-radius:14px;
+    opacity:0; transition:.3s; z-index:9999; pointer-events: none;
+    font-size:1rem; max-width:90%; text-align:center;
+}
+.toast.show{ opacity:1; }
+.toast.winner{ background: #4caf50; font-weight:700; font-size:1.2rem; }
+.toast.warn{ background: #b93a32; font-weight:700; }
+
+
+.gold{ background:var(--gold); color:black; }
+.gold:active{ background:#f0c860; }
+
+/* ===== UNENTSCHIEDEN – KEHRE ERWEITERN (NEU) ===== */
+.tie-break-overlay {
+    position: fixed; inset:0;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 20001;
+    backdrop-filter: blur(5px);
+}
+.tie-break-overlay.show { display: flex; }
+.tie-break-box {
+    background: white; color:#222;
+    border-radius: 30px;
+    padding: clamp(18px, 4vmin, 40px);
+    max-width: 460px;
+    width: 90%;
+    text-align: center;
+}
+.tie-break-icon{ font-size:3rem; margin-bottom:6px; }
+.tie-break-box h2{ font-size:1.6rem; margin-bottom:8px; color:var(--green); }
+.tie-break-score{
+    font-size:2.2rem; font-weight:900; color:var(--gold);
+    background:#102417; display:inline-block; padding:6px 24px;
+    border-radius:16px; margin:10px 0;
+}
+.tie-break-hint{ font-size:0.9rem; color:#666; margin:14px 0 20px; line-height:1.5; }
+.tie-break-buttons{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+.tie-break-buttons button{
+    padding:12px 22px; font-size:1rem; background:var(--green); color:white;
+    border-radius:14px; border:none; cursor:pointer; font-weight:700;
+}
+
+/* ===== KEHRE BESTÄTIGEN – Rückfrage nach jeder Kehreneingabe ===== */
+.kehre-confirm-overlay {
+    position: fixed; inset:0;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 20002;
+    backdrop-filter: blur(5px);
+}
+.kehre-confirm-overlay.show { display: flex; }
+.kehre-confirm-box {
+    background: white; color:#222;
+    border-radius: 30px;
+    padding: clamp(20px, 4vmin, 40px);
+    max-width: 460px;
+    width: 90%;
+    text-align: center;
+}
+.kehre-confirm-icon{ font-size:3rem; margin-bottom:6px; }
+.kehre-confirm-box h2{ font-size:1.5rem; margin-bottom:10px; color:var(--green); }
+.kehre-confirm-result{
+    font-size:1.5rem;
+    font-weight:900;
+    background:#eef5e9;
+    border:2px solid var(--border);
+    border-radius:16px;
+    padding:14px;
+    margin-bottom:8px;
+}
+.kehre-confirm-result .cw{ color:#1f8c3a; }
+.kehre-confirm-result .ce{ color:var(--red); }
+.kehre-confirm-hint{ font-size:0.85rem; color:#666; margin-bottom:18px; }
+.kehre-confirm-buttons{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+.kehre-confirm-buttons button{
+    padding:14px 30px; font-size:1.1rem; border-radius:14px; border:none;
+    cursor:pointer; font-weight:800;
+}
+.kehre-confirm-yes{ background:var(--green); color:white; }
+.kehre-confirm-no{ background:var(--red); color:white; }
+
+/* ===== RESPONSIVE-STRUKTUR =====
+   Die feste Skalierung oben (clamp()+vmin) deckt bereits jede Bildschirmgröße
+   fließend ab - hier geht es nur noch um die STRUKTUR: Wann werden die beiden
+   Mannschaftsspalten untereinander statt nebeneinander angezeigt? Das hängt
+   nicht von der reinen Größe ab (ein großes Tablet im Hochformat ist trotzdem
+   schmal), sondern vom Seitenverhältnis - deshalb orientation:portrait statt
+   einer festen Pixel-Schwelle. Zusätzlich eine schmale Breite als Fallback für
+   sehr schmale Fenster im Querformat (z.B. Splitscreen). */
+@media (orientation: portrait), (max-width: 640px){
+    .teams-row{ grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="topbar-links">
+        <a href="index.html">🏠 Start</a>
+    </div>
+    <div class="club-brand">
+        <img class="club-logo" src="" alt="">
+        <span class="club-name"></span>
+    </div>
+</div>
+
+<div class="team-name-row">
+    <div class="team-name-group">
+        <label><span id="teamIconW">⚪</span> <input type="text" id="teamNameInputW" maxlength="24" placeholder="Mannschaftsname W" oninput="updateTeamName('w', this.value)"></label>
+        <div class="color-toggle" id="colorToggleW">
+            <button type="button" class="color-btn green" onclick="setTeamColor('w','green')"><span class="dot"></span>Leuchtgrün</button>
+            <button type="button" class="color-btn red" onclick="setTeamColor('w','red')"><span class="dot"></span>Leuchtrot</button>
+        </div>
+    </div>
+    <div class="team-name-group">
+        <label><span id="teamIconE">🔴</span> <input type="text" id="teamNameInputE" maxlength="24" placeholder="Mannschaftsname E" oninput="updateTeamName('e', this.value)"></label>
+        <div class="color-toggle" id="colorToggleE">
+            <button type="button" class="color-btn green" onclick="setTeamColor('e','green')"><span class="dot"></span>Leuchtgrün</button>
+            <button type="button" class="color-btn red" onclick="setTeamColor('e','red')"><span class="dot"></span>Leuchtrot</button>
+        </div>
+    </div>
+</div>
+
+<div class="header">
+    <h1>Trainingsmodus Pro Tablet</h1>
+
+    <div class="header-controls">
+        <span class="keyboard-status" id="keyboardStatus">🔑 Bereit</span>
+
+        <select id="gamesSelect">
+            <option value="2" selected>2 Siege</option>
+            <option value="3">3 Siege</option>
+            <option value="4">4 Siege</option>
+            <option value="5">5 Siege</option>
+            <option value="6">6 Siege</option>
+        </select>
+
+        <select id="kehrenSelect">
+            <option value="4">4 Kehren</option>
+            <option value="6" selected>6 Kehren</option>
+            <option value="8">8 Kehren</option>
+            <option value="10">10 Kehren</option>
+        </select>
+
+        <select id="playerCount">
+            <option value="3">3 Spieler/Kehre</option>
+            <option value="4" selected>4 Spieler/Kehre</option>
+            <option value="5">5 Spieler/Kehre</option>
+            <option value="6">6 Spieler/Kehre</option>
+        </select>
+
+        <button class="fullscreen-btn" onclick="toggleFullscreen()" title="Vollbild ein/aus">⛶</button>
+        <button onclick="fullReset()" style="background:#b93a32;" title="Kompletter Reset">↺</button>
+    </div>
+</div>
+
+<div class="layout" id="layout"></div>
+
+<!-- Training beendet Overlay -->
+<div class="training-ended-overlay" id="trainingEndedOverlay">
+    <div class="training-ended-box">
+        <div class="trophy">🏆</div>
+        <h2>Training beendet!</h2>
+        <div class="winner-name" id="winnerName">Mannschaft W</div>
+        <div class="score-summary" id="scoreSummary">Siege: 2 : 0</div>
+        <div class="enter-hint">Antippen Sie „Neues Training starten“ für den nächsten Durchgang</div>
+        <button onclick="startNewTraining()">Neues Training starten</button>
+    </div>
+</div>
+
+<!-- Unentschieden – automatische Kehren-Verlängerung (NEU): es gibt kein Unentschieden zum Werten,
+     es werden automatisch immer 2 weitere Kehren gespielt, bis ein Sieger feststeht
+     (wie im echten Eisstocksport). Kein Klick nötig - die Verlängerung startet sofort,
+     dieses Fenster ist nur eine Info und schließt sich von selbst. -->
+<div class="tie-break-overlay" id="tieBreakOverlay">
+    <div class="tie-break-box">
+        <div class="tie-break-icon">🤝</div>
+        <h2>Unentschieden!</h2>
+        <div class="tie-break-score" id="tieBreakScore">0 : 0</div>
+        <p class="tie-break-hint" id="tieBreakHint">Nach allen Kehren steht es unentschieden. Es werden automatisch 2 weitere Kehren gespielt.</p>
+        <div class="tie-break-buttons">
+            <button onclick="closeTieBreakDialog()">Verstanden</button>
+        </div>
+    </div>
+</div>
+
+<!-- Kehre bestätigen – Rückmeldung mehrerer Vereine nach den ersten Testspielen:
+     nach JEDER Kehreneingabe kurz nachfragen, ob der Wert stimmt, bevor die nächste
+     Kehre / die Wertung darauf aufbaut. JA = weiter, NEIN = Eingabe verwerfen und
+     dieselbe Kehre neu eingeben. -->
+<div class="kehre-confirm-overlay" id="kehreConfirmOverlay">
+    <div class="kehre-confirm-box">
+        <div class="kehre-confirm-icon">❓</div>
+        <h2 id="kehreConfirmTitle">Kehre 1 – Eingabe richtig?</h2>
+        <div class="kehre-confirm-result" id="kehreConfirmResult"></div>
+        <div class="kehre-confirm-buttons">
+            <button class="kehre-confirm-yes" onclick="confirmKehreEntry()">✅ Ja</button>
+            <button class="kehre-confirm-no" onclick="rejectKehreEntry()">❌ Nein</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Eigenständiges Einzelprogramm für Tablets: keine Zugangssperre
+     (der frühere Test-/Admin-Login wurde wieder entfernt, der Zugriffsschutz
+     erfolgt jetzt zentral über das Dashboard) - sofort einsatzbereit, ohne
+     Login. Ein einfacher Link zurück zum Dashboard ist trotzdem vorhanden
+     (siehe .topbar oben), damit man von hier aus wieder ins Portal wechseln
+     kann. -->
+<script>
+const PENDING_DIGIT_TIMEOUT = 650;
+
+// Mannschaftsnamen sind frei editierbar (Textfeld oben) statt fest "Mannschaft W/E" -
+// gleicher localStorage-Key wie 05_Trainingsmodus_Pro.html, damit ein einmal
+// vergebener Name auf beiden Varianten übernommen wird.
+const TEAM_NAMES_STORAGE_KEY = 'esv_grein_team_namen';
+const DEFAULT_TEAM_NAMES = { w: 'Mannschaft W', e: 'Mannschaft E' };
+
+function loadTeamNames() {
+    try {
+        const data = localStorage.getItem(TEAM_NAMES_STORAGE_KEY);
+        if (data) {
+            const parsed = JSON.parse(data);
+            if (parsed && typeof parsed.w === 'string' && typeof parsed.e === 'string') {
+                return {
+                    w: parsed.w.trim() || DEFAULT_TEAM_NAMES.w,
+                    e: parsed.e.trim() || DEFAULT_TEAM_NAMES.e
+                };
+            }
+        }
+    } catch (e) {}
+    return { w: DEFAULT_TEAM_NAMES.w, e: DEFAULT_TEAM_NAMES.e };
+}
+
+function saveTeamNames() {
+    try { localStorage.setItem(TEAM_NAMES_STORAGE_KEY, JSON.stringify(state.teamNames)); } catch (e) {}
+}
+
+function updateTeamName(team, value) {
+    state.teamNames[team] = value;
+    saveTeamNames();
+    render();
+}
+
+function syncTeamNameInputs() {
+    const wInput = document.getElementById('teamNameInputW');
+    const eInput = document.getElementById('teamNameInputE');
+    if (wInput && document.activeElement !== wInput) wInput.value = state.teamNames.w;
+    if (eInput && document.activeElement !== eInput) eInput.value = state.teamNames.e;
+}
+
+function refreshTeamNamesIfChanged() {
+    const fresh = loadTeamNames();
+    if (fresh.w === state.teamNames.w && fresh.e === state.teamNames.e) return;
+    state.teamNames = fresh;
+    syncTeamNameInputs();
+    render();
+}
+
+window.addEventListener('storage', function (e) {
+    if (e.key === TEAM_NAMES_STORAGE_KEY) refreshTeamNamesIfChanged();
+    if (e.key === TEAM_COLORS_STORAGE_KEY) {
+        state.teamColors = loadTeamColors();
+        applyTeamColors();
+        render();
+    }
+});
+
+// ===== MANNSCHAFTSFARBEN (RAL 6038 Leuchtgrün / RAL 3024 Leuchtrot) =====
+// Offizielle Eisstock-Stockfarben. Es gibt genau 2 Farben für 2 Mannschaften -
+// wählt eine Mannschaft eine Farbe, bekommt die andere automatisch die jeweils
+// andere zugewiesen (siehe setTeamColor()). Nur in dieser Tablet-Version,
+// nicht in Pro/Handy (dort bleibt es bei den bisherigen Standardfarben).
+const TEAM_COLOR_HEX = {
+    green: '#00b51a',   // RAL 6038 Leuchtgrün (Näherungswert, RAL veröffentlicht keine offiziellen Hex-Codes)
+    red:   '#ff2d21'    // RAL 3024 Leuchtrot (Näherungswert)
+};
+const TEAM_COLOR_ICON = { green: '🟢', red: '🔴' };
+const TEAM_COLORS_STORAGE_KEY = 'esv_grein_team_farben';
+const DEFAULT_TEAM_COLORS = { w: 'green', e: 'red' };
+
+function loadTeamColors() {
+    try {
+        const data = localStorage.getItem(TEAM_COLORS_STORAGE_KEY);
+        if (data) {
+            const parsed = JSON.parse(data);
+            if (parsed && (parsed.w === 'green' || parsed.w === 'red') && (parsed.e === 'green' || parsed.e === 'red') && parsed.w !== parsed.e) {
+                return { w: parsed.w, e: parsed.e };
+            }
+        }
+    } catch (e) {}
+    return { w: DEFAULT_TEAM_COLORS.w, e: DEFAULT_TEAM_COLORS.e };
+}
+
+function saveTeamColors() {
+    try { localStorage.setItem(TEAM_COLORS_STORAGE_KEY, JSON.stringify(state.teamColors)); } catch (e) {}
+}
+
+// Mischt eine Farbe mit dem dunklen Kartenhintergrund - für den "ausgewählt"-
+// Zustand der Mannschaftskarte, damit dieser zur jeweils tatsächlich
+// zugewiesenen Farbe passt (nicht mehr fix grün/rot).
+function mixWithDark(hex, amount) {
+    const base = { r: 15, g: 31, b: 23 }; // #0f1f17
+    const c = hex.replace('#', '');
+    const r = parseInt(c.substring(0, 2), 16);
+    const g = parseInt(c.substring(2, 4), 16);
+    const b = parseInt(c.substring(4, 6), 16);
+    const mix = (a, base) => Math.round(base + (a - base) * amount);
+    const toHex = n => n.toString(16).padStart(2, '0');
+    return '#' + toHex(mix(r, base.r)) + toHex(mix(g, base.g)) + toHex(mix(b, base.b));
+}
+
+function applyTeamColors() {
+    const wHex = TEAM_COLOR_HEX[state.teamColors.w];
+    const eHex = TEAM_COLOR_HEX[state.teamColors.e];
+    const root = document.documentElement.style;
+    root.setProperty('--w-color', wHex);
+    root.setProperty('--e-color', eHex);
+    root.setProperty('--w-bg-selected', mixWithDark(wHex, 0.22));
+    root.setProperty('--e-bg-selected', mixWithDark(eHex, 0.22));
+    updateColorToggleUI();
+}
+
+function updateColorToggleUI() {
+    ['w', 'e'].forEach(team => {
+        const toggle = document.getElementById(team === 'w' ? 'colorToggleW' : 'colorToggleE');
+        if (!toggle) return;
+        const active = state.teamColors[team];
+        toggle.querySelectorAll('.color-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.classList.contains(active));
+        });
+    });
+    const iconW = document.getElementById('teamIconW');
+    const iconE = document.getElementById('teamIconE');
+    if (iconW) iconW.textContent = teamIcon('w');
+    if (iconE) iconE.textContent = teamIcon('e');
+}
+
+function teamIcon(team) {
+    return TEAM_COLOR_ICON[state.teamColors[team]] || (team === 'w' ? '⚪' : '🔴');
+}
+
+// Setzt die Farbe für eine Mannschaft - die andere Mannschaft bekommt
+// automatisch die jeweils übrige Farbe (Eingabe Mannschaftsnamen -> Auswahl
+// leuchtrot -> Auswahl leuchtgrün, wie von den Vereinen gewünscht).
+function setTeamColor(team, color) {
+    if (color !== 'green' && color !== 'red') return;
+    const other = team === 'w' ? 'e' : 'w';
+    const otherColor = color === 'green' ? 'red' : 'green';
+    state.teamColors[team] = color;
+    state.teamColors[other] = otherColor;
+    saveTeamColors();
+    applyTeamColors();
+    render();
+}
+
+// ===== STATE =====
+const state = {
+    kehren: 6,
+    baseKehren: 6,                  // konfigurierte Kehren-Anzahl (Dropdown) - bei Unentschieden werden
+                                     // automatisch 2er-Blöcke an "kehren" angehängt, "baseKehren" bleibt
+                                     // die Grundeinstellung, auf die nach dem Spiel zurückgesetzt wird.
+    winsToChampion: 2,
+    playerCount: 4,
+    arena: null,                    // wird gleich nach der Deklaration gesetzt (siehe unten)
+    selectedTeam: null,             // 'w' | 'e' | null
+    isTrainingEnded: false,
+    targetKehre: null,              // manuell angetippte Kehre (Korrektur), sonst null = automatisch
+    pendingDigit: null,             // { digit, timeoutId } für 2-stellige Eingabe (z.B. "10")
+    pendingConfirm: null,           // { idx } während der Kehre-Bestätigen-Dialog offen ist
+    teamNames: loadTeamNames(),
+    teamColors: loadTeamColors()    // { w: 'green'|'red', e: 'green'|'red' } - RAL 6038/3024
+};
+// createArena() liest state.kehren, daher erst NACH der obigen Deklaration aufrufen
+// (sonst "Cannot access 'state' before initialization").
+state.arena = createArena();
+
+// ===== KEYBOARD (optional – z.B. externe Tastatur/Nummernblock am Raspberry) =====
+function setupKeyboard() {
+    document.addEventListener('keydown', function(e) {
+        // Solange die Kehre-Bestätigen-Rückfrage offen ist, geht JEDE Tastatureingabe
+        // dorthin: Enter = Ja (weiter), Escape = Nein (Eingabe verwerfen) - alles andere
+        // wird ignoriert, damit währenddessen nichts am Spielstand verändert wird.
+        if (state.pendingConfirm) {
+            if (e.key === 'Enter' || e.key === 'NumpadEnter') {
+                e.preventDefault();
+                confirmKehreEntry();
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                rejectKehreEntry();
+            } else {
+                e.preventDefault();
+            }
+            return;
+        }
+
+        if (e.key === 'Enter' || e.key === 'NumpadEnter') {
+            e.preventDefault();
+            if (state.isTrainingEnded) {
+                startNewTraining();
+                toast('🔄 Neues Training gestartet!');
+            } else {
+                evaluateGame();
+            }
+            return;
+        }
+
+        if (e.key === 'Escape') {
+            if (state.pendingDigit) {
+                e.preventDefault();
+                cancelPendingDigit();
+                return;
+            }
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            }
+            return;
+        }
+
+        if (state.isTrainingEnded) return;
+
+        if (e.key === '/' || e.key === 'Divide' || e.code === 'NumpadDivide') {
+            e.preventDefault();
+            deleteKehreEntry();
+            return;
+        }
+
+        if (e.key === '-' || e.key === 'Minus' || e.key === 'Subtract') {
+            e.preventDefault();
+            selectTeam('e');
+            return;
+        }
+
+        if (e.key === '+' || e.key === 'Plus' || e.key === 'Add' || e.key === '=') {
+            e.preventDefault();
+            selectTeam('w');
+            return;
+        }
+
+        const numMap = {
+            'Numpad0':'0','Numpad1':'1','Numpad2':'2','Numpad3':'3','Numpad4':'4',
+            'Numpad5':'5','Numpad6':'6','Numpad7':'7','Numpad8':'8','Numpad9':'9'
+        };
+        if (/^[0-9]$/.test(e.key)) {
+            e.preventDefault();
+            handleDigit(e.key);
+            return;
+        }
+        if (numMap[e.key]) {
+            e.preventDefault();
+            handleDigit(numMap[e.key]);
+            return;
+        }
+    });
+}
+
+// ===== TEAM AUSWAHL =====
+function selectTeam(team) {
+    if (state.isTrainingEnded) {
+        toast('Training ist beendet! „Neues Training starten“ antippen');
+        return;
+    }
+    state.selectedTeam = (state.selectedTeam === team) ? null : team;
+    updateKeyboardStatus();
+    render();
+    if (state.selectedTeam) {
+        flashTeam(state.selectedTeam);
+    }
+}
+
+function flashTeam(team) {
+    requestAnimationFrame(() => {
+        const el = document.getElementById('teamBlock-' + team);
+        if (!el) return;
+        el.classList.remove('flash');
+        // reflow um die Animation erneut zu starten
+        void el.offsetWidth;
+        el.classList.add('flash');
+        setTimeout(() => el.classList.remove('flash'), 650);
+    });
+}
+
+// ===== ZIFFERNEINGABE (Kehren-Ergebnis: 1- oder 2-stellig) =====
+// tapDigit() verbindet Mannschaft-Wahl + Ziffer in einem Antippen (Touch-Ziffernblock
+// unter jeder Mannschaft) - handleDigit() selbst bleibt unverändert nutzbar
+// (z.B. für eine evtl. angeschlossene externe Tastatur).
+function tapDigit(team, digit) {
+    if (state.isTrainingEnded) {
+        toast('Training ist beendet! Bitte „Neues Training starten“ antippen');
+        return;
+    }
+    if (state.selectedTeam !== team) {
+        state.selectedTeam = team;
+        flashTeam(team);
+    }
+    handleDigit(digit);
+}
+
+function handleDigit(d) {
+    if (state.isTrainingEnded) {
+        toast('Training ist beendet! „Neues Training starten“ antippen');
+        return;
+    }
+    if (!state.selectedTeam) {
+        toast('⚠️ Bitte zuerst Mannschaft wählen ( + oder − / Kachel antippen)');
+        return;
+    }
+
+    const arena = state.arena;
+    if (hasWinner(arena)) {
+        endTraining(arena);
+        return;
+    }
+
+    const maxPoints = state.playerCount;
+
+    if (state.pendingDigit) {
+        clearTimeout(state.pendingDigit.timeoutId);
+        const first = state.pendingDigit.digit;
+        state.pendingDigit = null;
+        const combined = Number(first + d);
+        if (first === '1' && d === '0' && combined <= maxPoints) {
+            commitValue(combined);
+        } else {
+            commitValue(Number(first));
+            toast('ℹ️ Zweite Ziffer ignoriert – bitte Mannschaft erneut wählen');
+        }
+        render();
+        return;
+    }
+
+    // Möglicher Start einer 2-stelligen Eingabe (aktuell nur relevant für "10")
+    if (d === '1' && maxPoints >= 10) {
+        state.pendingDigit = {
+            digit: d,
+            timeoutId: setTimeout(() => {
+                commitValue(1);
+                render();
+            }, PENDING_DIGIT_TIMEOUT)
+        };
+        render();
+        return;
+    }
+
+    const v = Number(d);
+    if (v > maxPoints) {
+        toast(`⚠️ Maximal ${maxPoints} Punkte pro Kehre möglich`);
+        return;
+    }
+    commitValue(v);
+}
+
+function cancelPendingDigit() {
+    if (state.pendingDigit) {
+        clearTimeout(state.pendingDigit.timeoutId);
+        state.pendingDigit = null;
+        render();
+        toast('Eingabe abgebrochen');
+    }
+}
+
+function activeKehreIndexForEntry() {
+    if (state.targetKehre !== null && state.targetKehre !== undefined) return state.targetKehre;
+    return activeKehre(state.arena) - 1;
+}
+
+function commitValue(v) {
+    const arena = state.arena;
+    const idx = activeKehreIndexForEntry();
+    if (idx < 0 || idx >= state.kehren) return;
+
+    const team = state.selectedTeam;
+    if (team === 'w') {
+        arena.pointsA[idx] = v;
+        if (arena.pointsB[idx] === null) arena.pointsB[idx] = 0;
+    } else {
+        arena.pointsB[idx] = v;
+        if (arena.pointsA[idx] === null) arena.pointsA[idx] = 0;
+    }
+
+    state.selectedTeam = null;
+    state.targetKehre = null;
+    updateKeyboardStatus();
+    render();
+
+    // Rückfrage statt direkt weiterzuspielen (Rückmeldung mehrerer Vereine nach den
+    // ersten Testspielen): Fehleingaben sollen sich sofort korrigieren lassen, bevor
+    // sich die nächste Kehre / Wertung darauf aufbaut.
+    openKehreConfirmDialog(idx);
+}
+
+// ===== KEHRE BESTÄTIGEN (Rückfrage nach jeder Eingabe: JA = weiter, NEIN = neu eingeben) =====
+function openKehreConfirmDialog(idx) {
+    const arena = state.arena;
+    state.pendingConfirm = { idx };
+
+    const aVal = arena.pointsA[idx];
+    const bVal = arena.pointsB[idx];
+    document.getElementById('kehreConfirmTitle').textContent = `Kehre ${idx + 1} – Eingabe richtig?`;
+    document.getElementById('kehreConfirmResult').innerHTML =
+        `${teamIcon('w')} <span class="cw">${state.teamNames.w}: ${aVal}</span>&nbsp;&nbsp;|&nbsp;&nbsp;${teamIcon('e')} <span class="ce">${state.teamNames.e}: ${bVal}</span>`;
+    document.getElementById('kehreConfirmOverlay').classList.add('show');
+}
+
+function confirmKehreEntry() {
+    const c = state.pendingConfirm;
+    if (!c) return;
+    const idx = c.idx;
+    const arena = state.arena;
+    state.pendingConfirm = null;
+    document.getElementById('kehreConfirmOverlay').classList.remove('show');
+
+    toast(`✅ Kehre ${idx + 1} bestätigt: W ${arena.pointsA[idx]} | E ${arena.pointsB[idx]}`);
+
+    if (checkAllKehrenFull(arena)) {
+        setTimeout(() => {
+            toast('📊 Alle Kehren gespielt - Wertung läuft...');
+            setTimeout(() => evaluateGame(), 500);
+        }, 300);
+    }
+}
+
+function rejectKehreEntry() {
+    const c = state.pendingConfirm;
+    if (!c) return;
+    const idx = c.idx;
+    const arena = state.arena;
+    arena.pointsA[idx] = null;
+    arena.pointsB[idx] = null;
+    arena.scorerA[idx] = null;
+    arena.scorerB[idx] = null;
+    state.pendingConfirm = null;
+    document.getElementById('kehreConfirmOverlay').classList.remove('show');
+
+    state.targetKehre = idx;
+    updateKeyboardStatus();
+    render();
+    toast(`↩️ Kehre ${idx + 1} verworfen – bitte neu eingeben`);
+}
+
+// ===== KEHRE ANTIPPEN (Korrektur-Ziel wählen) =====
+function toggleKehreTarget(idx) {
+    if (state.isTrainingEnded) return;
+    state.targetKehre = (state.targetKehre === idx) ? null : idx;
+    render();
+}
+
+function getMostRecentCompletedIndex(arena) {
+    for (let i = state.kehren - 1; i >= 0; i--) {
+        if (arena.pointsA[i] !== null || arena.pointsB[i] !== null) return i;
+    }
+    return -1;
+}
+
+function deleteKehreEntry() {
+    if (state.isTrainingEnded) {
+        toast('Training ist beendet! „Neues Training starten“ antippen');
+        return;
+    }
+    const arena = state.arena;
+    let idx = state.targetKehre;
+    if (idx === null || idx === undefined) {
+        idx = getMostRecentCompletedIndex(arena);
+    }
+    if (idx === -1 || idx === null || idx === undefined) {
+        toast('Keine Kehre zum Löschen vorhanden');
+        return;
+    }
+    if (arena.pointsA[idx] === null && arena.pointsB[idx] === null) {
+        toast(`Kehre ${idx + 1} ist bereits leer`);
+        return;
+    }
+    arena.pointsA[idx] = null;
+    arena.pointsB[idx] = null;
+    arena.scorerA[idx] = null;
+    arena.scorerB[idx] = null;
+    state.targetKehre = idx;
+    cancelPendingDigit();
+    toast(`🗑️ Kehre ${idx + 1} gelöscht – bitte neu eingeben`);
+    render();
+}
+
+// ===== SPIEL WERTEN =====
+function evaluateGame() {
+    const arena = state.arena;
+
+    if (state.isTrainingEnded) {
+        toast('Training ist beendet! „Neues Training starten“ antippen');
+        return;
+    }
+
+    if (hasWinner(arena)) {
+        endTraining(arena);
+        return;
+    }
+
+    for (let i = 0; i < state.kehren; i++) {
+        if (arena.pointsA[i] === null || arena.pointsB[i] === null) {
+            toast('Bitte alle Kehren ausfüllen');
+            return;
+        }
+    }
+
+    const a = sum(arena.pointsA);
+    const b = sum(arena.pointsB);
+
+    if (state.kehren === state.baseKehren) {
+        // Reguläres Spielende nach den eingestellten Kehren: Gesamtsumme entscheidet.
+        // Bei Gleichstand werden automatisch 2 weitere Kehren gespielt (siehe unten) -
+        // kein Unentschieden wird final gewertet.
+        if (a === b) {
+            extendKehren(a, b);
+            return;
+        }
+        const winnerCode = a > b ? 'w' : 'e';
+        toast(winnerCode === 'w' ? `${teamIcon('w')} ${state.teamNames.w} gewinnt (${a}:${b})` : `${teamIcon('e')} ${state.teamNames.e} gewinnt (${a}:${b})`);
+        finishGame(winnerCode);
+        return;
+    }
+
+    // Verlängerung aktiv: der zuletzt gespielte 2er-Block aus zusätzlichen Kehren
+    // entscheidet per Punktesumme - genau wie beim Grundspiel, nur eben für je
+    // 2 zusätzliche Kehren. Steht auch dieser Block unentschieden, werden automatisch
+    // wieder 2 weitere Kehren gespielt, bis eine Mannschaft einen Block gewinnt.
+    const blockA = (arena.pointsA[state.kehren - 2] || 0) + (arena.pointsA[state.kehren - 1] || 0);
+    const blockB = (arena.pointsB[state.kehren - 2] || 0) + (arena.pointsB[state.kehren - 1] || 0);
+
+    if (blockA === blockB) {
+        extendKehren(a, b);
+        return;
+    }
+
+    const winnerCode = blockA > blockB ? 'w' : 'e';
+    toast(winnerCode === 'w'
+        ? `${teamIcon('w')} ${state.teamNames.w} gewinnt die Verlängerung (${a}:${b})`
+        : `${teamIcon('e')} ${state.teamNames.e} gewinnt die Verlängerung (${a}:${b})`);
+    finishGame(winnerCode);
+}
+
+// Abschluss eines entschiedenen Spiels - erhöht den Sieg-Zähler, bereitet die
+// nächste Runde vor.
+function finishGame(winnerCode) {
+    const arena = state.arena;
+    if (winnerCode === 'w') arena.winsA++; else arena.winsB++;
+
+    state.kehren = state.baseKehren;
+    arena.pointsA = Array(state.kehren).fill(null);
+    arena.pointsB = Array(state.kehren).fill(null);
+    arena.scorerA = Array(state.kehren).fill(null);
+    arena.scorerB = Array(state.kehren).fill(null);
+    state.targetKehre = null;
+
+    render();
+
+    if (hasWinner(arena)) {
+        setTimeout(() => endTraining(arena), 1000);
+    } else {
+        setTimeout(() => {
+            toast(`🔄 Neues Spiel beginnt! Stand: W ${arena.winsA} : ${arena.winsB} E`);
+            render();
+        }, 500);
+    }
+}
+
+// ===== UNENTSCHIEDEN: AUTOMATISCHE VERLÄNGERUNG UM JE 2 KEHREN (NEU) =====
+// Fügt automatisch 2 weitere Kehren hinzu (kein Klick nötig) und zeigt kurz eine
+// Info-Meldung, die sich von selbst schließt.
+function extendKehren(a, b) {
+    const arena = state.arena;
+    arena.pointsA.push(null, null);
+    arena.pointsB.push(null, null);
+    arena.scorerA.push(null, null);
+    arena.scorerB.push(null, null);
+    state.kehren += 2;
+    updateKeyboardStatus();
+    showTieBreakDialog(a, b);
+    render();
+}
+
+function showTieBreakDialog(a, b) {
+    document.getElementById('tieBreakScore').textContent = `${a} : ${b}`;
+    const hintEl = document.getElementById('tieBreakHint');
+    if (hintEl) {
+        hintEl.textContent = `Unentschieden (${a}:${b}) – es werden automatisch 2 weitere Kehren (Kehre ${state.kehren - 1} und ${state.kehren}) gespielt.`;
+    }
+    document.getElementById('tieBreakOverlay').classList.add('show');
+    clearTimeout(state._tieBreakTimeout);
+    state._tieBreakTimeout = setTimeout(closeTieBreakDialog, 3000);
+}
+
+function closeTieBreakDialog() {
+    document.getElementById('tieBreakOverlay').classList.remove('show');
+    clearTimeout(state._tieBreakTimeout);
+}
+
+// ===== TRAINING BEENDEN =====
+function endTraining(arena) {
+    state.isTrainingEnded = true;
+    updateKeyboardStatus();
+
+    const winnerKey = winnerTeamKey(arena);
+    const winner = winnerKey ? state.teamNames[winnerKey] : '';
+    const overlay = document.getElementById('trainingEndedOverlay');
+    const winnerEl = document.getElementById('winnerName');
+    const summaryEl = document.getElementById('scoreSummary');
+
+    winnerEl.textContent = winner;
+    winnerEl.style.color = winnerKey === 'w' ? '#4caf50' : '#ff6b6b';
+    summaryEl.textContent = `Siege: ${arena.winsA} : ${arena.winsB}`;
+
+    overlay.classList.add('show');
+
+    const toastEl = document.getElementById('toast');
+    toastEl.textContent = `🏆 ${winner} gewinnt das Training! „Neues Training starten“ antippen`;
+    toastEl.className = 'toast show winner';
+    clearTimeout(toastEl._timeout);
+    toastEl._timeout = setTimeout(() => {
+        toastEl.classList.remove('show');
+        toastEl.className = 'toast';
+    }, 5000);
+}
+
+function startNewTraining() {
+    const overlay = document.getElementById('trainingEndedOverlay');
+    overlay.classList.remove('show');
+
+    state.isTrainingEnded = false;
+    state.kehren = state.baseKehren;
+    state.arena = createArena();
+    state.selectedTeam = null;
+    state.targetKehre = null;
+    cancelPendingDigit();
+    updateKeyboardStatus();
+    render();
+    toast('🔄 Neues Training gestartet!');
+}
+
+// ===== STATUS UPDATE =====
+function updateKeyboardStatus() {
+    const statusEl = document.getElementById('keyboardStatus');
+
+    if (state.isTrainingEnded) {
+        statusEl.textContent = '🏁 Training beendet - „Neues Training starten“ antippen';
+        statusEl.className = 'keyboard-status training-ended';
+        return;
+    }
+
+    if (state.pendingDigit) {
+        statusEl.textContent = `⌨️ „${state.pendingDigit.digit}…” – 2. Ziffer?`;
+        statusEl.className = 'keyboard-status pending';
+        return;
+    }
+
+    if (state.selectedTeam) {
+        const teamLabel = state.selectedTeam === 'w' ? `${teamIcon('w')} W` : `${teamIcon('e')} E`;
+        const idx = activeKehreIndexForEntry();
+        const targetLabel = state.targetKehre !== null ? ` – Korrektur Kehre ${state.targetKehre + 1}` : ` – Kehre ${idx + 1}`;
+        statusEl.textContent = `${teamLabel} ausgewählt${targetLabel} – Punkte eingeben`;
+        statusEl.className = 'keyboard-status ' + (state.selectedTeam === 'w' ? 'team-w' : 'team-e');
+    } else {
+        statusEl.textContent = '🔑 Bereit';
+        statusEl.className = 'keyboard-status';
+    }
+}
+
+// ===== RENDER =====
+function render() {
+    document.getElementById('layout').innerHTML = renderArena(state.arena);
+    if (!state.isTrainingEnded) {
+        updateKeyboardStatus();
+    }
+    scrollToActiveVerlauf();
+}
+
+function renderArena(arena) {
+    const scoreA = sum(arena.pointsA);
+    const scoreB = sum(arena.pointsB);
+    const activeIndex = activeKehre(arena) - 1;
+    const entryIndex = activeKehreIndexForEntry();
+
+    const wSelected = state.selectedTeam === 'w' ? 'selected' : '';
+    const eSelected = state.selectedTeam === 'e' ? 'selected' : '';
+
+    return `
+    <div class="arena">
+        <div class="arena-top">
+            <div class="arena-title">Trainingsmodus PRO Tablet</div>
+            <div class="pending-preview ${state.pendingDigit ? 'show' : ''}">Eingabe: ${state.pendingDigit ? state.pendingDigit.digit + '…' : ''}</div>
+        </div>
+
+        <div class="teams-row">
+            ${renderTeamColumn('w', state.teamNames.w, teamIcon('w'), scoreA, arena.winsA, wSelected)}
+            ${renderTeamColumn('e', state.teamNames.e, teamIcon('e'), scoreB, arena.winsB, eSelected)}
+        </div>
+
+        <div class="kehren-verlauf-panel" id="kehrenWrapper">
+            <h4><span>📊 Kehren-Verlauf</span><span style="font-weight:600;font-size:0.75rem;">Kehre ${activeIndex+1} / ${state.kehren}</span></h4>
+            <div class="kehren-verlauf-grid">
+                ${renderVerlaufGrid(arena, activeIndex, entryIndex)}
+            </div>
+        </div>
+
+        <div class="arena-footer">
+            <button class="gold" onclick="evaluateGame()">▶ Werten</button>
+            <button onclick="resetGame()">🔁 Neues Spiel</button>
+            <button onclick="deleteKehreEntry()" style="background:var(--red);">🗑 Kehre löschen</button>
+            <div class="footer-right">@Roland Koll · Tablet-Version</div>
+        </div>
+    </div>
+    `;
+}
+
+function renderTeamColumn(team, label, icon, score, wins, selectedClass) {
+    return `
+    <div class="team-column ${team === 'e' ? 'e' : 'w'}">
+        <div class="team-block ${team === 'e' ? 'e' : 'w'} ${selectedClass}" id="teamBlock-${team}" onclick="selectTeam('${team}')">
+            <div class="team-head">
+                <div class="team-label">${icon} ${label}</div>
+                <div class="team-wins-big">🏆 ${wins}</div>
+            </div>
+            <div class="team-score-big">${score}</div>
+        </div>
+        ${renderKeypad(team)}
+    </div>`;
+}
+
+function renderKeypad(team) {
+    const maxPoints = state.playerCount;
+    const digits = ['1','2','3','4','5','6','7','8','9','0'];
+    const btns = digits.map(d => {
+        const disabled = Number(d) > maxPoints && !(d === '0');
+        return `<button class="keypad-btn" ${disabled ? 'disabled' : ''} onclick="tapDigit('${team}','${d}')">${d}</button>`;
+    }).join('');
+    return `
+    <div class="keypad-panel">
+        <div class="keypad-grid">${btns}</div>
+    </div>`;
+}
+
+function renderVerlaufGrid(arena, activeIndex, entryIndex) {
+    let html = '';
+    for (let i = 0; i < state.kehren; i++) {
+        const aVal = arena.pointsA[i] !== null ? arena.pointsA[i] : '-';
+        const bVal = arena.pointsB[i] !== null ? arena.pointsB[i] : '-';
+        const isActive = i === activeIndex;
+        const isTarget = i === entryIndex && state.targetKehre !== null;
+        const isCompleted = arena.pointsA[i] !== null && arena.pointsB[i] !== null;
+
+        html += `
+        <div class="verlauf-item ${isActive ? 'is-active' : ''} ${isCompleted ? 'is-completed' : ''} ${isTarget ? 'is-target' : ''}"
+             onclick="toggleKehreTarget(${i})" title="Antippen zum Korrigieren">
+            <div class="v-number">${i + 1}</div>
+            <div class="v-points"><span class="w">${aVal}</span><span class="e">${bVal}</span></div>
+        </div>`;
+    }
+    return html;
+}
+
+// ===== HELFER =====
+function createArena() {
+    return {
+        teamA: 'Mannschaft W',
+        teamB: 'Mannschaft E',
+        pointsA: Array(state.kehren).fill(null),
+        pointsB: Array(state.kehren).fill(null),
+        scorerA: Array(state.kehren).fill(null),
+        scorerB: Array(state.kehren).fill(null),
+        winsA: 0,
+        winsB: 0
+    };
+}
+
+function activeKehre(arena) {
+    for (let i = 0; i < state.kehren; i++) {
+        if (arena.pointsA[i] === null || arena.pointsB[i] === null) {
+            return i + 1;
+        }
+    }
+    return state.kehren;
+}
+
+function hasWinner(arena) {
+    return arena.winsA >= state.winsToChampion || arena.winsB >= state.winsToChampion;
+}
+
+// Liefert den Team-Schlüssel ('w'/'e') des Siegers, NICHT den (frei editierbaren)
+// Anzeigenamen - so bleibt die Sieger-Erkennung stabil, egal wie die Mannschaft heißt.
+function winnerTeamKey(arena) {
+    if (arena.winsA >= state.winsToChampion) return 'w';
+    if (arena.winsB >= state.winsToChampion) return 'e';
+    return null;
+}
+
+function sum(arr) {
+    return arr.reduce((a, b) => a + (b || 0), 0);
+}
+
+function checkAllKehrenFull(arena) {
+    for (let i = 0; i < state.kehren; i++) {
+        if (arena.pointsA[i] === null || arena.pointsB[i] === null) return false;
+    }
+    return true;
+}
+
+function scrollToActiveVerlauf() {
+    setTimeout(() => {
+        const wrapper = document.getElementById('kehrenWrapper');
+        if (!wrapper) return;
+        const activeItem = wrapper.querySelector('.verlauf-item.is-active');
+        if (activeItem) {
+            const wrapperRect = wrapper.getBoundingClientRect();
+            const itemRect = activeItem.getBoundingClientRect();
+            const isVisible = itemRect.top >= wrapperRect.top + 10 && itemRect.bottom <= wrapperRect.bottom - 10;
+            if (!isVisible) {
+                activeItem.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            }
+        }
+    }, 50);
+}
+
+function resetGame() {
+    if (state.isTrainingEnded) {
+        startNewTraining();
+        return;
+    }
+    const arena = state.arena;
+    state.kehren = state.baseKehren;
+    arena.pointsA = Array(state.kehren).fill(null);
+    arena.pointsB = Array(state.kehren).fill(null);
+    arena.scorerA = Array(state.kehren).fill(null);
+    arena.scorerB = Array(state.kehren).fill(null);
+    arena.winsA = 0;
+    arena.winsB = 0;
+    state.selectedTeam = null;
+    state.targetKehre = null;
+    cancelPendingDigit();
+    updateKeyboardStatus();
+    render();
+    toast('Spiel neu gestartet');
+}
+
+function fullReset() {
+    state.kehren = state.baseKehren;
+    state.arena = createArena();
+    state.selectedTeam = null;
+    state.targetKehre = null;
+    state.isTrainingEnded = false;
+    cancelPendingDigit();
+    updateKeyboardStatus();
+    document.getElementById('trainingEndedOverlay').classList.remove('show');
+    render();
+    toast('Kompletter Reset');
+}
+
+function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+        document.exitFullscreen();
+    }
+}
+
+function toast(msg, type) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show';
+    if (type === 'warn') t.classList.add('warn');
+    clearTimeout(t._timeout);
+    t._timeout = setTimeout(() => {
+        t.classList.remove('show');
+        t.className = 'toast';
+    }, 3000);
+}
+
+// ===== EVENT-LISTENER (Header-Auswahl) =====
+document.getElementById('playerCount').addEventListener('change', function(e) {
+    if (state.isTrainingEnded) {
+        toast('Training ist beendet! „Neues Training starten“ antippen');
+        e.target.value = state.playerCount;
+        return;
+    }
+    state.playerCount = Number(e.target.value);
+    state.selectedTeam = null;
+    cancelPendingDigit();
+    updateKeyboardStatus();
+    render();
+    toast(`👥 ${state.playerCount} Spieler/Kehre`);
+});
+
+document.getElementById('kehrenSelect').addEventListener('change', function(e) {
+    if (state.isTrainingEnded) {
+        toast('Training ist beendet! „Neues Training starten“ antippen');
+        e.target.value = state.baseKehren;
+        return;
+    }
+    state.kehren = Number(e.target.value);
+    state.baseKehren = state.kehren;
+    state.arena.pointsA = Array(state.kehren).fill(null);
+    state.arena.pointsB = Array(state.kehren).fill(null);
+    state.arena.scorerA = Array(state.kehren).fill(null);
+    state.arena.scorerB = Array(state.kehren).fill(null);
+    state.selectedTeam = null;
+    state.targetKehre = null;
+    cancelPendingDigit();
+    updateKeyboardStatus();
+    render();
+});
+
+document.getElementById('gamesSelect').addEventListener('change', function(e) {
+    if (state.isTrainingEnded) {
+        toast('Training ist beendet! „Neues Training starten“ antippen');
+        e.target.value = state.winsToChampion;
+        return;
+    }
+    state.winsToChampion = Number(e.target.value);
+    render();
+});
+
+// ===== HÖHENKORREKTUR =====
+function setCorrectHeight() {
+    const vh = window.innerHeight;
+    document.documentElement.style.setProperty('height', vh + 'px');
+    document.body.style.setProperty('height', vh + 'px');
+}
+
+window.addEventListener('resize', setCorrectHeight);
+window.addEventListener('orientationchange', function() {
+    setTimeout(setCorrectHeight, 300);
+});
+setCorrectHeight();
+
+// ===== INIT =====
+syncTeamNameInputs();
+applyTeamColors();
+setupKeyboard();
+render();
+</script>
+
+</body>
+</html>

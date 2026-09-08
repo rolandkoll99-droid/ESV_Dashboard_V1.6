@@ -1,280 +1,143 @@
-# Trainingsportal
+# ESV Grein Trainingsportal – eigene App
 
-Statische Website mit Passwortsperre, Login, Dashboard und 5 Trainingsmodulen.
+Dieses Paket macht aus den drei Trainingsmodulen (**Pro**, **Tablet**, **Handy**) eine eigene, installierbare Web-App für den ESV Grein – mit einer zentralen Startseite, eigenem Vereinslogo/-namen und frei einstellbaren Farben, Schriftart und Buttongrößen. Bearbeitet wird alles in **Visual Studio Code**.
 
-## Design
+## Enthaltene Dateien
 
-Einheitliches Grün/Gold-Theme über alle Seiten, angelehnt an das
-Dashboard-Design (`chrome.css`): dunkelgrüner Verlauf im Hintergrund,
-grüne Kopfleiste mit ESV-Grein-Logo auf jeder Seite, Gold (`#ffdf8c`) als
-Akzentfarbe, „Space Grotesk" für Überschriften und „Inter" als
-Fließtext-Schrift. Jede Modulseite hat eine grüne Kopfleiste mit Link
-zurück zum Dashboard und einem Abmelden-Button.
+| Datei / Ordner | Zweck |
+|---|---|
+| `index.html` | Startseite mit den drei Kacheln zu den Modulen |
+| `05_Trainingsmodus_Pro.html` | Modul 01 – Zuschauermonitor, externer Ziffernblock |
+| `05_Trainingsmodus_Pro_Tablet.html` | Modul 02 – Touch-Version für Tablets |
+| `05_Trainingsmodus_Pro_Handy.html` | Modul 03 – kompakte Version fürs Smartphone |
+| `theme.css` | **Zentrale Design-Datei**: Farben, Schriftart, Buttongrößen für alle drei Module + Startseite |
+| `club.js` | **Vereinslogo & Vereinsname** (wirkt auf alle drei Module + Startseite) |
+| `manifest.json` | App-Name/-Icon für die Installation (siehe unten) |
+| `sw.js` | Service Worker – macht die App installierbar & offline-fähig |
+| `icons/` | App-Icons (`icon-192.png`, `icon-512.png`) + Platzhalter-Vereinslogo |
+| `vendor/qrcode.min.js` | Bibliothek zur Erzeugung der QR-Codes auf der Startseite (läuft lokal, ohne Internet) |
 
-Die weißen Inhaltskarten (Tabellen, Ranking, Analyse-Ansicht, Kehren-Grid)
-in den Modulen wurden bewusst beibehalten, da sie für die Lesbarkeit von
-Daten wichtig sind – nur der äußere Rahmen (Kopfzeile, Hintergrundfarbe)
-wurde an das neue Theme angepasst. Team- bzw. bahnspezifische Farben
-(Grün/Rot für Mannschaften, Blau für „Bahn 1") sind funktional und wurden
-nicht verändert.
+Alle Dateien müssen im **gleichen Ordner** bleiben, damit die Verlinkung funktioniert.
 
-**Hinweis zu Dark Mode:** Der Dark-Mode-Umschalter (🌓) im Dashboard
-wirkt aktuell auf Header, Hintergrund und die Dashboard-eigenen Karten.
-Die internen weißen Karten/Tabellen der einzelnen Module (01, 02, 04, 05,
-06) reagieren derzeit nicht auf den Dark-Mode-Schalter – das wäre ein
-größerer separater Umbau jeder einzelnen Moduldatei.
+---
 
-## Smartphone-Nutzung (Querformat)
+## 1) Farben ändern
 
-Alle Seiten (Dashboard + die 5 Module) sind für die Bedienung am
-Smartphone **im Querformat** optimiert:
+Datei **`theme.css`** in VS Code öffnen, Abschnitt „2) FARBEN“. Jede Zeile ist kommentiert, z. B.:
 
-- Bei kurzen Bildschirmhöhen (typisch für ein liegendes Handy, z. B.
-  360–430 px hoch) greift eine eigene Kompakt-Ansicht: kleinerer Header,
-  kleinere Kacheln, ausgeblendete Beschreibungstexte – damit möglichst
-  viel ohne Scrollen sichtbar ist. Passt dennoch nicht alles auf den
-  Bildschirm, kann innerhalb der weißen Karte gescrollt werden (vorher
-  war das durch `overflow: hidden` blockiert – behoben).
-- Wird das Handy **hochkant** gehalten (schmal und hoch), erscheint ein
-  Hinweis „Bitte das Gerät ins Querformat drehen“, da die App für die
-  Bedienung im Querformat ausgelegt ist.
-
-Getestet wurde dies bislang nur mit den Browser-Entwicklertools
-(Chrome-Gerätesimulation); ein Test auf echten Geräten unterschiedlicher
-Displaygrößen wird empfohlen, bevor es im Vereinsbetrieb eingesetzt wird.
-
-## Dateien
-
-```
-index.html                     Passwortschutz (Zugangscode-Eingabe)
-login.html                     Login (Benutzername + Passwort)
-dashboard.html                 Übersicht / Startseite nach dem Login
-01_Trainingsmodus.html         Modul 1: Freies Training ohne Zeitdruck
-05_Trainingsmodus_Pro.html     Modul 2: Freies Training mit Zusatztastatur
-04_Trainingsanalyse.html       Modul 3: Trainingsanalyse / Auswertung
-06_Einzeltraining.html         Modul 4: Einzeltraining mit Anleitung
-02_Spielerverwaltung.html      Modul 5: Verwaltung der Spielerprofile
-02_Spielerliste.xlsx           Beispiel-/Vorlagendatei für den Excel-Import
-style.css                      gemeinsames Design (Basistheme für Zugang/Login)
-chrome.css                     Design des Dashboards (Header, Arena-Karte, Menü-/QR-Karten, Dark Mode)
-chrome.js                      Dark-Mode-Toggle & Toast-Funktion für das Dashboard
-auth.js                        zentrale, einfache Zugriffslogik (Passwort, Login, Logout)
-qrcode.min.js                  QR-Code-Bibliothek (MIT-lizenziert, ohne Abhängigkeiten) für
-                                die QR-Codes im Dashboard
-ds18b20_bridge.py              Hintergrund-Skript für den Pi: liest zwei DS18B20-Tauchsonden
-                                (Raum + Asphalt) über 1-Wire aus und schreibt sensors.json
-                                (siehe RASPBERRY_PI_SENSOREN_SETUP.md)
-sensors.json                   aktuelle Raum-/Asphalttemperatur fürs Dashboard (wird von
-                                tuya_bridge.py automatisch überschrieben)
-Defensiv Basis.jpg             Situationsbilder für das Einzeltraining
-Defensiv Elite.jpg
-Offensiv Basic.jpg
-Offensiv Elite.jpg
+```css
+--bg-main:#0a0e14;   /* Seitenhintergrund */
+--accent:#33c5ff;    /* Akzentfarbe für Buttons/Auswahl */
+--text-main:#eef2f6; /* Haupttext */
 ```
 
-Hinweis: Die Modulnummern in den Dateinamen sind historisch gewachsen und
-entsprechen nicht der Reihenfolge im Dashboard – im Dashboard sind alle
-fünf Module unter sprechenden Titeln (01–05) verlinkt.
+Einfach den Hex-Code (`#rrggbb`) ändern, Datei speichern, Seite im Browser neu laden – die Änderung wirkt automatisch auf **alle drei Module gleichzeitig**, es muss nichts in den einzelnen Modul-Dateien gesucht werden.
 
-## So legst du das Projekt auf GitHub an
+> Die Mannschaftsfarben (`--w-color` / `--e-color`) sind der Startwert. In den Modulen **Pro** und **Tablet** lassen sie sich zusätzlich direkt in der App pro Training umschalten (Leuchtgrün RAL 6038 / Leuchtrot RAL 3024, über die Buttons neben den Mannschaftsnamen) – wählt eine Mannschaft eine Farbe, bekommt die andere automatisch die verbleibende zugewiesen.
 
-1. **Repository erstellen**
-   Auf github.com oben rechts auf **+ → New repository** klicken. Namen vergeben
-   (z. B. `trainingsportal`), auf **Create repository** klicken.
+## 2) Schriftart ändern
 
-2. **Dateien hochladen**
-   Im leeren Repo auf **uploading an existing file** klicken (oder „Add file → Upload files“)
-   und alle Dateien aus diesem Ordner per Drag-and-drop hochladen. Danach unten
-   **Commit changes** klicken.
+Ebenfalls in `theme.css`, ganz oben, Abschnitt „1) SCHRIFTART“:
 
-   Alternativ per Git auf der Kommandozeile:
-   ```bash
-   git init
-   git add .
-   git commit -m "Erste Version Trainingsportal"
-   git branch -M main
-   git remote add origin https://github.com/DEIN-NUTZERNAME/trainingsportal.git
-   git push -u origin main
-   ```
+1. Auf [fonts.google.com](https://fonts.google.com) die gewünschte Schriftart suchen → **„Get font“** → **„Get embed code“** → den `@import`-Link kopieren.
+2. Die vorhandene `@import url(...)`-Zeile ganz oben in `theme.css` durch den neuen Link ersetzen.
+3. Die Namen in `--font-display` (Überschriften) und `--font-body` (Fließtext) entsprechend anpassen.
 
-3. **GitHub Pages aktivieren** (damit die Seite im Browser aufrufbar ist)
-   Im Repo auf **Settings → Pages**. Unter „Build and deployment“ als Source
-   **Deploy from a branch** wählen, Branch `main` und Ordner `/ (root)` auswählen,
-   **Save** klicken. Nach ein bis zwei Minuten ist die Seite unter
-   `https://DEIN-NUTZERNAME.github.io/trainingsportal/` erreichbar.
+## 3) Vereinslogo & Vereinsname ändern
 
-4. **Zugangsdaten anpassen**
-   In `auth.js` die Werte `SITE_PASSWORD`, `VALID_USER.user` und `VALID_USER.pass`
-   ändern und die Datei erneut committen/pushen.
-
-## Wichtiger Hinweis zur Sicherheit
-
-Der Passwortschutz in `auth.js` läuft **komplett im Browser** (clientseitig).
-Das Passwort steht im Klartext im Quellcode und kann von jedem, der die Seite
-aufruft, im „Seitenquelltext anzeigen“ ausgelesen werden. Das reicht, um
-neugierige Besucher fernzuhalten, ist aber **kein echter Zugriffsschutz** für
-vertrauliche Inhalte.
-
-Für echten Schutz gibt es zwei gängige Wege:
-- **GitHub Pages bleibt öffentlich, aber mit echtem Login:** Statt reinem HTML
-  ein Hosting mit serverseitiger Logik verwenden, z. B. Cloudflare Pages +
-  Cloudflare Access, oder Netlify mit Netlify Identity.
-- **Repository privat halten:** GitHub Pages kann auch aus einem privaten
-  Repository veröffentlicht werden (bei GitHub Pro/Team/Enterprise, oder als
-  privates Deployment über Vercel/Netlify), sodass nur eingeladene Personen
-  überhaupt Zugriff auf den Code haben.
-
-## Betrieb auf Raspberry Pi & Tablet (Kiosk-Modus, über GitHub Pages)
-
-Das aktuelle Betriebskonzept: Das Gesamtpaket liegt auf GitHub und wird über
-**GitHub Pages** veröffentlicht. Sowohl der Raspberry Pi (Touch-Monitor) als
-auch das SVITOO P11-T Tablet greifen als reine Clients per Browser auf
-dieselbe GitHub-Pages-Adresse zu – ein eigener lokaler Webserver ist dafür
-nicht nötig. Eigene Schritt-für-Schritt-Anleitungen:
-
-- [`RASPBERRY_PI_SETUP.md`](RASPBERRY_PI_SETUP.md) – Chromium-Kiosk-Modus
-  gegen die GitHub-Pages-URL, Touch-Kalibrierung, Autostart,
-  Internetabhängigkeit.
-- [`TABLET_SVITOO_P11-T_SETUP.md`](TABLET_SVITOO_P11-T_SETUP.md) – Zugriff
-  per WLAN auf dieselbe GitHub-Pages-URL, Vollbild/Kiosk-Modus, wichtiger
-  Hinweis zum Modul „Trainingsmodus Pro“ (benötigt Tastatur).
-
-**Zu beachten:** Beide Geräte müssen für den Zugriff online sein
-(Internetverbindung nötig), und jedes Gerät hat seinen **eigenen**
-lokalen Datenstand (`localStorage`) für Spielerliste/Trainingsergebnisse –
-dazu mehr im Abschnitt „Wichtiger Hinweis zur Sicherheit“ unten sowie in
-den beiden Anleitungen.
-
-- [`RASPBERRY_PI_SENSOREN_SETUP.md`](RASPBERRY_PI_SENSOREN_SETUP.md) – Raum-
-  und Asphalttemperatur per kabelgebundener DS18B20-Tauchsonde im
-  Dashboard anzeigen. Die Sonden hängen direkt per 1-Wire am Pi (kein
-  WLAN, keine Cloud, kein API-Key nötig), das Hintergrund-Skript
-  `ds18b20_bridge.py` liest sie aus und schreibt die Werte in
-  `sensors.json`, das automatisch ins GitHub-Repo gepusht wird.
-- [`SUPABASE_SETUP.md`](SUPABASE_SETUP.md) – **neu:** zentrale
-  Temperatur-Historie statt nur Momentaufnahme. Das Dashboard zeigt einen
-  48-Stunden-Verlauf, gespeist aus einer kleinen, kostenlosen
-  Supabase-Datenbank (sicherer Lesezugriff für den Browser, Schreibzugriff
-  nur vom Pi). Baut auf `RASPBERRY_PI_SENSOREN_SETUP.md` auf. Siehe auch
-  `ROADMAP.md` für den größeren Zusammenhang.
-
-## Kehren-Eingabe in „Trainingsmodus" (01)
-Die Eingabe der Kehren-Ergebnisse wurde überarbeitet: Statt in jeder
-Kehren-Zeile einzeln auf einen Punktwert zu tippen, gibt es jetzt eine
-kombinierte Ergebnistabelle (Kehre / Team W / Team E / Aktionen) und
-darunter ein **Schnell-Eingabe-Panel** nur für die gerade aktive Kehre –
-Wert für beide Teams auswählen (mit Tausch-Button ⇄ bei Verwechslung),
-dann „Kehre speichern" oder „Kehre abbrechen". Bereits gespielte Kehren
-lassen sich über die Stift-/Papierkorb-Icons in der Tabelle nachträglich
-bearbeiten oder löschen. Zusätzlich große, gut lesbare Gesamt-Ergebnis-
-Anzeige mit Spielnummer und Status („Läuft"/„Beendet") oben in der Karte.
-
-**Hinweis:** Der zweite Tab „Schüsse (Detailmodus)“ ist aktuell nur ein
-Platzhalter (zeigt einen Hinweis-Toast) – eine Einzelschuss-Erfassung pro
-Kehre gibt es noch nicht, das wäre ein eigenes, größeres Feature.
-
-## Kehren-Eingabe in „Trainingsmodus Pro" (05)
-
-Dieselbe Tabellen-/Schnell-Eingabe-Bedienung wie in „Trainingsmodus" (01)
-wurde auch hier ergänzt – **die Tastatur-/Zusatztastatur-Bedienung bleibt
-dabei vollständig erhalten** und funktioniert unverändert wie zuvor
-(`-`/`+` Team wählen, `1`–`6` Spieler/Punktwert, `*` Löschmodus, `Enter`
-Wertung, `/` Zuschauermonitor). Touch-Eingabe (Tabelle mit
-Bearbeiten-/Löschen-Icons + Schnell-Eingabe-Panel) und Tastatur schreiben
-in dieselben Daten und bleiben synchron: eine Tastatur-Eingabe setzt eine
-noch nicht gespeicherte Touch-Auswahl automatisch zurück, damit die
-Anzeige nie auseinanderläuft. Aufstellungs-Panels (Spielerauswahl je
-Team), Spielerverwaltung und Zuschauermonitor sind unverändert.
-
-## „Schüsse"-Tab: Spielserie & PDF-Export (01 & 05)
-
-Der bisher als Platzhalter angelegte „Schüsse"-Tab ist jetzt eine echte
-**Spielserien-Übersicht**: Jedes abgeschlossene Spiel (inkl. aller
-Kehren-Ergebnisse, Uhrzeit und Endergebnis) wird gesammelt, solange das
-Training läuft – bisher wurden diese Daten beim Start des nächsten
-Spiels einfach überschrieben. Über den Button „📄 Als PDF exportieren /
-Drucken" lässt sich die komplette Serie ausdrucken bzw. über den
-Druckdialog des Browsers als PDF speichern (kein zusätzliches
-Plugin/keine externe Bibliothek nötig – „Als PDF speichern" ist in jedem
-modernen Browser bereits im Druckdialog enthalten).
-
-Die Historie ist an die laufende Trainingsserie gebunden und wird bei
-„Neues Spiel Starten" bzw. „Kompletter Reset" zusammen mit den übrigen
-Werten zurückgesetzt (neue Serie = neue Historie, neues Startdatum).
-
-## Roadmap
-
-Ein priorisierter Überblick über sinnvolle nächste Verbesserungen
-(Software, Hardware, Sensorik) inkl. Umsetzungsstatus steht in
-[`ROADMAP.md`](ROADMAP.md).
-
-## Struktur erweitern
-
-Jede Modulseite hat denselben Grundaufbau: eine Topbar mit Link zurück zum
-Dashboard und einem Abmelden-Button, eine Titelzeile sowie eine Karte für den
-Inhalt. Eigene Inhalte einfach in die `<div class="card">` (bzw. das
-entsprechende Hauptcontainer-Element) der jeweiligen Datei einfügen.
-
-Neue Module bindest du wie folgt ein:
-1. HTML-Datei nach dem bestehenden Muster anlegen (Topbar mit
-   `<a href="dashboard.html">&larr; Zurück zum Dashboard</a>` und
-   `<a class="logout" href="#" onclick="logout(); return false;">Abmelden</a>`).
-2. `auth.js` einbinden und `requireGate(); requireLogin();` aufrufen, damit das
-   Modul denselben Zugriffsschutz wie die anderen Seiten nutzt.
-3. Eine neue Kachel in `dashboard.html` im `<div class="grid">` ergänzen.
-
-## Zugriffsschutz an/aus
-
-In `auth.js` steuert die Konstante `PROTECTION_ENABLED`, ob Passwortschutz und
-Login aktiv sind:
-- `true` – Zugangscode (`index.html`) und Login (`login.html`) sind Pflicht.
-- `false` – alle Seiten sind frei zugänglich, `index.html` und `login.html`
-  leiten automatisch zum Dashboard weiter. Das ist der aktuelle Zustand
-  (praktisch für Entwicklung/Tests, siehe Sicherheitshinweis unten).
-
-## Wetter-Anzeige im Dashboard
-
-Das Dashboard zeigt optional das aktuelle Wetter über die OpenWeatherMap-API
-an (`WEATHER_API_KEY`/`WEATHER_LOCATION` in `dashboard.html`). Ohne gültigen
-Key wird automatisch ein einfacher Platzhalterwert (Tag/Nacht-Schätzung)
-angezeigt. Der aktuell hinterlegte Key ist im Quelltext sichtbar – für den
-produktiven Einsatz empfiehlt es sich, den Key in den OpenWeatherMap-
-Einstellungen auf die eigene Domain zu beschränken oder einen eigenen Key
-einzutragen.
-
-## QR-Codes im Dashboard (Smartphone-Zugriff)
-
-Das Dashboard zeigt zwei QR-Codes, mit denen Spieler per Smartphone direkt
-zu **Trainingsanalyse** (`04_Trainingsanalyse.html`) und **Einzeltraining**
-(`06_Einzeltraining.html`) springen können. Die Codes werden clientseitig
-per `qrcode.min.js` erzeugt.
-
-**Wichtig – vor dem ersten Einsatz einmalig einrichten:** In `dashboard.html`
-die Konstante `GITHUB_PAGES_BASE_URL` auf deine echte GitHub-Pages-Adresse
-setzen:
+Datei **`club.js`** öffnen:
 
 ```js
-const GITHUB_PAGES_BASE_URL = 'https://DEIN-NUTZERNAME.github.io/trainingsportal/';
+const CLUB_CONFIG = {
+    name: "ESV Grein",
+    logo: "icons/logo-placeholder.svg"
+};
 ```
 
-Damit zeigen die QR-Codes **immer** auf die öffentlich erreichbare
-GitHub-Pages-Adresse – unabhängig davon, ob das Dashboard gerade lokal
-getestet, über die WLAN-IP des Pi oder direkt über GitHub Pages aufgerufen
-wird. Das ist wichtig, weil ein Smartphone beim Scannen nur eine öffentlich
-erreichbare Adresse aufrufen kann; die IP eines lokalen Testservers würde
-vom Handy aus ins Leere laufen. Solange der Platzhalter
-`DEIN-NUTZERNAME` nicht ersetzt ist, verwenden die QR-Codes ersatzweise die
-aktuell aufgerufene Adresse (praktisch nur für schnelle lokale Tests).
+- **Name**: einfach den Text zwischen den Anführungszeichen ändern.
+- **Logo**: eigene Bilddatei (PNG/JPG/SVG, am besten quadratisch) in den Ordner `icons` kopieren, z. B. `icons/logo.png`, und den Dateinamen bei `logo:` eintragen.
 
-**Wichtige Einschränkung:** Trainingsergebnisse in der Trainingsanalyse
-werden lokal je Gerät gespeichert (`localStorage`/IndexedDB, siehe
-Abschnitt „Betrieb auf Raspberry Pi & Tablet“). Scannt ein Spieler den
-QR-Code für die Trainingsanalyse mit seinem eigenen Handy, sieht er dort
-**nicht** die am Kiosk-Gerät (Pi/Tablet) erfassten Trainingsdaten, sondern
-den (in der Regel leeren) Datenstand seines eigenen Handy-Browsers. Für
-das Modul „Einzeltraining“ ist das unproblematisch, da es überwiegend
-feste Trainingsinhalte (Bilder, Regeln) ohne personenbezogene Ergebnisse
-zeigt. Wer die Trainingsanalyse-Ergebnisse tatsächlich geräteübergreifend
-sichtbar machen möchte, bräuchte einen zentralen Speicher (z. B. ein
-kleines Backend oder einen Cloud-Dienst) – bei Bedarf gerne ansprechen,
-das ist ein größeres separates Vorhaben.
+Das Logo erscheint danach automatisch in der Kopfleiste aller drei Module sowie oben auf der Startseite.
+
+> **Falls das Logo nicht angezeigt wird** (nur der Alt-Text „ESV Grein Logo“ bzw. ein „kaputtes Bild“-Symbol erscheint): Das liegt so gut wie immer daran, dass der Pfad bei `logo:` nicht **exakt** zur tatsächlichen Datei im `icons`-Ordner passt. Häufigste Ursachen:
+> 1. **Gross-/Kleinschreibung** – `icons/Logo.PNG` ist nicht dasselbe wie `icons/logo.png`. Der eingetragene Pfad muss zeichengenau mit dem echten Dateinamen übereinstimmen.
+> 2. **Falsche Dateiendung** – die Datei heisst z. B. wirklich `.jpeg`, im Code steht aber `.jpg` (oder umgekehrt).
+> 3. **Datei liegt nicht im `icons`-Ordner** – ggf. beim Kopieren versehentlich in einen anderen Ordner gelegt.
+>
+> Zur Kontrolle: Seite im Browser öffnen, **F12** drücken (Entwicklertools) → Reiter **„Console“**. Dort erscheint jetzt automatisch eine genaue Fehlermeldung mit dem exakten Pfad, der nicht gefunden wurde – bis das behoben ist, wird übergangsweise wieder das Platzhalter-Logo angezeigt, damit nie ein „kaputtes Bild“-Symbol sichtbar ist.
+
+## 4) Buttongrößen anpassen
+
+Ebenfalls in `theme.css`, Abschnitt „3) BUTTONGRÖSSEN“. Für jedes Modul gibt es einen eigenen Skalierungsfaktor:
+
+```css
+--btn-scale-pro: 1;
+--btn-scale-tablet: 1;
+--btn-scale-handy: 1;
+```
+
+`1` = Standardgröße, `1.2` = 20 % größer, `0.8` = 20 % kleiner. Der Faktor wirkt auf die Haupt-Buttons (Kopf- und Fußzeile) sowie – bei Tablet und Handy – auf den Bildschirm-Ziffernblock. Sinnvoller Bereich: etwa `0.8`–`1.6`. Auf sehr kleinen Bildschirmen greifen zusätzlich automatische Verkleinerungen, damit nichts abgeschnitten wird.
+
+---
+
+## 5) Als eigene App bereitstellen (installierbar)
+
+Diese App lässt sich – wie z. B. eine App aus dem Store – auf Tablet, Handy oder Desktop **installieren** (eigenes Icon, startet im Vollbild ohne Browserleiste, funktioniert auch offline). Dafür sind zwei Dinge nötig:
+
+### a) App-Icon festlegen
+
+Das Icon fürs Homescreen/Startmenü kommt aus `icons/icon-192.png` und `icons/icon-512.png` (aktuell ein Platzhalter mit „ESV“). Eigenes Icon einsetzen:
+
+1. Ein quadratisches Vereinslogo als PNG in zwei Größen bereitstellen: 192×192 Pixel und 512×512 Pixel (z. B. mit einem kostenlosen Tool wie [realfavicongenerator.net](https://realfavicongenerator.net) oder [appicon.co](https://appicon.co) aus einem großen Logo erzeugen lassen).
+2. Die beiden Dateien in den Ordner `icons` legen und **exakt** `icon-192.png` bzw. `icon-512.png` nennen (bestehende Platzhalter-Dateien überschreiben).
+3. Optional in `manifest.json` den Namen anpassen (`name`, `short_name`) – dieser erscheint unter dem Icon auf dem Homescreen.
+
+> Technischer Hinweis: Das App-Icon kann – anders als Logo/Name in der App selbst – nicht automatisch aus `club.js` übernommen werden, da Betriebssysteme dafür fertige Bilddateien in festen Größen benötigen.
+
+### b) Die App online bereitstellen
+
+Ein Service Worker (für Installierbarkeit & Offline-Nutzung) funktioniert nur, wenn die Seite über **http(s)** aufgerufen wird – nicht per Doppelklick auf die Datei (`file://`). Zwei gängige, kostenlose Wege:
+
+**Variante 1 – GitHub Pages (empfohlen, kostenlos):**
+1. Kostenloses GitHub-Konto anlegen, neues Repository erstellen.
+2. Alle Dateien dieses Ordners hochladen (per Drag & Drop im Browser oder mit Git).
+3. Unter *Settings → Pages* die Veröffentlichung aktivieren (Branch `main`, Ordner `/root`).
+4. Nach kurzer Zeit ist die App unter `https://<benutzername>.github.io/<repository-name>/` erreichbar.
+
+**Variante 2 – jeder andere Web-Hoster**, der statische HTML-Dateien ausliefert (z. B. Netlify, ein bestehender Vereins-Webspace). Einfach den kompletten Ordnerinhalt hochladen.
+
+### c) App installieren
+
+Die veröffentlichte Adresse (z. B. die GitHub-Pages-URL) auf dem gewünschten Gerät im Browser öffnen:
+
+- **Android (Chrome)**: Menü (⋮) → „App installieren“ bzw. „Zum Startbildschirm hinzufügen“.
+- **iPhone/iPad (Safari)**: Teilen-Symbol → „Zum Home-Bildschirm“.
+- **Windows/Mac (Chrome/Edge)**: Klick auf das Installieren-Symbol in der Adressleiste.
+
+Die App startet danach mit eigenem Icon im Vollbild, ganz ohne Browserleiste.
+
+---
+
+## 6) QR-Codes fürs eigene Gerät
+
+Auf der Startseite (`index.html`) sind unter „📱 Eigenes Gerät verbinden“ zwei QR-Codes eingeblendet – einer für **Trainingsmodus Tablet**, einer für **Trainingsmodus Handy**. Bringt ein Mitspieler sein eigenes Tablet oder Smartphone mit, reicht ein Scan mit der Handykamera, um direkt im passenden Modul zu landen – ohne Adresse abtippen zu müssen.
+
+Die Codes werden **automatisch** aus der Adresse gebildet, unter der `index.html` gerade aufgerufen wird – es ist **keine Konfiguration nötig**. Sobald die App auf GitHub Pages (oder einem anderen Hoster) liegt, zeigen die Codes von selbst auf die richtige Adresse dort. Lokal per Doppelklick (`file://`) angezeigt, funktionieren die Codes nicht zum Scannen (das steht dann auch so als Adresse darunter) – für einen echten Test siehe Abschnitt 7 unten.
+
+> Modul **Pro** hat bewusst keinen eigenen QR-Code, da es als Zuschauermonitor für den gemeinsamen Bildschirm gedacht ist, nicht fürs eigene Gerät.
+
+---
+
+## 7) Lokal in VS Code testen
+
+Farben/Schrift/Logo lassen sich auch einfach per Doppelklick auf `index.html` im Browser testen. Für einen vollständigen Test inkl. Installierbarkeit/Offline-Funktion empfiehlt sich die kostenlose VS-Code-Erweiterung **„Live Server“**:
+
+1. Erweiterung „Live Server“ (Ritwick Dey) in VS Code installieren.
+2. Rechtsklick auf `index.html` → **„Open with Live Server“**.
+3. Der Browser öffnet die App über `http://127.0.0.1:...` – jetzt funktionieren auch Installierbarkeit und Offline-Cache wie später online.
+
+> Tipp zum Testen der QR-Codes ohne GitHub: Live Server zeigt meist auch eine Netzwerk-Adresse wie `http://192.168.x.x:5500` an (bzw. über „Go Live“ unten in der Statusleiste einsehbar). Ruft man `index.html` über diese Adresse statt über `127.0.0.1` auf, sind die QR-Codes von jedem Handy im selben WLAN aus scannbar.
+
+## Hinweis
+
+Alle drei Module funktionieren technisch weiterhin unabhängig voneinander (können auch einzeln geöffnet werden) – `theme.css` und `club.js` sorgen lediglich dafür, dass Design und Branding an einer zentralen Stelle gepflegt werden.

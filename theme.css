@@ -1,0 +1,135 @@
+/* =====================================================================
+   THEME.CSS – zentrale Design-Einstellungen für ALLE DREI Module
+   (05_Trainingsmodus_Pro.html, 05_Trainingsmodus_Pro_Tablet.html,
+   05_Trainingsmodus_Pro_Handy.html) sowie die Startseite (index.html).
+
+   Diese eine Datei in Visual Studio Code öffnen, Werte ändern, speichern -
+   die Änderung wirkt sofort auf alle drei Module (einfach die Seite im
+   Browser neu laden). Es muss NICHTS in den einzelnen HTML-Dateien
+   gesucht/geändert werden.
+
+   Aufbau dieser Datei:
+   1) Schriftart   (Google-Font-Import + Variablen)
+   2) Farben        (Hintergrund, Schrift, Akzent- und Mannschaftsfarben)
+   3) Buttongrößen (ein Skalierungsfaktor je Modul)
+   4) App-Rahmen   (Kopfleiste mit Vereinslogo/-name - Layout, nicht zum
+                     Anpassen gedacht, siehe club.js für Logo/Namen selbst)
+   ===================================================================== */
+
+/* ===== 1) SCHRIFTART =====
+   Standard: "Space Grotesk" für Überschriften, "Inter" für Fließtext -
+   beides kostenlose Google Fonts. Eigene Schriftart einsetzen:
+   1. Auf https://fonts.google.com die gewünschte Schriftart suchen,
+      "Get font" -> "Get embed code" -> den @import-Link kopieren.
+   2. Die Zeile unten durch den neuen @import-Link ersetzen.
+   3. Die Namen in --font-display / --font-heading unten anpassen. */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;600;700&display=swap');
+
+:root{
+    --font-display:"Space Grotesk","Inter",sans-serif;   /* Überschriften, Titel */
+    --font-body:"Inter",Segoe UI,Arial,sans-serif;         /* Fließtext, Buttons, Zahlen */
+
+    /* ===== 2) FARBEN =====
+       Alle Werte als Hex-Code (#rrggbb) oder rgba(...). Nach dem Ändern
+       einfach die Datei speichern und die Seite im Browser neu laden. */
+
+    /* Grundfarben (App-Hintergrund) */
+    --bg-main:#0a0e14;          /* Seitenhintergrund (dunkler Verlauf-Grundton) */
+    --bg-panel:#131b24;         /* Kopfleisten / Karten-Hintergrund */
+    --line:rgba(255,255,255,0.08); /* dünne Trennlinien */
+
+    /* Schriftfarben */
+    --text-main:#eef2f6;        /* Haupttext (auf dunklem Hintergrund) */
+    --text-dim:#8a97a6;         /* abgeschwächter/zweitrangiger Text */
+
+    /* Akzentfarbe (z.B. Hervorhebungen, Auswahl-Rahmen, Standard-Buttons) */
+    --accent:#33c5ff;
+    --accent-hover:#5fd4ff;     /* Akzentfarbe beim Hovern/Antippen */
+
+    /* Vereinsfarben / Signalfarben (u.a. für Modals mit hellem Hintergrund) */
+    --green:#1f5e3a;
+    --red:#b93a32;
+    --gold:#ffdf8c;
+    --dark:#102417;
+    --light:#eef5e9;
+    --border:#d7e4cf;
+
+    /* Standard-Mannschaftsfarben (Kartenrahmen, Punkteanzeige, Ziffernblock).
+       Hinweis: Im Modul "Tablet" können diese beiden Farben zusätzlich pro
+       Training direkt in der App umgeschaltet werden (Leuchtgrün/Leuchtrot
+       nach RAL 6038 / RAL 3024) - die Werte hier sind nur der Startwert. */
+    --w-color:#4caf50;
+    --e-color:#ff6b6b;
+
+    /* ===== 3) BUTTONGRÖSSEN =====
+       Ein Skalierungsfaktor je Modul: 1 = Standardgröße, 1.2 = 20% größer,
+       0.8 = 20% kleiner usw. Wirkt auf die Hauptbuttons (Kopfleiste,
+       Fußzeile) sowie - bei Tablet/Handy - auf den Bildschirm-Ziffernblock.
+       Sinnvoller Bereich etwa 0.8 - 1.6; auf sehr kleinen Bildschirmen
+       greifen zusätzlich automatische Verkleinerungen, damit nichts
+       abgeschnitten wird. */
+    --btn-scale-pro: 1;
+    --btn-scale-tablet: 1;
+    --btn-scale-handy: 1;
+}
+
+/* ===== 4) APP-RAHMEN: Kopfleiste mit Vereinslogo/-name =====
+   Gemeinsame Kopfleiste (.topbar) für alle drei Module: links ein
+   "Start"-Link zurück zur Übersicht (index.html), rechts das Vereinslogo
+   und der Vereinsname (Inhalt kommt aus club.js - dort Logo-Datei und
+   Name eintragen, siehe README.md). */
+.topbar{
+    position: sticky;
+    top: 0;
+    z-index: 501;
+    background:var(--bg-panel);
+    border-bottom:1px solid var(--line);
+    padding:6px 14px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-shrink:0;
+    font-size:13px;
+    gap:10px;
+}
+.topbar .topbar-links{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+.topbar a, .topbar button.linkish{
+    color:var(--text-dim);
+    text-decoration:none;
+    background:none;
+    border:1px solid var(--line);
+    padding:6px 12px;
+    border-radius:20px;
+    font-size:12.5px;
+    font-weight:600;
+    cursor:pointer;
+    font-family:inherit;
+}
+.topbar a:hover, .topbar button.linkish:hover{ color:var(--text-main); border-color:var(--text-dim); background:none; }
+
+.club-brand{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    min-width:0;
+}
+.club-logo{
+    height:26px;
+    width:26px;
+    object-fit:contain;
+    border-radius:6px;
+    flex-shrink:0;
+}
+.club-name{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:13px;
+    color:var(--text-main);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
