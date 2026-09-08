@@ -10,7 +10,7 @@
 
 const CLUB_CONFIG = {
     // Vereinsname - erscheint neben dem Logo oben in jedem Modul.
-    name: "ESV Dimbach",
+    name: "Stocksport PRO",
 
     // Vereinslogo - Dateiname eines Bildes im "icons"-Ordner (PNG, JPG
     // oder SVG). Eigenes Logo einsetzen:
