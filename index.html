@@ -2,286 +2,1083 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
-<title>ESV Grein – Trainingsportal</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- Farben, Schriftart, Buttongrößen: siehe theme.css (zentral für alle 3 Module).
-     Vereinslogo/-name: siehe club.js. -->
-<link rel="stylesheet" href="theme.css">
-<script defer src="club.js"></script>
-<link rel="manifest" href="manifest.json">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e1b38">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Stocksport">
+<meta name="description" content="Stocksport Trainings APP – Tablet-Demo: Trainingsspiele zählen, Anwesenheit und Trefferquote erfassen, Auswertungen auf einen Blick.">
+<title>Stocksport Trainings APP – Tablet (Demo)</title>
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png">
-<meta name="theme-color" content="#131b24">
-
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 <style>
-*{ margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
-html, body{ min-height:100%; }
-body{
-    font-family:var(--font-body);
-    background:linear-gradient(160deg,var(--bg-main),#0a0d12);
-    color:var(--text-main);
-    min-height:100vh;
+/* =====================================================================
+   Stocksport Trainings APP – Tablet-Edition (DEMO)
+   Eine einzige Datei, läuft offline im Browser (iPad / Android / PC).
+   Daten bleiben auf dem Gerät; Sicherung als Datei (z. B. in OneDrive).
+   © ESV Grein – siehe LIZENZ.md
+   ===================================================================== */
+:root{
+  --bg:#f3f5f9; --card:#fff; --line:#e7eaf1; --line2:#eef1f6;
+  --ink:#101828; --ink2:#475467; --muted:#8a94a6;
+  --nav:#0e1b38; --nav2:#172a52; --nav-ink:#aeb9d0;
+  --blue:#2f6bff; --blue-bg:#eaf0ff; --green:#12a150; --green-bg:#e6f6ed;
+  --orange:#f08c00; --orange-bg:#fff3e0; --purple:#7457f5; --purple-bg:#f0ecff;
+  --teal:#0e9f9a; --teal-bg:#e2f6f5; --red:#e0344b; --red-bg:#fdebed; --gold:#c98a04; --gold-bg:#fff6d9;
+  --radius:16px; --shadow:0 1px 2px rgba(16,24,40,.04),0 2px 8px rgba(16,24,40,.05);
+  --gap:14px; --side:84px; --tabbar:0px;
+  --safe-b:env(safe-area-inset-bottom,0px); --safe-t:env(safe-area-inset-top,0px);
 }
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,sans-serif;font-size:15px;-webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;touch-action:manipulation}
+input,select{font-size:16px}  /* verhindert Zoom auf dem iPad */
+svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+[hidden]{display:none!important}
 
-.hero{
-    max-width:1100px;
-    margin:0 auto;
-    padding:40px 24px 60px;
-    text-align:center;
-}
-.hero .club-brand-hero{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:10px;
-    margin-bottom:28px;
-}
-.hero .club-logo{
-    width:64px;
-    height:64px;
-    object-fit:contain;
-    border-radius:16px;
-}
-.hero .club-name{
-    font-family:var(--font-display);
-    font-weight:700;
-    font-size:1.1rem;
-    color:var(--text-dim);
-    letter-spacing:0.02em;
-}
+/* ---------- Grundgerüst ---------- */
+.app{display:grid;grid-template-columns:var(--side) 1fr;min-height:100vh;min-height:100dvh}
+.sidebar{background:var(--nav);color:var(--nav-ink);position:sticky;top:0;height:100vh;height:100dvh;display:flex;flex-direction:column;align-items:center;gap:6px;padding:calc(14px + var(--safe-t)) 10px 14px}
+.sidebar img{width:44px;height:44px;border-radius:12px;background:#fff;padding:3px;margin-bottom:12px}
+.nav{display:flex;flex-direction:column;align-items:center;gap:4px;width:100%;border:0;background:none;color:var(--nav-ink);padding:10px 2px;border-radius:12px;font-size:10.5px;font-weight:600;min-height:58px;justify-content:center}
+.nav.active{background:var(--blue);color:#fff;box-shadow:0 4px 14px rgba(47,107,255,.35)}
+.nav:not(.active):active{background:rgba(255,255,255,.08)}
+.sidebar .spacer{flex:1}
+.main{min-width:0;padding:calc(16px + var(--safe-t)) 22px calc(22px + var(--tabbar) + var(--safe-b))}
+.demo-bar{display:flex;align-items:center;gap:12px;background:linear-gradient(90deg,#fff6d9,#fff0c2);border:1px solid #f3dc8e;color:#6b4d00;border-radius:12px;padding:9px 14px;margin-bottom:14px;font-size:13.5px}
+.demo-bar b{color:#4a3500}
+.demo-bar button{margin-left:auto;border:0;background:#4a3500;color:#fff;border-radius:9px;padding:7px 12px;font-size:13px;font-weight:700;white-space:nowrap}
+.head{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.head h1{margin:0;font-size:26px;font-weight:800;letter-spacing:-.02em}
+.head p{margin:2px 0 0;color:var(--ink2);font-size:14px}
+.head .right{margin-left:auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:14px;color:var(--ink2);white-space:nowrap;box-shadow:var(--shadow)}
+.chip b{color:var(--ink)}
+.chip svg.i{width:18px;height:18px;color:var(--muted)}
+.chip.warn{background:var(--orange-bg);border-color:#ffd9a3;color:#8a4b00;cursor:pointer}
+.view{display:none}.view.active{display:block;animation:fade .18s ease}
+@keyframes fade{from{opacity:.4;transform:translateY(4px)}}
 
-.eyebrow{
-    text-transform:uppercase;
-    letter-spacing:0.14em;
-    font-size:12px;
-    font-weight:700;
-    color:var(--accent);
-    margin-bottom:8px;
-}
-h1{
-    font-family:var(--font-display);
-    font-size:clamp(1.8rem, 5vw, 2.6rem);
-    letter-spacing:0.01em;
-    margin-bottom:10px;
-}
-.lead{
-    color:var(--text-dim);
-    font-size:1rem;
-    max-width:520px;
-    margin:0 auto 36px;
-}
+/* ---------- Karten ---------- */
+.grid{display:grid;gap:var(--gap);grid-template-columns:repeat(12,minmax(0,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px;min-width:0}
+.c-12{grid-column:span 12}.c-8{grid-column:span 8}.c-7{grid-column:span 7}.c-6{grid-column:span 6}.c-5{grid-column:span 5}.c-4{grid-column:span 4}.c-3{grid-column:span 3}
+.card-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.card-head h3{margin:0;font-size:16px;font-weight:700}
+.card-head .note{color:var(--muted);font-size:13px}
+.card-head .r{margin-left:auto}
+.seg{display:inline-flex;background:var(--line2);border-radius:11px;padding:3px;gap:2px}
+.seg button{border:0;background:none;padding:8px 14px;border-radius:9px;font-size:14px;font-weight:600;color:var(--ink2);min-height:38px}
+.seg button.active{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(16,24,40,.12)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:11px 16px;font-size:15px;font-weight:650;min-height:46px;color:var(--ink);box-shadow:var(--shadow);text-decoration:none}
+.btn:active{transform:scale(.98)}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.green{background:var(--green);border-color:var(--green);color:#fff}
+.btn.danger{color:var(--red)}
+.btn.ghost{box-shadow:none;background:var(--line2);border-color:transparent}
+.btn svg.i{width:19px;height:19px}
+.btn:disabled{opacity:.45}
+.link{border:0;background:none;color:var(--blue);font-size:14px;font-weight:650;padding:6px 0;display:inline-flex;align-items:center;gap:4px}
+.field{display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--ink2);font-weight:600}
+.field input,.field select{border:1px solid var(--line);border-radius:11px;padding:10px 12px;background:#fff;min-height:46px;color:var(--ink);font-weight:500}
+.field input:focus,.field select:focus,.pct:focus{outline:2px solid var(--blue);outline-offset:0;border-color:transparent}
+.row{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
+.muted{color:var(--muted)}
+.empty{color:var(--muted);text-align:center;padding:26px 8px;font-size:14px}
 
-.grid{
-    display:grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap:16px;
-    text-align:left;
-}
+/* ---------- Dashboard ---------- */
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--gap);margin-bottom:var(--gap)}
+.kpi{display:flex;flex-direction:column;padding:15px 16px;cursor:pointer}
+.k-top{display:flex;align-items:center;gap:12px;min-width:0}
+.k-ic{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto}
+.k-lbl{font-size:13px;color:var(--ink2);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.k-val{font-size:27px;font-weight:800;letter-spacing:-.02em;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.k-val small{font-size:.52em;color:var(--ink2);margin-left:2px}
+.k-sub{font-size:13px;color:var(--muted);margin-top:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.k-sub b{color:var(--ink2)}
+.k-bar{display:flex;height:7px;border-radius:99px;overflow:hidden;background:var(--line2);margin-top:10px}
+.k-bar i{display:block;height:100%}.k-bar .bw{background:#9aa6bd}.k-bar .be{background:var(--red)}
+.delta{font-weight:700}.delta.up{color:var(--green)}.delta.down{color:var(--red)}.delta.flat{color:var(--muted)}
+.t-blue{background:var(--blue-bg);color:var(--blue)}.t-green{background:var(--green-bg);color:var(--green)}.t-orange{background:var(--orange-bg);color:var(--orange)}
+.t-purple{background:var(--purple-bg);color:var(--purple)}.t-teal{background:var(--teal-bg);color:var(--teal)}.t-red{background:var(--red-bg);color:var(--red)}.t-gold{background:var(--gold-bg);color:var(--gold)}
+.list{list-style:none;margin:0;padding:0}
+.list>li{display:flex;align-items:center;gap:12px;padding:10px 2px;border-bottom:1px solid var(--line2);min-width:0}
+.list>li:last-child{border-bottom:0}
+.m-main{min-width:0;flex:1}
+.m-main b{display:block;font-size:15px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-main small{display:block;font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.badge{font-size:12px;font-weight:700;padding:5px 10px;border-radius:8px;white-space:nowrap;flex:0 0 auto}
+.badge.grey{background:var(--line2);color:var(--ink2)}
+.shield{width:30px;height:34px}.shield+.shield{margin-left:-9px}
+.shield.w path{fill:#eef1f6;stroke:#9aa6bd;stroke-width:1.5}.shield.e path{fill:#fde3e7;stroke:var(--red);stroke-width:1.5}
+.shield text{font-size:9.5px;font-weight:800;text-anchor:middle}.shield.w text{fill:#5b6b88}.shield.e text{fill:var(--red)}
+.score{font-size:18px;font-weight:800;white-space:nowrap;min-width:62px;text-align:center}
+.score .lose{color:var(--muted)}
+.ev-ic{width:42px;height:42px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex:0 0 auto;line-height:1}
+.ev-ic .m{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em}.ev-ic .d{font-size:17px;font-weight:800;margin-top:1px}
+.av{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:12.5px;font-weight:800;flex:0 0 auto}
+.pbar{display:flex;align-items:center;gap:9px;min-width:0;flex:1}
+.pbar .tk{flex:1;height:8px;border-radius:99px;background:var(--line2);overflow:hidden}
+.pbar .tk i{display:block;height:100%;border-radius:99px;background:var(--green)}
+.pbar .tk.p i{background:var(--purple)}
+.pbar b{font-size:14px;min-width:54px;text-align:right}
+.miss{color:var(--red);font-weight:650;font-size:14px;min-width:56px;text-align:right}
+.chart{height:210px;display:flex;align-items:stretch;gap:12px;padding-top:4px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;min-width:0}
+.bar-val{font-size:13px;font-weight:700;color:var(--ink2);margin-bottom:4px}
+.bar-area{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center;border-bottom:1px solid var(--line)}
+.bar{width:min(40px,70%);border-radius:8px 8px 3px 3px;background:#c9d7ff;min-height:3px;transition:height .5s}
+.bar-col.cur .bar{background:var(--blue)}
+.bar-lbl{font-size:12.5px;color:var(--muted);margin-top:6px;font-weight:600}.bar-col.cur .bar-lbl{color:var(--blue)}
 
-.tile{
-    display:flex;
-    align-items:center;
-    gap:16px;
-    background:var(--bg-panel);
-    border:1px solid var(--line);
-    border-radius:18px;
-    padding:20px;
-    text-decoration:none;
-    color:var(--text-main);
-    transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
-}
-.tile:hover{
-    transform:translateY(-2px);
-    border-color:var(--accent);
-    background:#16202c;
-}
-.tile .num{
-    font-family:var(--font-display);
-    font-size:1.6rem;
-    font-weight:700;
-    color:var(--accent);
-    min-width:2.4ch;
-}
-.tile .title{
-    font-weight:800;
-    font-size:1.05rem;
-    margin-bottom:4px;
-}
-.tile .sub{
-    font-size:0.85rem;
-    color:var(--text-dim);
-    line-height:1.4;
-}
-.tile .arrow{
-    margin-left:auto;
-    font-size:1.3rem;
-    color:var(--text-dim);
-}
-.tile:hover .arrow{ color:var(--accent); }
+/* ---------- Spiel zählen ---------- */
+.board{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:var(--gap)}
+.total{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin-bottom:14px}
+.team{border-radius:14px;padding:12px 14px;text-align:center;border:2px solid transparent;cursor:pointer}
+.team.w{background:#f1f3f8}.team.e{background:var(--red-bg)}
+.team.sel{border-color:var(--blue)}
+.team input{border:0;background:transparent;text-align:center;font-weight:700;font-size:15px;width:100%;color:var(--ink2);padding:2px}
+.team .pts{font-size:54px;font-weight:900;line-height:1.05;letter-spacing:-.03em}
+.team.e .pts{color:var(--red)}
+.vs{font-size:28px;font-weight:800;color:var(--muted)}
+.ktab{width:100%;border-collapse:separate;border-spacing:0 6px}
+.ktab th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;text-align:center;padding:0 4px}
+.ktab td{text-align:center;padding:0 4px}
+.ktab td.k{font-weight:700;color:var(--ink2);width:70px;text-align:left;font-size:14px}
+.cell{width:100%;min-height:50px;border-radius:12px;border:2px solid var(--line);background:#fff;font-size:22px;font-weight:800}
+.cell.e{color:var(--red)}
+.cell.act{border-color:var(--blue);background:var(--blue-bg);box-shadow:0 0 0 3px rgba(47,107,255,.15)}
+.cell.empty-c{color:#c5ccd8;font-weight:500}
+.pad{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.pad button{min-height:66px;border-radius:14px;border:1px solid var(--line);background:#fff;font-size:28px;font-weight:800;box-shadow:var(--shadow)}
+.pad button:active{background:var(--blue-bg)}
+.pad button.wide{grid-column:span 2;font-size:17px;font-weight:700}
+.pad-info{font-size:14px;color:var(--ink2);margin-bottom:10px;min-height:20px}
+.pad-info b{color:var(--blue)}
 
-.install-hint{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    background:#1c2734;
-    border:1px solid var(--line);
-    color:var(--text-dim);
-    font-size:0.85rem;
-    padding:8px 14px;
-    border-radius:14px;
-    margin-top:32px;
-}
-.install-hint b{ color:var(--gold); }
+/* ---------- Anwesenheit / Treffer / Spieler ---------- */
+.plist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.pl{display:flex;align-items:center;gap:12px;background:#fff;border:2px solid var(--line);border-radius:14px;padding:10px 14px;min-height:62px;cursor:pointer;user-select:none}
+.pl.on{border-color:var(--green);background:var(--green-bg)}
+.pl .ck{width:30px;height:30px;border-radius:9px;border:2px solid #c5ccd8;display:grid;place-items:center;flex:0 0 auto;background:#fff}
+.pl.on .ck{background:var(--green);border-color:var(--green);color:#fff}
+.pl .ck svg{width:18px;height:18px;stroke-width:3;opacity:0}.pl.on .ck svg{opacity:1}
+.pl b{font-size:16px;font-weight:650;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.datebar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.datebar input{border:1px solid var(--line);border-radius:11px;padding:9px 12px;min-height:46px;background:#fff;font-weight:650}
+.icon-b{width:46px;height:46px;border-radius:12px;border:1px solid var(--line);background:#fff;display:grid;place-items:center;box-shadow:var(--shadow)}
+.counter{font-size:15px;color:var(--ink2);margin-left:auto}.counter b{font-size:20px;color:var(--green)}
+.trow{display:grid;grid-template-columns:minmax(0,1fr) 110px 110px;gap:10px;align-items:center;padding:8px 2px;border-bottom:1px solid var(--line2)}
+.trow.h{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;border-bottom:1px solid var(--line)}
+.trow .who{display:flex;align-items:center;gap:10px;min-width:0}
+.trow .who b{font-size:15.5px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pct{width:100%;border:1px solid var(--line);border-radius:11px;padding:10px 12px;min-height:46px;text-align:right;font-weight:700;background:#fff}
+.pct.t{color:var(--green)}.pct.f{color:var(--red)}
+.pct.bad{border-color:var(--red);background:var(--red-bg)}
+.arow{display:grid;grid-template-columns:28px minmax(0,1.3fr) minmax(120px,1.5fr) 70px 64px;gap:12px;align-items:center;padding:10px 2px;border-bottom:1px solid var(--line2)}
+.arow.h{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;padding-top:0}
+.arow .rk{font-weight:800;color:var(--muted);text-align:center}
+.arow .num{text-align:right;color:var(--ink2);font-weight:600}
+.srow{display:flex;align-items:center;gap:12px;padding:10px 2px;border-bottom:1px solid var(--line2)}
+.srow input{flex:1;border:1px solid transparent;border-radius:10px;padding:9px 10px;font-size:16px;font-weight:650;background:transparent;min-height:44px}
+.srow input:focus{border-color:var(--blue);background:#fff;outline:0}
+.srow .nr{color:var(--muted);font-size:13px;width:44px}
 
-/* ===== QR-CODES (eigenes Gerät verbinden) =====
-   Zeigt für Tablet & Handy je einen QR-Code, der direkt auf das jeweilige
-   Modul zeigt - erzeugt automatisch aus der aktuellen Seitenadresse (siehe
-   Skript am Ende der Seite), keine manuelle Konfiguration nötig. */
-.qr-section{
-    margin-top:44px;
-    padding-top:32px;
-    border-top:1px solid var(--line);
-}
-.qr-section h2{
-    font-family:var(--font-display);
-    font-size:1.2rem;
-    margin-bottom:8px;
-}
-.qr-lead{
-    color:var(--text-dim);
-    font-size:0.88rem;
-    max-width:480px;
-    margin:0 auto 24px;
-}
-.qr-grid{
-    display:flex;
-    gap:18px;
-    justify-content:center;
-    flex-wrap:wrap;
-}
-.qr-card{
-    background:var(--bg-panel);
-    border:1px solid var(--line);
-    border-radius:18px;
-    padding:18px;
-    width:190px;
-}
-.qr-code{
-    background:#fff;
-    border-radius:12px;
-    padding:10px;
-    margin-bottom:10px;
-}
-.qr-code svg{
-    display:block;
-    width:100%;
-    height:auto;
-}
-.qr-title{
-    font-weight:700;
-    font-size:0.88rem;
-    margin-bottom:4px;
-}
-.qr-url{
-    font-size:0.68rem;
-    color:var(--text-dim);
-    word-break:break-all;
-    line-height:1.4;
-}
+/* ---------- Dialog / Toast ---------- */
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.45);display:grid;place-items:center;z-index:80;padding:20px}
+.dlg{background:#fff;border-radius:18px;max-width:520px;width:100%;padding:22px;box-shadow:0 20px 60px rgba(15,23,42,.3);max-height:90vh;overflow:auto}
+.dlg h2{margin:0 0 8px;font-size:21px}
+.dlg p,.dlg li{color:var(--ink2);line-height:1.5;font-size:15px}
+.dlg .acts{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
+.toast{position:fixed;left:50%;bottom:calc(24px + var(--tabbar) + var(--safe-b));transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;font-size:15px;opacity:0;pointer-events:none;transition:.25s;z-index:90;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.ok{background:var(--green)}.toast.err{background:var(--red)}
 
-.footer-note{
-    margin-top:36px;
-    font-size:0.78rem;
-    color:#57626e;
+/* ---------- Hochformat / kleine Geräte: Leiste unten ---------- */
+@media (max-width:1180px){ .kpis{grid-template-columns:repeat(3,minmax(0,1fr))} .kpis .kpi:nth-child(n+4){grid-column:span 1} }
+@media (max-width:1180px) and (min-width:901px){ .kpis{grid-template-columns:repeat(6,minmax(0,1fr))} .kpis .kpi{grid-column:span 2} .kpis .kpi:nth-child(n+4){grid-column:span 3} }
+@media (max-width:1180px) and (min-width:901px){ .c-5{grid-column:span 7}.c-4{grid-column:span 5}.c-3{grid-column:span 12}.c-8{grid-column:span 7} }
+@media (max-width:900px){
+  :root{--tabbar:68px}
+  .app{grid-template-columns:1fr}
+  .sidebar{position:fixed;inset:auto 0 0 0;height:calc(var(--tabbar) + var(--safe-b));flex-direction:row;justify-content:space-around;padding:6px 6px calc(6px + var(--safe-b));z-index:60;gap:2px}
+  .sidebar img,.sidebar .spacer{display:none}
+  .nav{min-height:54px;padding:6px 2px;font-size:10.5px;flex:1}
+  .main{padding:calc(14px + var(--safe-t)) 16px calc(20px + var(--tabbar) + var(--safe-b))}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.kpis .kpi:nth-child(5){grid-column:span 2}
+  .c-8,.c-7,.c-6,.c-5,.c-4,.c-3{grid-column:span 12}
+  .board{grid-template-columns:1fr}
+  .head .right .chip.date{display:none}
 }
-
-@media (max-width:600px){
-    .hero{ padding:28px 16px 40px; }
+@media (max-width:560px){
+  .plist{grid-template-columns:1fr}
+  .kpis{grid-template-columns:1fr}.kpis .kpi:nth-child(5){grid-column:auto}
+  .trow{grid-template-columns:minmax(0,1fr) 84px 84px}
+  .arow{grid-template-columns:22px minmax(0,1fr) 90px 56px;}.arow .ein{display:none}
+  .head h1{font-size:22px}
+  .demo-bar span.long{display:none}
+  .team .pts{font-size:42px}
+  .pad button{min-height:58px}
+  #dGames li>span:first-child,.list .badge.grey{display:none}
 }
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7.5" height="7.5" rx="1.8"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.8"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.8"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.8"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l5.5 3.5-5.5 3.5z"/></symbol>
+  <symbol id="i-calcheck" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16.5" rx="2.5"/><path d="M8 2.5v4M16 2.5v4M8.5 14l2.5 2.5 4.5-5"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.4-3.4 3-5.5 6.5-5.5s6.1 2.1 6.5 5.5"/><path d="M15.5 4.7a3.5 3.5 0 010 6.6M18 14.9c2.1.6 3.3 2.4 3.5 5.1"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16.5" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></symbol>
+  <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 00.5-8A6 6 0 006 9.5 4.3 4.3 0 007 18z"/><path d="M12 11v5M9.8 13.8L12 16l2.2-2.2"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 00.5-8A6 6 0 006 9.5 4.3 4.3 0 007 18z"/><path d="M12 16v-5M9.8 13.2L12 11l2.2 2.2"/></symbol>
+  <symbol id="i-stock" viewBox="0 0 24 24"><path d="M12 3v5"/><circle cx="12" cy="3" r="1.3"/><path d="M6 13c0-2.8 2.7-5 6-5s6 2.2 6 5"/><path d="M4 13h16v2.5c0 2-3.6 3.5-8 3.5s-8-1.5-8-3.5z"/></symbol>
+  <symbol id="i-pie" viewBox="0 0 24 24"><path d="M11 3.1A9 9 0 1020.9 13H11z"/><path d="M14.5 2.8a8.5 8.5 0 016.7 6.7h-6.7z"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></symbol>
+  <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 21h8M12 16.5V21M7 3.5h10v5.5a5 5 0 01-10 0zM7 5.5H4.5A3 3 0 007.2 10M17 5.5h2.5a3 3 0 01-2.7 4.5"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24"><path d="M5 3h11l3 3v15H5z"/><path d="M8 3v5h8V3M8 21v-7h8v7"/></symbol>
+  <symbol id="i-sheet" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16M10 3v18"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></symbol>
+</defs></svg>
 
-<div class="hero">
-    <div class="club-brand-hero">
-        <img class="club-logo" src="" alt="">
-        <span class="club-name"></span>
+<div class="app">
+  <nav class="sidebar" id="sidebar">
+    <img src="icons/icon-192.png" alt="">
+    <button class="nav" data-v="home"><svg class="i"><use href="#i-grid"/></svg>Übersicht</button>
+    <button class="nav" data-v="spiel"><svg class="i"><use href="#i-play"/></svg>Spiel</button>
+    <button class="nav" data-v="anw"><svg class="i"><use href="#i-calcheck"/></svg>Anwesenheit</button>
+    <button class="nav" data-v="treffer"><svg class="i"><use href="#i-target"/></svg>Treffer</button>
+    <button class="nav" data-v="spieler"><svg class="i"><use href="#i-users"/></svg>Spieler</button>
+    <button class="nav" data-v="termine"><svg class="i"><use href="#i-cal"/></svg>Termine</button>
+    <div class="spacer"></div>
+    <button class="nav" data-v="daten"><svg class="i"><use href="#i-cloud"/></svg>Daten</button>
+  </nav>
+
+  <main class="main">
+    <div class="demo-bar" id="demoBar">
+      <span>⭐ <b>DEMO-Version</b> <span class="long">– mit Beispieldaten zum Ausprobieren. Die Vollversion läuft im ganzen Verein auf mehreren Geräten.</span></span>
+      <button id="demoInfoBtn">Vollversion</button>
     </div>
+    <header class="head">
+      <div><h1 id="title">Dashboard</h1><p id="sub">&nbsp;</p></div>
+      <div class="right">
+        <span class="chip warn" id="backupChip" hidden title="Daten sichern"><svg class="i"><use href="#i-cloud"/></svg><b>Sichern!</b></span>
+        <span class="chip date"><svg class="i"><use href="#i-cal"/></svg><span id="today">–</span></span>
+        <span class="chip"><svg class="i"><use href="#i-clock"/></svg><b id="clock">--:--</b></span>
+      </div>
+    </header>
 
-    <p class="eyebrow">Trainingsportal</p>
-    <h1>Stocksport Trainings App</h1>
-    <p class="lead">Wähle ein Modul aus, um zu starten.</p>
+    <!-- ================= ÜBERSICHT ================= -->
+    <section class="view" id="v-home">
+      <div class="card-head" style="margin-bottom:12px">
+        <span class="muted" style="font-size:14px">Auswertung Trainingsspiele</span>
+        <div class="seg r" id="periodSeg"><button data-p="gesamt">Gesamt</button><button data-p="jahr">Jahr</button><button data-p="monat">Monat</button><button data-p="heute">Heute</button></div>
+      </div>
+      <div class="kpis">
+        <div class="card kpi" data-go="termine"><div class="k-top"><span class="k-ic t-blue"><svg class="i"><use href="#i-stock"/></svg></span><div style="min-width:0"><div class="k-lbl">Nächstes Training</div><div class="k-val" id="kTr">–</div></div></div><div class="k-sub" id="kTrS">&nbsp;</div></div>
+        <div class="card kpi" data-go="spiel"><div class="k-top"><span class="k-ic t-green"><svg class="i"><use href="#i-play"/></svg></span><div style="min-width:0"><div class="k-lbl">Gespielte Spiele</div><div class="k-val" id="kSp">–</div></div></div><div class="k-sub" id="kSpS">&nbsp;</div></div>
+        <div class="card kpi" data-go="spiel"><div class="k-top"><span class="k-ic t-orange"><svg class="i"><use href="#i-pie"/></svg></span><div style="min-width:0"><div class="k-lbl">Siege W : E</div><div class="k-val" id="kSi">–</div></div></div><div class="k-bar" id="kSiBar"><i class="bw" style="flex:1"></i><i class="be" style="flex:1"></i></div><div class="k-sub" id="kSiS" style="margin-top:6px">&nbsp;</div></div>
+        <div class="card kpi" data-go="spiel"><div class="k-top"><span class="k-ic t-purple"><svg class="i"><use href="#i-star"/></svg></span><div style="min-width:0"><div class="k-lbl">Ø Punkte pro Spiel</div><div class="k-val" id="kAv">–</div></div></div><div class="k-sub" id="kAvS">&nbsp;</div></div>
+        <div class="card kpi" data-go="termine"><div class="k-top"><span class="k-ic t-gold"><svg class="i"><use href="#i-trophy"/></svg></span><div style="min-width:0"><div class="k-lbl">Nächstes Turnier</div><div class="k-val" id="kTu">–</div></div></div><div class="k-sub" id="kTuS">&nbsp;</div></div>
+      </div>
+      <div class="grid">
+        <div class="card c-6"><div class="card-head"><h3>Letzte Spiele</h3><button class="link r" data-go="spiel">Neues Spiel <svg class="i" style="width:16px;height:16px"><use href="#i-arrow"/></svg></button></div><ul class="list" id="dGames"></ul></div>
+        <div class="card c-6"><div class="card-head"><h3>Nächste Trainings &amp; Termine</h3><button class="link r" data-go="termine">Termine <svg class="i" style="width:16px;height:16px"><use href="#i-arrow"/></svg></button></div><ul class="list" id="dEvents"></ul></div>
+        <div class="card c-5"><div class="card-head"><h3>Trefferquote – Top 5</h3><span class="note" id="dTaNote"></span><div class="seg r" id="taSeg"><button data-p="monat" class="active">Monat</button><button data-p="jahr">Jahr</button><button data-p="gesamt">Gesamt</button></div></div><ul class="list" id="dTa"></ul></div>
+        <div class="card c-4"><div class="card-head"><h3>Beteiligung pro Monat</h3><span class="note r">Ø Spieler je Training</span></div><div class="chart" id="dChart"></div></div>
+        <div class="card c-3"><div class="card-head"><h3>Beteiligung</h3><div class="seg r" id="betSeg"><button data-p="monat" class="active">Monat</button><button data-p="jahr">Jahr</button></div></div><ul class="list" id="dBet"></ul></div>
+      </div>
+    </section>
 
-    <div class="grid">
-        <a class="tile" href="05_Trainingsmodus_Pro.html">
-            <span class="num">01</span>
-            <span>
-                <div class="title">Trainingsmodus PRO</div>
-                <div class="sub">Zuschauermonitor · Eingabe über externen Ziffernblock</div>
-            </span>
-            <span class="arrow">&rarr;</span>
-        </a>
-        <a class="tile" href="05_Trainingsmodus_Pro_Tablet.html">
-            <span class="num">02</span>
-            <span>
-                <div class="title">Trainingsmodus Tablet</div>
-                <div class="sub">Touch-Bedienung für Tablets · Mannschaftsfarben wählbar</div>
-            </span>
-            <span class="arrow">&rarr;</span>
-        </a>
-        <a class="tile" href="05_Trainingsmodus_Pro_Handy.html">
-            <span class="num">03</span>
-            <span>
-                <div class="title">Trainingsmodus Handy</div>
-                <div class="sub">Kompakte Version fürs Smartphone</div>
-            </span>
-            <span class="arrow">&rarr;</span>
-        </a>
-    </div>
-
-    <div class="install-hint">📲 <span>Tipp: Über das Browsermenü <b>„Zum Startbildschirm hinzufügen“</b> lässt sich diese Seite als eigene App installieren.</span></div>
-
-    <div class="qr-section">
-        <h2>📱 Eigenes Gerät verbinden</h2>
-        <p class="qr-lead">Hat ein Mitspieler sein eigenes Tablet oder Handy dabei? Einfach den passenden Code mit der Kamera scannen – schon ist das Modul startklar.</p>
-        <div class="qr-grid">
-            <div class="qr-card">
-                <div class="qr-code" id="qrTablet"></div>
-                <div class="qr-title">Trainingsmodus Tablet</div>
-                <div class="qr-url" id="qrTabletUrl"></div>
-            </div>
-            <div class="qr-card">
-                <div class="qr-code" id="qrHandy"></div>
-                <div class="qr-title">Trainingsmodus Handy</div>
-                <div class="qr-url" id="qrHandyUrl"></div>
-            </div>
+    <!-- ================= SPIEL ZÄHLEN ================= -->
+    <section class="view" id="v-spiel">
+      <div class="board">
+        <div class="card">
+          <div class="total">
+            <div class="team w" data-team="w"><input id="teamW" value="Mannschaft W" aria-label="Name Mannschaft W"><div class="pts" id="sumW">0</div></div>
+            <div class="vs">:</div>
+            <div class="team e" data-team="e"><input id="teamE" value="Mannschaft E" aria-label="Name Mannschaft E"><div class="pts" id="sumE">0</div></div>
+          </div>
+          <div class="card-head" style="margin-bottom:4px"><span class="muted">Kehren</span><div class="seg r" id="kehrenSeg"><button data-k="4">4</button><button data-k="6">6</button><button data-k="8">8</button><button data-k="10">10</button></div></div>
+          <table class="ktab"><thead><tr><th></th><th>W</th><th>E</th></tr></thead><tbody id="ktab"></tbody></table>
         </div>
-    </div>
+        <div>
+          <div class="card" style="margin-bottom:var(--gap)">
+            <div class="pad-info" id="padInfo"></div>
+            <div class="pad" id="pad">
+              <button>1</button><button>2</button><button>3</button><button>4</button>
+              <button>5</button><button>6</button><button>7</button><button>8</button>
+              <button>9</button><button>10</button><button>0</button><button id="padUndo" class="wide" style="grid-column:span 1;font-size:15px"><svg class="i"><use href="#i-undo"/></svg></button>
+            </div>
+            <div class="row" style="margin-top:14px">
+              <button class="btn ghost" id="newGame" style="flex:1">Neues Spiel</button>
+              <button class="btn green" id="saveGame" style="flex:2"><svg class="i"><use href="#i-save"/></svg>Spiel speichern</button>
+            </div>
+          </div>
+          <div class="card"><div class="card-head"><h3>Heute gespielt</h3><span class="note" id="todayGamesNote"></span></div><ul class="list" id="todayGames"></ul></div>
+        </div>
+      </div>
+    </section>
 
-    <p class="footer-note">Trainingsportal ESV Grein</p>
+    <!-- ================= ANWESENHEIT ================= -->
+    <section class="view" id="v-anw">
+      <div class="grid">
+        <div class="card c-8">
+          <div class="card-head">
+            <div class="datebar">
+              <button class="icon-b" id="anwPrev" title="Voriges Training"><svg class="i"><use href="#i-left"/></svg></button>
+              <input type="date" id="anwDate">
+              <button class="icon-b" id="anwNext" title="Nächstes Training"><svg class="i"><use href="#i-right"/></svg></button>
+            </div>
+            <span class="counter" id="anwCount"></span>
+          </div>
+          <div class="row" style="margin-bottom:12px"><button class="btn ghost" id="anwAll">Alle anwesend</button><button class="btn ghost" id="anwNone">Keiner</button><span class="muted" style="font-size:13px">Antippen = anwesend · wird sofort gespeichert</span></div>
+          <ul class="plist" id="anwList"></ul>
+        </div>
+        <div class="card c-4">
+          <div class="card-head"><h3>Wer trainiert am meisten?</h3></div>
+          <div class="seg" id="anwSeg" style="margin-bottom:10px"><button data-p="monat" class="active">Monat</button><button data-p="jahr">Jahr</button><button data-p="gesamt">Gesamt</button></div>
+          <ul class="list" id="anwRank"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TREFFERQUOTE ================= -->
+    <section class="view" id="v-treffer">
+      <div class="card-head"><div class="seg" id="tqTabs"><button data-t="erf" class="active">Erfassen</button><button data-t="ausw">Spielerauswertung</button></div></div>
+      <div class="card" id="tqErf">
+        <div class="card-head">
+          <div class="datebar">
+            <button class="icon-b" id="tqPrev"><svg class="i"><use href="#i-left"/></svg></button>
+            <input type="date" id="tqDate">
+            <button class="icon-b" id="tqNext"><svg class="i"><use href="#i-right"/></svg></button>
+          </div>
+          <span class="note r">Werte in % · Treffer + Fehlschüsse max. 100 %</span>
+        </div>
+        <div class="trow h"><span>Spieler</span><span style="text-align:right">🎯 Treffer</span><span style="text-align:right">✖ Fehl</span></div>
+        <div id="tqList"></div>
+      </div>
+      <div class="card" id="tqAusw" hidden>
+        <div class="card-head"><h3>Spielerauswertung</h3><span class="note" id="tqAwNote"></span><div class="seg r" id="tqSeg"><button data-p="monat">Monat</button><button data-p="jahr" class="active">Jahr</button><button data-p="gesamt">Gesamt</button></div></div>
+        <div class="arow h"><span>#</span><span>Spieler</span><span>Ø Trefferquote</span><span style="text-align:right">Ø Fehl</span><span class="ein" style="text-align:right">Einträge</span></div>
+        <div id="tqAwList"></div>
+      </div>
+    </section>
+
+    <!-- ================= SPIELER ================= -->
+    <section class="view" id="v-spieler">
+      <div class="grid">
+        <div class="card c-7">
+          <div class="card-head"><h3>Spielerliste</h3><span class="note" id="spCount"></span></div>
+          <div class="row" style="margin-bottom:12px">
+            <label class="field" style="flex:1;min-width:200px">Neuer Spieler<input id="spNew" placeholder="Vorname Nachname" autocomplete="off"></label>
+            <button class="btn primary" id="spAdd"><svg class="i"><use href="#i-plus"/></svg>Hinzufügen</button>
+          </div>
+          <div id="spList"></div>
+          <p class="muted" style="font-size:13px;margin:12px 0 0">Namen antippen zum Ändern. Beim Löschen bleiben vergangene Auswertungen erhalten.</p>
+        </div>
+        <div class="card c-5">
+          <div class="card-head"><h3>Verein</h3></div>
+          <div class="row" style="flex-direction:column;align-items:stretch">
+            <label class="field">Vereinsname<input id="vName"></label>
+            <label class="field">Ort<input id="vOrt"></label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TERMINE ================= -->
+    <section class="view" id="v-termine">
+      <div class="grid">
+        <div class="card c-5">
+          <div class="card-head"><h3>Trainingstag</h3></div>
+          <div class="row">
+            <label class="field" style="flex:1">Wochentag<select id="stWd"><option value="1">Montag</option><option value="2">Dienstag</option><option value="3">Mittwoch</option><option value="4">Donnerstag</option><option value="5">Freitag</option><option value="6">Samstag</option><option value="0">Sonntag</option></select></label>
+            <label class="field" style="width:130px">Beginn<input type="time" id="stTime"></label>
+          </div>
+          <div class="row" style="margin-top:12px"><label class="field" style="flex:1">Trainingsort<input id="stOrt" placeholder="z. B. Stockhalle"></label></div>
+        </div>
+        <div class="card c-7">
+          <div class="card-head"><h3>Turnier / Termin eintragen</h3></div>
+          <div class="row">
+            <label class="field" style="width:170px">Datum<input type="date" id="tDate"></label>
+            <label class="field" style="width:120px">Uhrzeit<input type="time" id="tTime"></label>
+            <label class="field" style="width:150px">Art<select id="tTyp"><option value="turnier">Turnier</option><option value="training">Sondertraining</option><option value="sonstiges">Sonstiges</option></select></label>
+          </div>
+          <div class="row" style="margin-top:12px">
+            <label class="field" style="flex:1;min-width:160px">Bezeichnung<input id="tTitel" placeholder="z. B. Herbstturnier"></label>
+            <label class="field" style="flex:1;min-width:140px">Ort<input id="tOrt"></label>
+            <button class="btn primary" id="tAdd"><svg class="i"><use href="#i-plus"/></svg>Eintragen</button>
+          </div>
+        </div>
+        <div class="card c-12"><div class="card-head"><h3>Kommende Termine</h3></div><ul class="list" id="tList"></ul></div>
+      </div>
+    </section>
+
+    <!-- ================= DATEN ================= -->
+    <section class="view" id="v-daten">
+      <div class="grid">
+        <div class="card c-6">
+          <div class="card-head"><h3>☁️ Sicherung in OneDrive</h3></div>
+          <p style="margin:0 0 12px;color:var(--ink2);line-height:1.5">Die Daten liegen auf diesem Gerät. Mit <b>„In OneDrive sichern“</b> entsteht eine Sicherungsdatei –
+            im Teilen-Menü <b>OneDrive</b> (Android) bzw. <b>„In Dateien sichern“ → OneDrive</b> (iPad) wählen.
+            Auf einem anderen Tablet mit <b>„Sicherung öffnen“</b> die Datei aus OneDrive laden.</p>
+          <div class="row">
+            <button class="btn primary" id="bkSave" style="flex:1"><svg class="i"><use href="#i-cloud"/></svg>In OneDrive sichern</button>
+            <button class="btn" id="bkOpen" style="flex:1"><svg class="i"><use href="#i-upload"/></svg>Sicherung öffnen</button>
+            <input type="file" id="bkFile" accept=".json,application/json" hidden>
+          </div>
+          <p class="muted" style="font-size:13.5px;margin:12px 0 0" id="bkInfo"></p>
+        </div>
+        <div class="card c-6">
+          <div class="card-head"><h3>📊 Für Excel exportieren</h3></div>
+          <p style="margin:0 0 12px;color:var(--ink2);line-height:1.5">CSV-Dateien lassen sich direkt in Excel öffnen – ebenfalls über OneDrive teilbar.</p>
+          <div class="row">
+            <button class="btn" id="csvAnw" style="flex:1"><svg class="i"><use href="#i-sheet"/></svg>Anwesenheit</button>
+            <button class="btn" id="csvTq" style="flex:1"><svg class="i"><use href="#i-sheet"/></svg>Trefferquote</button>
+            <button class="btn" id="csvSp" style="flex:1"><svg class="i"><use href="#i-sheet"/></svg>Spiele</button>
+          </div>
+        </div>
+        <div class="card c-6">
+          <div class="card-head"><h3>📱 Als App installieren</h3></div>
+          <p style="margin:0;color:var(--ink2);line-height:1.55"><b>iPad (Safari):</b> Teilen-Symbol → „Zum Home-Bildschirm“.<br>
+            <b>Android (Chrome):</b> Menü ⋮ → „App installieren“ bzw. „Zum Startbildschirm hinzufügen“.<br>
+            Danach startet die App ohne Adressleiste und funktioniert auch ohne Internet. Auf dem iPad bleiben die Daten nur so zuverlässig erhalten – trotzdem regelmäßig sichern.</p>
+        </div>
+        <div class="card c-6">
+          <div class="card-head"><h3>🧪 Demo-Daten</h3></div>
+          <p style="margin:0 0 12px;color:var(--ink2);line-height:1.5">Beispielverein neu laden oder mit dem eigenen Verein und leeren Listen starten.</p>
+          <div class="row">
+            <button class="btn" id="demoReset" style="flex:1">Beispieldaten neu laden</button>
+            <button class="btn danger" id="demoClear" style="flex:1"><svg class="i"><use href="#i-trash"/></svg>Leer starten</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
 </div>
 
-<!-- QR-Codes: zeigen jeweils direkt auf 05_Trainingsmodus_Pro_Tablet.html bzw.
-     05_Trainingsmodus_Pro_Handy.html - die Adresse wird automatisch aus der
-     aktuellen Seitenadresse gebildet (funktioniert also unverändert, egal
-     unter welcher Adresse die Seite später liegt, z.B. auf GitHub Pages).
-     Läuft komplett offline über die lokale Bibliothek in vendor/qrcode.min.js. -->
-<script src="vendor/qrcode.min.js"></script>
-<script>
-(function () {
-    function renderQr(codeElId, urlElId, targetFile) {
-        var url = new URL(targetFile, window.location.href).href;
-        var qr = qrcode(0, 'M');
-        qr.addData(url);
-        qr.make();
-        document.getElementById(codeElId).innerHTML = qr.createSvgTag({ scalable: true });
-        document.getElementById(urlElId).textContent = url;
-    }
-    renderQr('qrTablet', 'qrTabletUrl', '05_Trainingsmodus_Pro_Tablet.html');
-    renderQr('qrHandy', 'qrHandyUrl', '05_Trainingsmodus_Pro_Handy.html');
-})();
-</script>
+<div class="toast" id="toast"></div>
+<div class="modal" id="modal" hidden><div class="dlg" id="dlg"></div></div>
 
+<script>
+'use strict';
+// =====================================================================
+//  EINSTELLUNGEN FÜR DIE WEITERGABE (hier anpassen)
+// =====================================================================
+const APP = {
+    version: '1.0-demo',
+    maxSpieler: 12,                                   // Demo-Grenze – Vollversion unbegrenzt
+    kontakt: 'ESV Grein – Stocksport',                // <- Kontakt für Anfragen (Name, E-Mail oder Telefon)
+    kontaktLink: '',                                  // <- optional: z. B. 'mailto:...' oder Webseite
+};
+const KEY = 'stocksport_tablet_demo_v1';
+
+// =====================================================================
+//  HILFSFUNKTIONEN
+// =====================================================================
+const $ = id => document.getElementById(id);
+const MONTH_NAMES = ['Jänner','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+const MONTH_SHORT = ['Jän','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+const WD_SHORT = ['So','Mo','Di','Mi','Do','Fr','Sa'];
+const WD_LONG = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+const WD_PLURAL = ['sonntags','montags','dienstags','mittwochs','donnerstags','freitags','samstags'];
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const isoOf = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+const today = () => isoOf(new Date());
+const parseIso = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const addDays = (iso, n) => { const d = parseIso(iso); d.setDate(d.getDate() + n); return isoOf(d); };
+const fmtShort = s => { const d = parseIso(s); return String(d.getDate()).padStart(2, '0') + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.'; };
+const fmtWd = s => WD_SHORT[parseIso(s).getDay()] + ', ' + fmtShort(s);
+const fmtLong = s => WD_LONG[parseIso(s).getDay()] + ', ' + fmtShort(s) + parseIso(s).getFullYear();
+const daysUntil = s => { const t = new Date(); t.setHours(0, 0, 0, 0); return Math.round((parseIso(s) - t) / 86400000); };
+const relDays = n => n === 0 ? 'heute' : n === 1 ? 'morgen' : n === 2 ? 'übermorgen' : n < 0 ? 'vor ' + (-n) + ' Tagen' : 'in ' + n + ' Tagen';
+const fmtNum = v => v == null ? '–' : Number(v).toLocaleString('de-AT', { maximumFractionDigits: 1 });
+const avg = xs => xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null;
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const initials = n => { const p = String(n || '?').trim().split(/\s+/); return ((p[0] || '?')[0] + (p.length > 1 ? p[p.length - 1][0] : '')).toUpperCase(); };
+const TONES = ['t-blue','t-green','t-orange','t-purple','t-teal','t-red','t-gold'];
+const tone = n => { let h = 0; for (const c of String(n)) h = (h * 31 + c.charCodeAt(0)) >>> 0; return TONES[h % TONES.length]; };
+const svg = (id, st) => '<svg class="i"' + (st ? ' style="' + st + '"' : '') + '><use href="#' + id + '"/></svg>';
+
+function toast(msg, type) {
+    const t = $('toast'); t.textContent = msg; t.className = 'toast show ' + (type || '');
+    clearTimeout(t._h); t._h = setTimeout(() => t.className = 'toast', 2600);
+}
+function dialog(html, buttons) {
+    return new Promise(res => {
+        $('dlg').innerHTML = html + '<div class="acts">' + buttons.map((b, i) => '<button class="btn ' + (b.cls || '') + '" data-i="' + i + '">' + b.label + '</button>').join('') + '</div>';
+        $('modal').hidden = false;
+        $('dlg').querySelectorAll('.acts button').forEach(b => b.onclick = () => { $('modal').hidden = true; res(buttons[+b.dataset.i].value); });
+    });
+}
+const confirmDlg = (title, text, okLabel, danger) => dialog('<h2>' + title + '</h2><p>' + text + '</p>',
+    [{ label: 'Abbrechen', cls: 'ghost', value: false }, { label: okLabel || 'OK', cls: danger ? 'primary' : 'primary', value: true }]);
+
+// =====================================================================
+//  DATEN (bleiben im Browser des Geräts; Sicherung als Datei)
+// =====================================================================
+let D;
+function emptyData(name, ort) {
+    return { format: 'stocksport-tablet', version: 1, demo: false,
+        verein: { name: name || 'Mein Verein', ort: ort || '' },
+        einstellungen: { wochentag: 5, beginn: '18:30', dauer: 150, ort: '' },
+        spieler: [], spiele: [], anwesenheit: {}, treffer: [], termine: [],
+        geaendert: null, gesichert: null };
+}
+function demoData() {
+    const d = emptyData('SV Musterdorf', 'Musterdorf');
+    d.demo = true;
+    d.einstellungen.ort = 'Stockhalle Musterdorf';
+    const names = ['Max Huber','Anna Leitner','Josef Gruber','Maria Wimmer','Thomas Bauer','Eva Steiner','Franz Moser','Lisa Hofer','Karl Mayr','Sabine Pichler','Stefan Berger'];
+    d.spieler = names.map((n, i) => ({ id: 'S' + String(i + 1).padStart(2, '0'), name: n }));
+    // Trainingstage: die letzten ~95 Freitage (knapp 2 Jahre, damit Vergleiche mit dem Vorjahr möglich sind)
+    let rnd = 7; const r = () => (rnd = (rnd * 9301 + 49297) % 233280) / 233280;
+    const t = today(); let fr = parseIso(t); while (fr.getDay() !== 5) fr.setDate(fr.getDate() - 1);
+    if (isoOf(fr) === t) fr.setDate(fr.getDate() - 7);
+    const fleiss = [.95, .9, .85, .8, .75, .7, .65, .6, .5, .45, .35];
+    const skill = [72, 68, 64, 61, 58, 56, 53, 50, 47, 44, 40];
+    for (let w = 0; w < 95; w++) {
+        const iso = isoOf(fr);
+        const mon = fr.getMonth();
+        if (!((mon === 6 || mon === 7) && r() < .6)) {     // Sommerpause mit weniger Trainings
+            const ids = d.spieler.filter((p, i) => r() < fleiss[i]).map(p => p.id);
+            if (ids.length) d.anwesenheit[iso] = ids;
+            if (w < 45) ids.forEach(id => {
+                if (r() < .75) {
+                    const i = +id.slice(1) - 1;
+                    const tq = Math.max(15, Math.min(92, Math.round((skill[i] + (r() - .5) * 18) * 10) / 10));
+                    const fe = Math.max(0, Math.min(100 - tq, Math.round(((100 - tq) * (.35 + r() * .3)) * 10) / 10));
+                    d.treffer.push({ datum: iso, sid: id, t: tq, f: fe });
+                }
+            });
+            // 2-4 Trainingsspiele pro Training
+            {
+                const n = 2 + Math.floor(r() * (w < 20 ? 3 : 2));
+                for (let g = 0; g < n; g++) {
+                    const k = 6, w_ = [], e_ = [];
+                    for (let j = 0; j < k; j++) { const pts = Math.floor(r() * 4) + (r() < .3 ? 2 : 0); if (r() < .5) { w_.push(pts); e_.push(Math.floor(r() * 2)); } else { e_.push(pts); w_.push(Math.floor(r() * 2)); } }
+                    const hh = 18 + Math.floor((30 + g * 35) / 60), mm = (30 + g * 35) % 60;
+                    addGame(d, { datum: iso, uhrzeit: String(hh).padStart(2, '0') + ':' + String(mm).padStart(2, '0'), w: w_, e: e_, teamW: 'Mannschaft W', teamE: 'Mannschaft E' });
+                }
+            }
+        }
+        fr.setDate(fr.getDate() - 7);
+    }
+    d.termine = [
+        { id: uid(), datum: addDays(t, 12), uhrzeit: '09:00', typ: 'turnier', titel: 'Herbstturnier', ort: 'Stockhalle Musterdorf' },
+        { id: uid(), datum: addDays(t, 40), uhrzeit: '13:30', typ: 'turnier', titel: 'Bezirksmeisterschaft', ort: 'Eisstockhalle Nachbarort' },
+        { id: uid(), datum: addDays(t, 20), uhrzeit: '19:00', typ: 'sonstiges', titel: 'Jahreshauptversammlung', ort: 'Vereinsheim' }
+    ];
+    d.geaendert = null; d.gesichert = null;
+    return d;
+}
+function addGame(d, g) {
+    const pw = g.w.reduce((a, b) => a + (b || 0), 0), pe = g.e.reduce((a, b) => a + (b || 0), 0);
+    d.spiele.push({ id: uid(), datum: g.datum, uhrzeit: g.uhrzeit, kehren: g.w.length, w: g.w, e: g.e, pw, pe,
+        sieger: pw > pe ? 'W' : pe > pw ? 'E' : '', teamW: g.teamW, teamE: g.teamE });
+}
+function load() {
+    try { const raw = localStorage.getItem(KEY); if (raw) { const x = JSON.parse(raw); if (x && x.format === 'stocksport-tablet') return x; } } catch (e) {}
+    return null;
+}
+function save(silent) {
+    D.geaendert = new Date().toISOString();
+    try { localStorage.setItem(KEY, JSON.stringify(D)); }
+    catch (e) { toast('Speichern auf dem Gerät nicht möglich – bitte Sicherung erstellen!', 'err'); }
+    updateBackupChip();
+    if (!silent) renderCurrent();
+}
+function playerName(id) { const p = D.spieler.find(p => p.id === id); return p ? p.name : (D.alteNamen && D.alteNamen[id]) || id; }
+function nextPlayerId() { let n = 0; D.spieler.forEach(p => { const m = /^S(\d+)$/.exec(p.id); if (m) n = Math.max(n, +m[1]); }); Object.keys(D.alteNamen || {}).forEach(id => { const m = /^S(\d+)$/.exec(id); if (m) n = Math.max(n, +m[1]); }); return 'S' + String(n + 1).padStart(2, '0'); }
+
+// =====================================================================
+//  NAVIGATION
+// =====================================================================
+const VIEWS = {
+    home: ['Dashboard', null], spiel: ['Spiel zählen', 'Kehre für Kehre eintragen – W gegen E'],
+    anw: ['Anwesenheit', 'Trainingsbeteiligung abhaken'], treffer: ['Trefferquote', 'Treffer & Fehlschüsse je Spieler in %'],
+    spieler: ['Spieler & Verein', 'Spielerliste pflegen'], termine: ['Termine', 'Trainingstag, Turniere & Termine'],
+    daten: ['Daten & Sicherung', 'OneDrive, Excel-Export, App installieren']
+};
+let cur = 'home';
+function show(v) {
+    if (!VIEWS[v]) v = 'home';
+    cur = v;
+    document.querySelectorAll('.view').forEach(s => s.classList.toggle('active', s.id === 'v-' + v));
+    document.querySelectorAll('.nav').forEach(b => b.classList.toggle('active', b.dataset.v === v));
+    $('title').textContent = VIEWS[v][0];
+    $('sub').textContent = VIEWS[v][1] || 'Willkommen, ' + D.verein.name + '! 👋';
+    if (location.hash.slice(1) !== v) history.replaceState(null, '', v === 'home' ? location.pathname : '#' + v);
+    renderCurrent();
+    window.scrollTo(0, 0);
+}
+function renderCurrent() {
+    ({ home: renderHome, spiel: renderSpiel, anw: renderAnw, treffer: renderTreffer, spieler: renderSpieler, termine: renderTermine, daten: renderDaten })[cur]();
+}
+document.querySelectorAll('.nav').forEach(b => b.onclick = () => show(b.dataset.v));
+document.addEventListener('click', e => { const g = e.target.closest('[data-go]'); if (g) show(g.dataset.go); });
+window.addEventListener('hashchange', () => show(location.hash.slice(1) || 'home'));
+function seg(id, cb) {
+    $(id).addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return;
+        $(id).querySelectorAll('button').forEach(x => x.classList.toggle('active', x === b)); cb(b.dataset); });
+}
+
+// =====================================================================
+//  ÜBERSICHT
+// =====================================================================
+let period = 'jahr', taPeriod = 'monat', betPeriod = 'monat';
+function periodFilter(p, iso) {
+    const t = today();
+    return p === 'gesamt' ? true : p === 'jahr' ? iso.startsWith(t.slice(0, 4)) : p === 'monat' ? iso.startsWith(t.slice(0, 7)) : iso === t;
+}
+function stats(games) {
+    const n = games.length;
+    return { n, avg: n ? avg(games.map(g => g.pw + g.pe)) : null, aw: n ? avg(games.map(g => g.pw)) : null, ae: n ? avg(games.map(g => g.pe)) : null,
+        sw: games.filter(g => g.sieger === 'W').length, se: games.filter(g => g.sieger === 'E').length };
+}
+function cmpGames(p) {   // gleicher Zeitraum im Vorjahr / Vormonat
+    const t = parseIso(today());
+    if (p === 'jahr') { const a = (t.getFullYear() - 1) + '-01-01', b = isoOf(new Date(t.getFullYear() - 1, t.getMonth(), Math.min(t.getDate(), 28))); return D.spiele.filter(g => g.datum >= a && g.datum <= b); }
+    if (p === 'monat') { const pm = new Date(t.getFullYear(), t.getMonth(), 0); const a = isoOf(new Date(pm.getFullYear(), pm.getMonth(), 1)), b = isoOf(new Date(pm.getFullYear(), pm.getMonth(), Math.min(t.getDate(), pm.getDate()))); return D.spiele.filter(g => g.datum >= a && g.datum <= b); }
+    return null;
+}
+function delta(c, p, lbl) {
+    if (c == null || p == null) return '';
+    if (!p) return c ? '<span class="delta up">▲ neu</span> ' + lbl : '';
+    const x = Math.round((c - p) / p * 100);
+    return '<span class="delta ' + (x > 0 ? 'up' : x < 0 ? 'down' : 'flat') + '">' + (x > 0 ? '▲ ' : x < 0 ? '▼ ' : '± ') + Math.abs(x) + ' %</span> ' + lbl;
+}
+function nextTraining() {
+    const st = D.einstellungen, now = new Date();
+    const [hh, mm] = st.beginn.split(':').map(Number);
+    const d = new Date(now); d.setHours(hh, mm, 0, 0);
+    while (d.getDay() !== +st.wochentag || d.getTime() + st.dauer * 60000 < now.getTime()) { d.setDate(d.getDate() + 1); d.setHours(hh, mm, 0, 0); }
+    const iso = isoOf(d);
+    const extra = D.termine.filter(t => t.typ === 'training' && t.datum >= today() && t.datum < iso).sort((a, b) => a.datum.localeCompare(b.datum))[0];
+    if (extra) return { datum: extra.datum, uhrzeit: extra.uhrzeit || st.beginn, ort: extra.ort, titel: extra.titel, laeuft: false };
+    return { datum: iso, uhrzeit: st.beginn, ort: st.ort, titel: 'Training', laeuft: d <= now };
+}
+function upcoming() {
+    const st = D.einstellungen, ev = [], nt = nextTraining(), t = today();
+    let d = parseIso(nt.titel === 'Training' ? nt.datum : t); while (d.getDay() !== +st.wochentag) d.setDate(d.getDate() + 1);
+    const extraDays = new Set(D.termine.filter(x => x.typ === 'training').map(x => x.datum));
+    for (let i = 0; i < 6; i++) { const iso = isoOf(d); if (!extraDays.has(iso)) ev.push({ datum: iso, uhrzeit: st.beginn, typ: 'training', titel: 'Wöchentliches Training', ort: st.ort, laeuft: nt.laeuft && nt.datum === iso }); d.setDate(d.getDate() + 7); }
+    D.termine.filter(x => x.datum >= t).forEach(x => ev.push(x));
+    return ev.sort((a, b) => (a.datum + (a.uhrzeit || '')).localeCompare(b.datum + (b.uhrzeit || '')));
+}
+const TYPE = { training: ['Training', 't-blue'], turnier: ['Turnier', 't-gold'], sonstiges: ['Termin', 't-purple'] };
+function evItem(e, withDelete) {
+    const dt = parseIso(e.datum), ty = TYPE[e.typ] || TYPE.sonstiges;
+    const sub = [e.uhrzeit ? e.uhrzeit + ' Uhr' : '', e.titel, e.ort].filter(Boolean).map(esc).join(' · ');
+    return '<li><span class="ev-ic ' + ty[1] + '"><span class="m">' + MONTH_SHORT[dt.getMonth()] + '</span><span class="d">' + dt.getDate() + '</span></span>' +
+        '<div class="m-main"><b>' + fmtLong(e.datum) + '</b><small>' + sub + '</small></div><span class="badge ' + ty[1] + '">' + ty[0] + '</span>' +
+        (withDelete ? '<button class="icon-b" data-del="' + e.id + '" title="Löschen" style="color:var(--red)">' + svg('i-trash') + '</button>'
+                    : '<span class="badge ' + (e.laeuft ? 't-green' : 'grey') + '">' + (e.laeuft ? '● läuft' : relDays(daysUntil(e.datum))) + '</span>') + '</li>';
+}
+const shield = (c, t) => '<svg class="shield ' + c + '" viewBox="0 0 30 34"><path d="M15 2l11 4v9c0 8-5 13.5-11 16.5C9 28.5 4 23 4 15V6z"/><text x="15" y="20">' + t + '</text></svg>';
+function gameItem(g, withDelete) {
+    const win = g.sieger;
+    const badge = win === 'W' ? '<span class="badge t-green">Sieg W</span>' : win === 'E' ? '<span class="badge t-red">Sieg E</span>' : '<span class="badge grey">Unentsch.</span>';
+    return '<li><span style="display:flex">' + shield('w', 'W') + shield('e', 'E') + '</span><div class="m-main"><b>' + esc(g.teamW || 'Mannschaft W') + ' <span class="muted" style="font-weight:500">vs.</span> ' + esc(g.teamE || 'Mannschaft E') + '</b>' +
+        '<small>' + fmtWd(g.datum) + parseIso(g.datum).getFullYear() + ' · ' + esc(g.uhrzeit) + ' Uhr · ' + g.kehren + ' Kehren</small></div>' +
+        '<span class="score"><span class="' + (win === 'E' ? 'lose' : '') + '">' + g.pw + '</span> : <span class="' + (win === 'W' ? 'lose' : '') + '" style="' + (win === 'W' ? '' : 'color:var(--red)') + '">' + g.pe + '</span></span>' + badge +
+        (withDelete ? '<button class="icon-b" data-gdel="' + g.id + '" title="Spiel löschen" style="color:var(--red)">' + svg('i-trash') + '</button>' : '') + '</li>';
+}
+function sortedGames() { return D.spiele.slice().sort((a, b) => (b.datum + b.uhrzeit).localeCompare(a.datum + a.uhrzeit)); }
+
+function renderHome() {
+    $('sub').textContent = 'Willkommen, ' + D.verein.name + '! 👋';
+    document.querySelectorAll('#periodSeg button').forEach(b => b.classList.toggle('active', b.dataset.p === period));
+    // Training / Turnier
+    const tr = nextTraining(), n = daysUntil(tr.datum);
+    $('kTr').textContent = n === 0 ? 'Heute' : n === 1 ? 'Morgen' : fmtWd(tr.datum);
+    $('kTrS').innerHTML = '<b>' + esc(tr.uhrzeit) + ' Uhr</b> · ' + (tr.laeuft ? '<span class="delta up">● läuft</span>' : relDays(n)) + (tr.ort ? ' · ' + esc(tr.ort) : '');
+    const tu = D.termine.filter(t => t.typ === 'turnier' && t.datum >= today()).sort((a, b) => a.datum.localeCompare(b.datum))[0];
+    if (tu) { const m = daysUntil(tu.datum); $('kTu').textContent = m === 0 ? 'Heute' : m === 1 ? 'Morgen' : fmtWd(tu.datum); $('kTuS').innerHTML = (tu.uhrzeit ? '<b>' + esc(tu.uhrzeit) + ' Uhr</b> · ' : '') + relDays(m) + ' · ' + esc(tu.titel); }
+    else { $('kTu').textContent = 'offen'; $('kTuS').textContent = 'unter „Termine“ eintragen'; }
+    // Spiele
+    const s = stats(D.spiele.filter(g => periodFilter(period, g.datum)));
+    const cg = cmpGames(period), c = cg ? stats(cg) : null, cl = period === 'jahr' ? 'vs. Vorjahr' : 'vs. Vormonat';
+    const lbl = { gesamt: 'seit Beginn', jahr: 'im Jahr ' + today().slice(0, 4), monat: 'im ' + MONTH_NAMES[new Date().getMonth()], heute: 'heute' }[period];
+    $('kSp').textContent = s.n;
+    $('kSpS').innerHTML = (c ? delta(s.n, c.n, cl) : '') || (s.n ? lbl : 'keine Spiele ' + lbl);
+    $('kAv').innerHTML = s.avg == null ? '–' : fmtNum(s.avg) + '<small>Pkt.</small>';
+    $('kAvS').innerHTML = (c && s.avg != null && c.avg != null ? delta(s.avg, c.avg, cl) + ' · ' : '') + (s.n ? 'W Ø <b>' + fmtNum(s.aw) + '</b> · E Ø <b>' + fmtNum(s.ae) + '</b>' : lbl);
+    const tot = s.sw + s.se;
+    $('kSi').innerHTML = s.sw + ' <span class="muted">:</span> <span style="color:var(--red)">' + s.se + '</span>';
+    $('kSiBar').children[0].style.flex = tot ? s.sw : 1; $('kSiBar').children[1].style.flex = tot ? s.se : 1; $('kSiBar').style.opacity = tot ? 1 : .35;
+    $('kSiS').innerHTML = tot ? 'W <b>' + Math.round(s.sw / tot * 100) + ' %</b> · E <b style="color:var(--red)">' + Math.round(s.se / tot * 100) + ' %</b>' : 'noch keine Siege ' + lbl;
+    // Listen
+    const games = sortedGames().slice(0, 5);
+    $('dGames').innerHTML = games.map(g => gameItem(g)).join('') || '<li class="empty">Noch keine Spiele – unter „Spiel“ das erste Spiel zählen.</li>';
+    $('dEvents').innerHTML = upcoming().slice(0, 5).map(e => evItem(e)).join('');
+    renderTaTop(); renderChart(); renderBetTop();
+}
+function taRows(p) {
+    const sel = D.treffer.filter(x => periodFilter(p, x.datum)), by = {};
+    sel.forEach(x => { const o = by[x.sid] = by[x.sid] || { t: [], f: [], d: new Set() }; if (x.t != null) o.t.push(x.t); if (x.f != null) o.f.push(x.f); o.d.add(x.datum); });
+    return { sel, rows: Object.keys(by).map(id => ({ id, name: playerName(id), t: avg(by[id].t), f: avg(by[id].f), n: by[id].d.size }))
+        .filter(r => r.t != null).sort((a, b) => b.t - a.t || a.name.localeCompare(b.name, 'de')) };
+}
+function renderTaTop() {
+    const { sel, rows } = taRows(taPeriod), all = sel.map(x => x.t).filter(v => v != null);
+    $('dTaNote').innerHTML = all.length ? 'Ø <b style="color:var(--green)">' + fmtNum(avg(all)) + ' %</b>' : '';
+    $('dTa').innerHTML = rows.slice(0, 5).map((r, i) => '<li><span class="muted" style="width:16px;font-weight:800;text-align:center">' + (i + 1) + '</span><span class="av ' + tone(r.name) + '">' + esc(initials(r.name)) + '</span>' +
+        '<b style="width:32%;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:650">' + esc(r.name) + '</b>' +
+        '<span class="pbar"><span class="tk"><i style="width:' + r.t + '%"></i></span><b>' + fmtNum(r.t) + ' %</b></span><span class="miss">' + (r.f == null ? '–' : fmtNum(r.f) + ' %') + '</span></li>').join('')
+        || '<li class="empty">Noch keine Werte – unter „Treffer“ erfassen.</li>';
+}
+function renderChart() {
+    const now = new Date(), t = today(), ms = [];
+    for (let i = 5; i >= 0; i--) { const d = new Date(now.getFullYear(), now.getMonth() - i, 1); ms.push({ k: isoOf(d).slice(0, 7), m: d.getMonth(), y: d.getFullYear() }); }
+    ms.forEach(m => { const ds = Object.keys(D.anwesenheit).filter(d => d.startsWith(m.k) && d <= t && D.anwesenheit[d].length); m.n = ds.length; m.a = ds.length ? avg(ds.map(d => D.anwesenheit[d].length)) : 0; });
+    const max = Math.max(1, ...ms.map(m => m.a));
+    $('dChart').innerHTML = ms.map((m, i) => '<div class="bar-col' + (i === 5 ? ' cur' : '') + '" title="' + MONTH_NAMES[m.m] + ' ' + m.y + ': ' + m.n + ' Trainings"><span class="bar-val">' + (m.n ? fmtNum(m.a) : '–') + '</span>' +
+        '<div class="bar-area"><div class="bar" style="height:' + (m.n ? Math.max(4, Math.round(m.a / max * 100)) : 0) + '%"></div></div><span class="bar-lbl">' + MONTH_SHORT[m.m] + '</span></div>').join('');
+}
+function betRank(p) {
+    const t = today(), dates = Object.keys(D.anwesenheit).filter(d => d <= t && D.anwesenheit[d].length && periodFilter(p, d));
+    const cnt = {}; dates.forEach(d => D.anwesenheit[d].forEach(id => cnt[id] = (cnt[id] || 0) + 1));
+    const rows = Object.keys(cnt).map(id => ({ name: playerName(id), n: cnt[id] })).sort((a, b) => b.n - a.n || a.name.localeCompare(b.name, 'de'));
+    let rank = 0, prev = null; rows.forEach((r, i) => { if (r.n !== prev) { rank = i + 1; prev = r.n; } r.rank = rank; });
+    return { rows, total: dates.length };
+}
+function rankHtml(p, max) {
+    const { rows, total } = betRank(p), medals = ['🥇', '🥈', '🥉'];
+    return rows.slice(0, max).map(r => '<li><span style="width:24px;text-align:center;font-size:18px">' + (medals[r.rank - 1] || '<span class="muted" style="font-size:14px;font-weight:800">' + r.rank + '.</span>') + '</span>' +
+        '<div class="m-main"><b>' + esc(r.name) + '</b><span class="pbar" style="margin-top:5px"><span class="tk p"><i style="width:' + Math.round(r.n / total * 100) + '%"></i></span></span></div>' +
+        '<b style="white-space:nowrap">' + r.n + '<span class="muted" style="font-weight:600"> / ' + total + '</span></b></li>').join('') || '<li class="empty">Noch keine Trainings erfasst.</li>';
+}
+function renderBetTop() { $('dBet').innerHTML = rankHtml(betPeriod, 5); }
+seg('periodSeg', d => { period = d.p; renderHome(); });
+seg('taSeg', d => { taPeriod = d.p; renderTaTop(); });
+seg('betSeg', d => { betPeriod = d.p; renderBetTop(); });
+
+// =====================================================================
+//  SPIEL ZÄHLEN
+// =====================================================================
+let G = null;
+function newGame(k) {
+    const kehren = k || (G && G.kehren) || 6;
+    G = { kehren, w: Array(kehren).fill(null), e: Array(kehren).fill(null), pos: { k: 0, t: 'w' } };
+    try { localStorage.setItem(KEY + '_spiel', JSON.stringify(G)); } catch (e) {}
+}
+function storeGame() { try { localStorage.setItem(KEY + '_spiel', JSON.stringify(G)); } catch (e) {} }
+function renderSpiel() {
+    if (!G) { try { G = JSON.parse(localStorage.getItem(KEY + '_spiel')); } catch (e) {} if (!G || !G.w) newGame(6); }
+    document.querySelectorAll('#kehrenSeg button').forEach(b => b.classList.toggle('active', +b.dataset.k === G.kehren));
+    const sw = G.w.reduce((a, b) => a + (b || 0), 0), se = G.e.reduce((a, b) => a + (b || 0), 0);
+    $('sumW').textContent = sw; $('sumE').textContent = se;
+    document.querySelectorAll('.team').forEach(t => t.classList.toggle('sel', G.pos && t.dataset.team === G.pos.t));
+    $('ktab').innerHTML = G.w.map((_, i) => '<tr><td class="k">Kehre ' + (i + 1) + '</td>' + ['w', 'e'].map(t => {
+        const v = G[t][i], act = G.pos && G.pos.k === i && G.pos.t === t;
+        return '<td><button class="cell ' + t + (act ? ' act' : '') + (v == null ? ' empty-c' : '') + '" data-k="' + i + '" data-t="' + t + '">' + (v == null ? '–' : v) + '</button></td>';
+    }).join('') + '</tr>').join('');
+    $('padInfo').innerHTML = G.pos ? 'Punkte für <b>' + (G.pos.t === 'w' ? esc($('teamW').value || 'W') : esc($('teamE').value || 'E')) + '</b> in <b>Kehre ' + (G.pos.k + 1) + '</b> antippen' : '✅ Alle Kehren eingetragen – Spiel speichern';
+    const played = G.w.some(v => v != null) || G.e.some(v => v != null);
+    $('saveGame').disabled = !played;
+    const tg = sortedGames().filter(g => g.datum === today());
+    $('todayGamesNote').textContent = tg.length ? tg.length + (tg.length === 1 ? ' Spiel' : ' Spiele') : '';
+    $('todayGames').innerHTML = tg.map(g => gameItem(g, true)).join('') || '<li class="empty">Heute noch kein Spiel gespeichert.</li>';
+}
+function advance() {
+    const order = []; for (let i = 0; i < G.kehren; i++) order.push({ k: i, t: 'w' }, { k: i, t: 'e' });
+    const idx = order.findIndex(o => o.k === G.pos.k && o.t === G.pos.t);
+    const nxt = order.slice(idx + 1).concat(order.slice(0, idx)).find(o => G[o.t][o.k] == null);
+    G.pos = nxt || null;
+}
+$('pad').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.id === 'padUndo') {       // letzten Eintrag zurücknehmen
+        if (G.pos && G[G.pos.t][G.pos.k] != null) G[G.pos.t][G.pos.k] = null;
+        else { const order = []; for (let i = 0; i < G.kehren; i++) order.push({ k: i, t: 'w' }, { k: i, t: 'e' });
+               const last = order.reverse().find(o => G[o.t][o.k] != null); if (last) { G[last.t][last.k] = null; G.pos = last; } }
+    } else {
+        if (!G.pos) { toast('Alle Kehren sind eingetragen – Feld antippen zum Ändern'); return; }
+        G[G.pos.t][G.pos.k] = +b.textContent; advance();
+    }
+    storeGame(); renderSpiel();
+});
+$('ktab').addEventListener('click', e => { const c = e.target.closest('.cell'); if (!c) return; G.pos = { k: +c.dataset.k, t: c.dataset.t }; storeGame(); renderSpiel(); });
+document.querySelectorAll('.team').forEach(t => t.addEventListener('click', e => { if (e.target.tagName === 'INPUT') return; if (G.pos) { G.pos.t = t.dataset.team; renderSpiel(); } }));
+['teamW', 'teamE'].forEach(id => $(id).addEventListener('change', () => { try { localStorage.setItem(KEY + '_teams', JSON.stringify([$('teamW').value, $('teamE').value])); } catch (e) {} renderSpiel(); }));
+seg('kehrenSeg', async d => {
+    const k = +d.k; if (k === G.kehren) return;
+    const played = G.w.some(v => v != null) || G.e.some(v => v != null);
+    if (played && !(await confirmDlg('Kehren ändern?', 'Das laufende Spiel wird dabei geleert.', 'Neues Spiel'))) { renderSpiel(); return; }
+    newGame(k); renderSpiel();
+});
+$('newGame').onclick = async () => {
+    const played = G.w.some(v => v != null) || G.e.some(v => v != null);
+    if (played && !(await confirmDlg('Neues Spiel?', 'Das aktuelle Spiel wurde noch nicht gespeichert und wird verworfen.', 'Verwerfen', true))) return;
+    newGame(); renderSpiel();
+};
+$('saveGame').onclick = async () => {
+    const open = G.w.concat(G.e).filter(v => v == null).length;
+    if (open && !(await confirmDlg('Spiel speichern?', 'Es sind noch ' + (open / 2 >= 1 ? Math.ceil(open / 2) + ' Kehre(n)' : 'Felder') + ' offen. Offene Felder zählen als 0 Punkte.', 'Trotzdem speichern'))) return;
+    const now = new Date();
+    addGame(D, { datum: today(), uhrzeit: String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0'),
+        w: G.w.map(v => v || 0), e: G.e.map(v => v || 0), teamW: $('teamW').value.trim() || 'Mannschaft W', teamE: $('teamE').value.trim() || 'Mannschaft E' });
+    const g = D.spiele[D.spiele.length - 1];
+    newGame(); save();
+    toast(g.sieger ? 'Gespeichert – Sieg ' + g.sieger + ' ' + g.pw + ' : ' + g.pe : 'Gespeichert – Unentschieden ' + g.pw + ' : ' + g.pe, 'ok');
+};
+$('todayGames').addEventListener('click', async e => {
+    const b = e.target.closest('[data-gdel]'); if (!b) return;
+    if (await confirmDlg('Spiel löschen?', 'Das Spiel wird aus der Auswertung entfernt.', 'Löschen', true)) { D.spiele = D.spiele.filter(g => g.id !== b.dataset.gdel); save(); }
+});
+
+// =====================================================================
+//  ANWESENHEIT
+// =====================================================================
+let anwDate = null, anwPeriod = 'monat';
+function defaultDate() { const n = nextTraining(); return daysUntil(n.datum) === 0 ? n.datum : lastTrainingDay(today()); }
+function lastTrainingDay(from) { let d = parseIso(from); while (d.getDay() !== +D.einstellungen.wochentag) d.setDate(d.getDate() - 1); return isoOf(d); }
+function stepTraining(iso, dir) { let d = parseIso(iso); do d.setDate(d.getDate() + dir); while (d.getDay() !== +D.einstellungen.wochentag); return isoOf(d); }
+function renderAnw() {
+    if (!anwDate) anwDate = defaultDate();
+    $('anwDate').value = anwDate;
+    const set = new Set(D.anwesenheit[anwDate] || []);
+    $('anwList').innerHTML = D.spieler.map(p => '<li class="pl' + (set.has(p.id) ? ' on' : '') + '" data-id="' + p.id + '"><span class="ck">' + svg('i-check') + '</span><b>' + esc(p.name) + '</b><span class="muted" style="font-size:12px">' + p.id + '</span></li>').join('')
+        || '<li class="empty" style="grid-column:1/-1">Noch keine Spieler – unter „Spieler“ anlegen.</li>';
+    $('anwCount').innerHTML = fmtLong(anwDate) + ' · <b>' + D.spieler.filter(p => set.has(p.id)).length + '</b> von ' + D.spieler.length;
+    $('anwRank').innerHTML = rankHtml(anwPeriod, 10);
+}
+$('anwList').addEventListener('click', e => {
+    const li = e.target.closest('.pl'); if (!li) return;
+    const arr = D.anwesenheit[anwDate] = D.anwesenheit[anwDate] || [];
+    const i = arr.indexOf(li.dataset.id); if (i >= 0) arr.splice(i, 1); else arr.push(li.dataset.id);
+    if (!arr.length) delete D.anwesenheit[anwDate];
+    save();
+});
+$('anwDate').addEventListener('change', e => { if (e.target.value) { anwDate = e.target.value; renderAnw(); } });
+$('anwPrev').onclick = () => { anwDate = stepTraining(anwDate, -1); renderAnw(); };
+$('anwNext').onclick = () => { anwDate = stepTraining(anwDate, 1); renderAnw(); };
+$('anwAll').onclick = () => { if (!D.spieler.length) return; D.anwesenheit[anwDate] = D.spieler.map(p => p.id); save(); };
+$('anwNone').onclick = () => { delete D.anwesenheit[anwDate]; save(); };
+seg('anwSeg', d => { anwPeriod = d.p; renderAnw(); });
+
+// =====================================================================
+//  TREFFERQUOTE
+// =====================================================================
+let tqDate = null, tqPeriod = 'jahr';
+const parsePct = v => { v = String(v).trim().replace(',', '.').replace('%', ''); if (v === '') return null; const f = Math.round(parseFloat(v) * 10) / 10; return isFinite(f) && f >= 0 && f <= 100 ? f : NaN; };
+function renderTreffer() {
+    if (!tqDate) tqDate = defaultDate();
+    $('tqDate').value = tqDate;
+    const present = new Set(D.anwesenheit[tqDate] || []);
+    const list = D.spieler.slice().sort((a, b) => (present.has(b.id) - present.has(a.id)) || a.name.localeCompare(b.name, 'de'));
+    $('tqList').innerHTML = list.map(p => {
+        const x = D.treffer.find(x => x.datum === tqDate && x.sid === p.id) || {};
+        return '<div class="trow" data-id="' + p.id + '"><span class="who"><span class="av ' + tone(p.name) + '">' + esc(initials(p.name)) + '</span><b>' + esc(p.name) + '</b>' + (present.has(p.id) ? '<span class="badge t-green">anwesend</span>' : '') + '</span>' +
+            '<input class="pct t" inputmode="decimal" data-f="t" placeholder="–" value="' + (x.t == null ? '' : fmtNum(x.t)) + '">' +
+            '<input class="pct f" inputmode="decimal" data-f="f" placeholder="–" value="' + (x.f == null ? '' : fmtNum(x.f)) + '"></div>';
+    }).join('') || '<p class="empty">Noch keine Spieler angelegt.</p>';
+    // Auswertung
+    const { sel, rows } = taRows(tqPeriod);
+    $('tqAwNote').textContent = new Set(sel.map(x => x.datum)).size + ' Trainings · ' + rows.length + ' Spieler';
+    $('tqAwList').innerHTML = rows.map((r, i) => '<div class="arow"><span class="rk">' + (['🥇','🥈','🥉'][i] || (i + 1) + '.') + '</span>' +
+        '<span style="display:flex;align-items:center;gap:10px;min-width:0"><span class="av ' + tone(r.name) + '">' + esc(initials(r.name)) + '</span><b style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(r.name) + '</b></span>' +
+        '<span class="pbar"><span class="tk"><i style="width:' + r.t + '%"></i></span><b>' + fmtNum(r.t) + ' %</b></span><span class="miss">' + (r.f == null ? '–' : fmtNum(r.f) + ' %') + '</span><span class="num ein">' + r.n + '</span></div>').join('')
+        || '<p class="empty">Keine Werte im gewählten Zeitraum.</p>';
+}
+$('tqList').addEventListener('change', e => {
+    const inp = e.target.closest('.pct'); if (!inp) return;
+    const row = inp.closest('.trow'), id = row.dataset.id;
+    const t = parsePct(row.querySelector('[data-f=t]').value), f = parsePct(row.querySelector('[data-f=f]').value);
+    row.querySelectorAll('.pct').forEach(x => x.classList.remove('bad'));
+    if (Number.isNaN(t) || Number.isNaN(f)) { inp.classList.add('bad'); toast('Bitte eine Zahl zwischen 0 und 100 eingeben', 'err'); return; }
+    if (t != null && f != null && t + f > 100.0001) { inp.classList.add('bad'); toast('Treffer + Fehlschüsse ergeben mehr als 100 %', 'err'); return; }
+    D.treffer = D.treffer.filter(x => !(x.datum === tqDate && x.sid === id));
+    if (t != null || f != null) D.treffer.push({ datum: tqDate, sid: id, t, f });
+    save(true);
+    inp.style.background = 'var(--green-bg)'; setTimeout(() => inp.style.background = '', 600);
+    // nur die Auswertung neu zeichnen, damit die Eingabe nicht springt
+    const { sel, rows } = taRows(tqPeriod); $('tqAwNote').textContent = new Set(sel.map(x => x.datum)).size + ' Trainings · ' + rows.length + ' Spieler';
+});
+$('tqList').addEventListener('keydown', e => { if (e.key === 'Enter') { const all = [...$('tqList').querySelectorAll('.pct')]; const i = all.indexOf(e.target); if (i >= 0 && all[i + 1]) all[i + 1].focus(); else e.target.blur(); } });
+$('tqDate').addEventListener('change', e => { if (e.target.value) { tqDate = e.target.value; renderTreffer(); } });
+$('tqPrev').onclick = () => { tqDate = stepTraining(tqDate, -1); renderTreffer(); };
+$('tqNext').onclick = () => { tqDate = stepTraining(tqDate, 1); renderTreffer(); };
+seg('tqTabs', d => { $('tqErf').hidden = d.t !== 'erf'; $('tqAusw').hidden = d.t !== 'ausw'; renderTreffer(); });
+seg('tqSeg', d => { tqPeriod = d.p; renderTreffer(); });
+
+// =====================================================================
+//  SPIELER & VEREIN
+// =====================================================================
+function renderSpieler() {
+    $('spCount').textContent = D.spieler.length + (D.demo ? ' von max. ' + APP.maxSpieler + ' (Demo)' : ' Spieler');
+    $('spList').innerHTML = D.spieler.map(p => '<div class="srow" data-id="' + p.id + '"><span class="av ' + tone(p.name) + '">' + esc(initials(p.name)) + '</span><span class="nr">' + p.id + '</span>' +
+        '<input value="' + esc(p.name) + '" aria-label="Name"><button class="icon-b" data-sdel title="Löschen" style="color:var(--red)">' + svg('i-trash') + '</button></div>').join('')
+        || '<p class="empty">Noch keine Spieler.</p>';
+    $('vName').value = D.verein.name; $('vOrt').value = D.verein.ort;
+}
+function addSpieler() {
+    const n = $('spNew').value.trim().replace(/\s+/g, ' ');
+    if (!n) { $('spNew').focus(); return; }
+    if (D.spieler.length >= APP.maxSpieler) { demoInfo('In der Demo sind höchstens ' + APP.maxSpieler + ' Spieler möglich.'); return; }
+    if (D.spieler.some(p => p.name.toLowerCase() === n.toLowerCase())) { toast('Diesen Namen gibt es schon', 'err'); return; }
+    D.spieler.push({ id: nextPlayerId(), name: n.slice(0, 60) }); $('spNew').value = ''; save(); toast(n + ' hinzugefügt', 'ok');
+}
+$('spAdd').onclick = addSpieler;
+$('spNew').addEventListener('keydown', e => { if (e.key === 'Enter') addSpieler(); });
+$('spList').addEventListener('change', e => {
+    const row = e.target.closest('.srow'); const p = D.spieler.find(x => x.id === row.dataset.id); const n = e.target.value.trim();
+    if (!n) { e.target.value = p.name; return; } p.name = n.slice(0, 60); save(true); toast('Name geändert', 'ok');
+});
+$('spList').addEventListener('click', async e => {
+    if (!e.target.closest('[data-sdel]')) return;
+    const row = e.target.closest('.srow'), p = D.spieler.find(x => x.id === row.dataset.id);
+    if (!(await confirmDlg('Spieler löschen?', esc(p.name) + ' wird aus der Liste entfernt. Bisherige Anwesenheiten und Trefferquoten bleiben in den Auswertungen erhalten.', 'Löschen', true))) return;
+    D.alteNamen = D.alteNamen || {}; D.alteNamen[p.id] = p.name;
+    D.spieler = D.spieler.filter(x => x !== p); save();
+});
+$('vName').addEventListener('change', e => { D.verein.name = e.target.value.trim() || 'Mein Verein'; save(true); toast('Gespeichert', 'ok'); });
+$('vOrt').addEventListener('change', e => { D.verein.ort = e.target.value.trim(); save(true); toast('Gespeichert', 'ok'); });
+
+// =====================================================================
+//  TERMINE
+// =====================================================================
+function renderTermine() {
+    const st = D.einstellungen;
+    $('stWd').value = st.wochentag; $('stTime').value = st.beginn; $('stOrt').value = st.ort;
+    if (!$('tDate').value) $('tDate').value = addDays(today(), 7);
+    const list = D.termine.filter(t => t.datum >= today()).sort((a, b) => (a.datum + a.uhrzeit).localeCompare(b.datum + b.uhrzeit));
+    $('tList').innerHTML = '<li style="background:var(--blue-bg);border-radius:12px;padding:10px 12px;border:0;margin-bottom:6px"><span class="ev-ic t-blue" style="background:#fff">' + svg('i-stock') + '</span><div class="m-main"><b>Training jeden ' + WD_LONG[+st.wochentag] + ', ' + esc(st.beginn) + ' Uhr</b><small>' + esc(st.ort || 'Trainingsort oben eintragen') + ' · nächstes: ' + fmtLong(nextTraining().datum) + '</small></div></li>' +
+        (list.map(t => evItem(t, true)).join('') || '<li class="empty">Keine Turniere oder Termine eingetragen.</li>');
+}
+['stWd', 'stTime', 'stOrt'].forEach(id => $(id).addEventListener('change', () => {
+    D.einstellungen.wochentag = +$('stWd').value; D.einstellungen.beginn = $('stTime').value || '18:30'; D.einstellungen.ort = $('stOrt').value.trim();
+    anwDate = tqDate = null; save(); toast('Trainingstag gespeichert', 'ok');
+}));
+$('tAdd').onclick = () => {
+    const datum = $('tDate').value; if (!datum) { toast('Bitte ein Datum wählen', 'err'); return; }
+    const typ = $('tTyp').value;
+    D.termine.push({ id: uid(), datum, uhrzeit: $('tTime').value || '', typ, titel: $('tTitel').value.trim() || TYPE[typ][0], ort: $('tOrt').value.trim() });
+    $('tTitel').value = ''; $('tOrt').value = ''; $('tTime').value = ''; save(); toast('Termin eingetragen', 'ok');
+};
+$('tList').addEventListener('click', async e => {
+    const b = e.target.closest('[data-del]'); if (!b) return;
+    if (await confirmDlg('Termin löschen?', 'Der Termin wird entfernt.', 'Löschen', true)) { D.termine = D.termine.filter(t => t.id !== b.dataset.del); save(); }
+});
+
+// =====================================================================
+//  DATEN: Sicherung (OneDrive), Excel-Export, Demo
+// =====================================================================
+async function shareFile(name, text, mime) {
+    const blob = new Blob([text], { type: mime });
+    const file = new File([blob], name, { type: mime });
+    // iPad / Android: Teilen-Menü -> OneDrive bzw. "In Dateien sichern"
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try { await navigator.share({ files: [file], title: name }); return true; }
+        catch (e) { if (e.name === 'AbortError') return false; }
+    }
+    // PC / andere Browser: Download (in den OneDrive-Ordner speichern)
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    return true;
+}
+const stamp = () => { const d = new Date(); return isoOf(d) + '_' + String(d.getHours()).padStart(2, '0') + String(d.getMinutes()).padStart(2, '0'); };
+const fileSafe = s => String(s).replace(/[^\wäöüÄÖÜß-]+/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+$('bkSave').onclick = async () => {
+    const copy = Object.assign({}, D, { gesichert: new Date().toISOString(), app: APP.version });
+    const ok = await shareFile('Stocksport_' + fileSafe(D.verein.name) + '_' + stamp() + '.json', JSON.stringify(copy, null, 1), 'application/json');
+    if (ok) { D.gesichert = copy.gesichert; try { localStorage.setItem(KEY, JSON.stringify(D)); } catch (e) {} updateBackupChip(); renderDaten(); toast('Sicherung erstellt', 'ok'); }
+};
+$('bkOpen').onclick = () => $('bkFile').click();
+$('bkFile').addEventListener('change', async e => {
+    const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+    let x; try { x = JSON.parse(await f.text()); } catch (err) { toast('Die Datei ist keine gültige Sicherung', 'err'); return; }
+    if (!x || x.format !== 'stocksport-tablet' || !Array.isArray(x.spieler)) { toast('Die Datei ist keine Stocksport-Sicherung', 'err'); return; }
+    const info = esc(x.verein && x.verein.name) + ': ' + x.spieler.length + ' Spieler, ' + (x.spiele || []).length + ' Spiele, ' + Object.keys(x.anwesenheit || {}).length + ' Trainingstage' +
+        (x.gesichert ? '<br>gesichert am ' + new Date(x.gesichert).toLocaleString('de-AT') : '');
+    if (!(await confirmDlg('Sicherung laden?', info + '<br><br>Die Daten auf diesem Gerät werden dadurch <b>ersetzt</b>.', 'Laden', true))) return;
+    D = Object.assign(emptyData(), x); D.gesichert = x.gesichert || new Date().toISOString();
+    if (D.demo && D.spieler.length > APP.maxSpieler) D.spieler = D.spieler.slice(0, APP.maxSpieler);
+    try { localStorage.setItem(KEY, JSON.stringify(D)); } catch (err) {}
+    D.geaendert = D.gesichert; anwDate = tqDate = null; updateBackupChip(); renderCurrent(); toast('Sicherung geladen', 'ok');
+});
+function csv(rows) { return '﻿' + rows.map(r => r.map(v => { v = v == null ? '' : typeof v === 'number' ? String(v).replace('.', ',') : String(v); return /[;"\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(';')).join('\r\n'); }
+$('csvAnw').onclick = () => {
+    const dates = Object.keys(D.anwesenheit).sort();
+    const ids = [...new Set(D.spieler.map(p => p.id).concat(...dates.map(d => D.anwesenheit[d])))];
+    const rows = [['Spieler-ID', 'Name'].concat(dates.map(fmtShort).map((s, i) => s + dates[i].slice(0, 4))).concat(['Summe'])];
+    ids.forEach(id => { const r = [id, playerName(id)]; let n = 0; dates.forEach(d => { const on = D.anwesenheit[d].includes(id); n += on; r.push(on ? 'x' : ''); }); r.push(n); rows.push(r); });
+    shareFile('Anwesenheit_' + fileSafe(D.verein.name) + '_' + today() + '.csv', csv(rows), 'text/csv');
+};
+$('csvTq').onclick = () => {
+    const rows = [['Datum', 'Spieler-ID', 'Name', 'Trefferquote %', 'Fehlschüsse %']];
+    D.treffer.slice().sort((a, b) => a.datum.localeCompare(b.datum)).forEach(x => rows.push([x.datum, x.sid, playerName(x.sid), x.t, x.f]));
+    shareFile('Trefferquote_' + fileSafe(D.verein.name) + '_' + today() + '.csv', csv(rows), 'text/csv');
+};
+$('csvSp').onclick = () => {
+    const rows = [['Datum', 'Uhrzeit', 'Mannschaft W', 'Mannschaft E', 'Punkte W', 'Punkte E', 'Sieger', 'Kehren', 'Kehren W', 'Kehren E']];
+    sortedGames().reverse().forEach(g => rows.push([g.datum, g.uhrzeit, g.teamW, g.teamE, g.pw, g.pe, g.sieger || 'unentschieden', g.kehren, g.w.join('-'), g.e.join('-')]));
+    shareFile('Spiele_' + fileSafe(D.verein.name) + '_' + today() + '.csv', csv(rows), 'text/csv');
+};
+$('demoReset').onclick = async () => { if (await confirmDlg('Beispieldaten neu laden?', 'Alle Daten auf diesem Gerät werden durch den Beispielverein ersetzt.', 'Neu laden', true)) { D = demoData(); anwDate = tqDate = null; save(); D.geaendert = null; localStorage.setItem(KEY, JSON.stringify(D)); updateBackupChip(); toast('Beispieldaten geladen', 'ok'); } };
+$('demoClear').onclick = async () => {
+    const name = await dialog('<h2>Mit eigenem Verein starten</h2><p>Alle Daten auf diesem Gerät werden gelöscht. Danach Spieler unter „Spieler“ anlegen (Demo: max. ' + APP.maxSpieler + ').</p><label class="field">Vereinsname<input id="newClub" placeholder="z. B. ESV Musterstadt"></label>',
+        [{ label: 'Abbrechen', cls: 'ghost', value: null }, { label: 'Leer starten', cls: 'primary', value: 'ok' }]);
+    if (!name) return;
+    D = emptyData((document.getElementById('newClub') || {}).value || 'Mein Verein'); D.demo = true;
+    anwDate = tqDate = null; save(); show('spieler'); toast('Neu gestartet – jetzt Spieler anlegen', 'ok');
+};
+function renderDaten() {
+    $('bkInfo').innerHTML = (D.gesichert ? 'Letzte Sicherung: <b>' + new Date(D.gesichert).toLocaleString('de-AT', { dateStyle: 'medium', timeStyle: 'short' }) + '</b>' : 'Noch keine Sicherung erstellt.') +
+        ' · ' + D.spieler.length + ' Spieler, ' + D.spiele.length + ' Spiele, ' + Object.keys(D.anwesenheit).length + ' Trainingstage';
+}
+function updateBackupChip() {
+    const old = D.gesichert ? (Date.now() - new Date(D.gesichert)) / 86400000 : 999;
+    $('backupChip').hidden = !(D.geaendert && (!D.gesichert || D.geaendert > D.gesichert) && (old > 3 || !D.gesichert));
+    $('backupChip').title = 'Seit der letzten Sicherung wurde etwas geändert – jetzt in OneDrive sichern';
+}
+$('backupChip').onclick = () => show('daten');
+
+// =====================================================================
+//  DEMO-HINWEIS
+// =====================================================================
+function demoInfo(prefix) {
+    const k = APP.kontaktLink ? '<a href="' + esc(APP.kontaktLink) + '">' + esc(APP.kontakt) + '</a>' : '<b>' + esc(APP.kontakt) + '</b>';
+    dialog('<h2>⭐ Stocksport Trainings APP – Vollversion</h2>' + (prefix ? '<p><b>' + esc(prefix) + '</b></p>' : '') +
+        '<p>Diese Demo zeigt die wichtigsten Funktionen auf einem Tablet. Die <b>Vollversion</b> bietet zusätzlich:</p><ul>' +
+        '<li>Zentraler Vereinsserver (PC oder Raspberry Pi) – alle Tablets und Bildschirme sehen <b>denselben Datenstand</b></li>' +
+        '<li><b>Trainingsmodus PRO</b> für den großen Bildschirm an der Bahn, Einzeltraining & Trainingsanalyse</li>' +
+        '<li>Unbegrenzt viele Spieler, echte Datenbank mit täglicher Sicherung, Excel-Datei für die Trainingsbeteiligung</li>' +
+        '<li>Termine aus dem <b>Google Kalender</b>, Spielermaterial-Verwaltung, Anleitung</li>' +
+        '<li>Vereins-Lizenz mit eurem Vereinsnamen</li></ul><p>Anfragen an: ' + k + '</p>',
+        [{ label: 'Schließen', cls: 'primary', value: true }]);
+}
+$('demoInfoBtn').onclick = () => demoInfo();
+
+// =====================================================================
+//  START
+// =====================================================================
+D = load() || demoData();
+if (!load()) { try { localStorage.setItem(KEY, JSON.stringify(D)); } catch (e) {} }
+try { const tn = JSON.parse(localStorage.getItem(KEY + '_teams')); if (tn) { $('teamW').value = tn[0]; $('teamE').value = tn[1]; } } catch (e) {}
+$('demoBar').hidden = false;
+function tick() { const n = new Date(); $('clock').textContent = n.toLocaleTimeString('de-AT', { hour: '2-digit', minute: '2-digit' }); $('today').textContent = WD_SHORT[n.getDay()] + ', ' + n.toLocaleDateString('de-AT'); }
+tick(); setInterval(tick, 15000);
+updateBackupChip();
+show(location.hash.slice(1) || 'home');
+// Anderer Tab/Fenster hat Daten geändert
+window.addEventListener('storage', e => { if (e.key === KEY && e.newValue) { try { D = JSON.parse(e.newValue); renderCurrent(); } catch (x) {} } });
+// Offline-Betrieb (nur über https bzw. GitHub Pages)
+if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
 </body>
 </html>
